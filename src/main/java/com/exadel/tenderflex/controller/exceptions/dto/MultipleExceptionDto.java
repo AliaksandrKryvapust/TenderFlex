@@ -1,4 +1,4 @@
-package com.exadel.tenderflex.controller.eceptions.dto;
+package com.exadel.tenderflex.controller.exceptions.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,5 +1,7 @@
 package com.exadel.tenderflex.config.security;
 
+import com.exadel.tenderflex.controller.filter.JwtFilter;
+import com.exadel.tenderflex.repository.entity.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

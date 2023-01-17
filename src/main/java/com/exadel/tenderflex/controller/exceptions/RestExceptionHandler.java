@@ -1,8 +1,8 @@
-package com.exadel.tenderflex.controller.eceptions;
+package com.exadel.tenderflex.controller.exceptions;
 
-import com.exadel.tenderflex.controller.eceptions.dto.ExceptionDto;
-import com.exadel.tenderflex.controller.eceptions.dto.MultipleExceptionDto;
-import com.exadel.tenderflex.controller.eceptions.dto.SingleExceptionDto;
+import com.exadel.tenderflex.controller.exceptions.dto.ExceptionDto;
+import com.exadel.tenderflex.controller.exceptions.dto.MultipleExceptionDto;
+import com.exadel.tenderflex.controller.exceptions.dto.SingleExceptionDto;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
