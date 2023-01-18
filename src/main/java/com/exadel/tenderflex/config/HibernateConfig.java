@@ -24,8 +24,8 @@ public class HibernateConfig {
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect"); //DB Dialect
         jpaProperties.put("javax.persistence.jdbc.driver", "org.postgresql.Driver"); //DB Driver
-        jpaProperties.put("javax.persistence.jdbc.url", "jdbc:postgresql://localhost:5432/my_fit"); //BD Mane
-        jpaProperties.put("javax.persistence.jdbc.user", "postgres"); //DB User
+        jpaProperties.put("javax.persistence.jdbc.url", "jdbc:postgresql://localhost:5432/app"); //BD Mane
+        jpaProperties.put("javax.persistence.jdbc.user", "app"); //DB User
         jpaProperties.put("javax.persistence.jdbc.password", "postgres"); //DB Password
         //Warning! Can rewrite the table
         jpaProperties.put("hibernate.hbm2ddl.auto", "none"); // create / create-drop / update
@@ -36,7 +36,7 @@ public class HibernateConfig {
         jpaProperties.put("hibernate.format_sql", "true"); // Show SQL formatted
         jpaProperties.put("hibernate.use_sql_comments", "true");
         jpaProperties.put("hibernate.connection.pool_size", "10");
-        jpaProperties.put("hibernate.default_schema", "users");
+        jpaProperties.put("hibernate.default_schema", "app");
         factory.setJpaProperties(jpaProperties);
         return factory;
     }
