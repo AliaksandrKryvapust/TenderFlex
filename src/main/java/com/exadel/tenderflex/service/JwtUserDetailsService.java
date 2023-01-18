@@ -1,14 +1,18 @@
 package com.exadel.tenderflex.service;
 
+import com.exadel.tenderflex.repository.api.IUserRepository;
+import com.exadel.tenderflex.repository.entity.EUserStatus;
+import com.exadel.tenderflex.repository.entity.Privilege;
+import com.exadel.tenderflex.repository.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
@@ -22,10 +26,15 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         User user = this.userRepository.findByEmail(email);
         this.validate(email, user);
-        boolean enabled = user.getStatus().equals(UserStatus.ACTIVATED);
-        boolean nonLocked = !user.getStatus().equals(UserStatus.DEACTIVATED);
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority(user.getRole().name()));
+        boolean enabled = user.getStatus().equals(EUserStatus.ACTIVATED);
+        boolean nonLocked = !user.getStatus().equals(EUserStatus.DEACTIVATED);
+        Set<GrantedAuthority> authorityList = new HashSet<>();
+        user.getRoles().forEach((i) -> {
+            authorityList.add(new SimpleGrantedAuthority("ROLE_" + i.getRole().name()));
+            for (Privilege privilege : i.getPrivileges()) {
+                authorityList.add(new SimpleGrantedAuthority(privilege.getPrivilege().name()));
+            }
+        });
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), enabled,
                 true, true, nonLocked, authorityList);
     }
