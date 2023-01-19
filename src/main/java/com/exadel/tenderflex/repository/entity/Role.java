@@ -25,7 +25,7 @@ public class Role {
     private EUserRole role;
     @Setter
     @ManyToMany
-    @JoinTable(name = "roles_privilege", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+    @JoinTable(name = "role_privilege", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private List<Privilege> privileges;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
