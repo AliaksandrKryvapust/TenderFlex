@@ -1,26 +1,34 @@
 package com.exadel.tenderflex.service;
 
+import com.exadel.tenderflex.repository.api.IRoleRepository;
 import com.exadel.tenderflex.repository.api.IUserRepository;
+import com.exadel.tenderflex.repository.entity.Privilege;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.service.api.IUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.OptimisticLockException;
+import java.util.List;
 import java.util.UUID;
 
+@Service
 public class UserService implements IUserService {
     private final IUserRepository userRepository;
+    private final IRoleRepository roleRepository;
 
-    public UserService(IUserRepository userRepository) {
+    public UserService(IUserRepository userRepository, IRoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     @Transactional
     public User save(User user) {
         this.validate(user);
+        this.setPrivileges(user);
         return this.userRepository.save(user);
     }
 
@@ -61,5 +69,12 @@ public class UserService implements IUserService {
         currentEntity.setPassword(user.getPassword());
         currentEntity.setEmail(user.getEmail());
         currentEntity.setStatus(user.getStatus());
+    }
+
+    private void setPrivileges(User user) {
+        user.getRoles().forEach((i) -> {
+            List<Privilege> rolePrivilege = this.roleRepository.getRoleByRole(i.getRole()).orElseThrow().getPrivileges();
+            i.setPrivileges(rolePrivilege);
+        });
     }
 }
