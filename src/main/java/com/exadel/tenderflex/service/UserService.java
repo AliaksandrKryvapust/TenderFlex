@@ -77,4 +77,9 @@ public class UserService implements IUserService {
             i.setPrivileges(rolePrivilege);
         });
     }
+
+    @Override
+    public User getUser(String email) {
+        return this.userRepository.findByEmail(email);
+    }
 }
