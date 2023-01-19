@@ -39,3 +39,28 @@ CREATE TABLE app.role_privilege
 
 ALTER TABLE IF EXISTS app.role_privilege
     OWNER to app;
+
+CREATE TABLE app.users
+(
+    id        uuid,
+    username  character varying(20)       NOT NULL,
+    password  character varying(200)      NOT NULL,
+    email     character varying(50)       NOT NULL,
+    status    character varying(50)       NOT NULL,
+    dt_create timestamp without time zone NOT NULL DEFAULT 'now()',
+    dt_update timestamp without time zone NOT NULL DEFAULT 'now()',
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS app.users
+    OWNER to app;
+
+CREATE TABLE app.user_roles
+(
+    user_id uuid REFERENCES app.users (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    role_id uuid REFERENCES app.roles (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT "user_roles_PK" PRIMARY KEY (user_id, role_id)
+);
+
+ALTER TABLE IF EXISTS app.user_roles
+    OWNER to app;
