@@ -12,6 +12,7 @@ public class EmailValidator implements ConstraintValidator<IValidEmail, String> 
             "[A-Za-z\\d-]+(.[A-Za-z\\d]+)*(.[A-Za-z]{2,})$";
     @Override
     public void initialize(IValidEmail constraintAnnotation) {
+        // This method intentionally left blank
     }
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context){
