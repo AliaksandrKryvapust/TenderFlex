@@ -32,9 +32,7 @@ public class UserService implements IUserService, IUserManager {
     private final IUserRepository userRepository;
     private final IRoleService roleService;
     private final IUserValidator userValidator;
-    private final JwtUserDetailsService jwtUserDetailsService;
     private final UserMapper userMapper;
-    private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     @Transactional
@@ -91,14 +89,6 @@ public class UserService implements IUserService, IUserManager {
         userValidator.validateEntity(entityToSave);
         User user = update(entityToSave, id, version);
         return userMapper.outputMapping(user);
-    }
-
-    @Override
-    public UserLoginDtoOutput login(UserDtoLogin userDtoLogin) {
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userDtoLogin.getEmail());
-        userValidator.validateUser(userDtoLogin, userDetails);
-        String token = jwtTokenUtil.generateToken(userDetails);
-        return userMapper.loginOutputMapping(userDetails, token);
     }
 
     @Override

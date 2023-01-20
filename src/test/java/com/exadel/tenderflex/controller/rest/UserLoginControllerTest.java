@@ -20,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -39,12 +38,12 @@ class UserLoginControllerTest {
     @MockBean
     private IUserManager userManager;
     @MockBean
+    private JwtUserDetailsService userDetailsService;
+    @MockBean
     SecurityContext securityContext;
     // Beans for JwtFilter
     @MockBean
     private JwtTokenUtil tokenUtil;
-    @MockBean
-    private JwtUserDetailsService userDetailsService;
 
     @Test
     @WithMockUser(username = "admin@tenderflex.com", password = "kdrL556D", roles = {"ADMIN"})
@@ -93,7 +92,7 @@ class UserLoginControllerTest {
         final UserLoginDtoOutput userLoginDtoOutput = UserLoginDtoOutput.builder()
                 .email(email)
                 .token(token).build();
-        Mockito.when(userManager.login(userDtoLogin)).thenReturn(userLoginDtoOutput);
+        Mockito.when(userDetailsService.login(userDtoLogin)).thenReturn(userLoginDtoOutput);
 
         // assert
         this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/login").contentType(MediaType.APPLICATION_JSON)
@@ -103,7 +102,7 @@ class UserLoginControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(token));
 
         //test
-        Mockito.verify(userManager).login(userDtoLogin);
+        Mockito.verify(userDetailsService).login(userDtoLogin);
     }
 
     @Test

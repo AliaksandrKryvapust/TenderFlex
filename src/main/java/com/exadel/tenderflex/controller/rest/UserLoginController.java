@@ -4,7 +4,9 @@ import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.IUserManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,13 +18,11 @@ import javax.validation.Valid;
 
 @RestController
 @Validated
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserLoginController {
     private final IUserManager userManager;
-
-    public UserLoginController(IUserManager userManager) {
-        this.userManager = userManager;
-    }
+    private final JwtUserDetailsService userDetailsService;
 
     @GetMapping
     protected ResponseEntity<UserDtoOutput> getCurrentUser() {
@@ -33,7 +33,7 @@ public class UserLoginController {
 
     @PostMapping("/login")
     protected ResponseEntity<UserLoginDtoOutput> login(@RequestBody @Valid UserDtoLogin dtoLogin) {
-        UserLoginDtoOutput userLoginDtoOutput = userManager.login(dtoLogin);
+        UserLoginDtoOutput userLoginDtoOutput = userDetailsService.login(dtoLogin);
         return ResponseEntity.ok(userLoginDtoOutput);
     }
 
