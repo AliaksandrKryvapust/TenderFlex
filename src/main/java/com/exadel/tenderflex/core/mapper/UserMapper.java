@@ -31,25 +31,25 @@ public class UserMapper {
 
     public User userInputMapping(UserDtoRegistration userDtoRegistration) {
         Role role = Role.builder()
-                .role(userDtoRegistration.getRole())
+                .roleType(userDtoRegistration.getRole())
                 .build();
         return User.builder().username(userDtoRegistration.getUsername())
                 .password(encoder.encode(userDtoRegistration.getPassword()))
                 .email(userDtoRegistration.getEmail())
-                .roles(Collections.singletonList(role))
+                .roles(Collections.singleton(role))
                 .status(EUserStatus.ACTIVATED)
                 .build();
     }
 
     public User inputMapping(UserDtoInput userDtoInput) {
         Role role = Role.builder()
-                .role(EUserRole.valueOf(userDtoInput.getRole()))
+                .roleType(EUserRole.valueOf(userDtoInput.getRole()))
                 .build();
         return User.builder()
                 .username(userDtoInput.getUsername())
                 .password(encoder.encode(userDtoInput.getPassword()))
                 .email(userDtoInput.getEmail())
-                .roles(Collections.singletonList(role))
+                .roles(Collections.singleton(role))
                 .status(EUserStatus.valueOf(userDtoInput.getStatus()))
                 .build();
     }
@@ -74,7 +74,7 @@ public class UserMapper {
                 .dtUpdate(user.getDtUpdate())
                 .email(user.getEmail())
                 .username(user.getUsername())
-                .role(user.getRoles().get(0).getRole())
+                .role(user.getRoles().stream().findFirst().orElseThrow().getRoleType())
                 .status(user.getStatus())
                 .build();
     }
@@ -91,5 +91,11 @@ public class UserMapper {
                 .last(record.isLast())
                 .content(outputs)
                 .build();
+    }
+    public void updateEntityFields(User user, User currentEntity) {
+        currentEntity.setUsername(user.getUsername());
+        currentEntity.setPassword(user.getPassword());
+        currentEntity.setEmail(user.getEmail());
+        currentEntity.setStatus(user.getStatus());
     }
 }
