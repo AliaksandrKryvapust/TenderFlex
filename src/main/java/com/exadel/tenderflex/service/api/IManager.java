@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public interface IManager<TYPE, TYPE2> {
     TYPE saveDto(TYPE2 type);
-    PageDtoOutput getDto(Pageable pageable);
+    PageDtoOutput<TYPE> getDto(Pageable pageable);
     TYPE getDto(UUID id);
 }

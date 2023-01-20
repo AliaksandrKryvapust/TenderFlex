@@ -25,7 +25,7 @@ public class UserAdminController {
     }
 
     @GetMapping(params = {"page", "size"})
-    protected ResponseEntity<PageDtoOutput> getPage(@RequestParam("page") int page,
+    protected ResponseEntity<PageDtoOutput<UserDtoOutput>> getPage(@RequestParam("page") int page,
                                                     @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(userManager.getDto(pageable));
