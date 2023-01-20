@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.OptimisticLockException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService implements IUserService {
@@ -53,6 +51,12 @@ public class UserService implements IUserService {
         return null;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public User getUser(String email) {
+        return this.userRepository.findByEmail(email);
+    }
+
     private void validate(User user) {
         if (user.getId() != null || user.getDtUpdate() != null) {
             throw new IllegalStateException("User id should be empty");
@@ -80,10 +84,5 @@ public class UserService implements IUserService {
             roles.add(userRole);
         });
         user.setRoles(roles);
-    }
-
-    @Override
-    public User getUser(String email) {
-        return this.userRepository.findByEmail(email);
     }
 }
