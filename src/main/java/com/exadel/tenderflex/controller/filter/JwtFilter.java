@@ -8,8 +8,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -22,16 +20,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.exadel.tenderflex.core.Constants.TOKEN_HEADER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    private static final String jwtSecret = "NDQ1ZjAzNjQtMzViZi00MDRjLTljZjQtNjNjYWIyZTU5ZDYw";
     private final JwtUserDetailsService jwtUserDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
@@ -43,7 +37,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        if (this.validateSecret(request, response, filterChain)) return;
         this.validateJwtToken(request);
         filterChain.doFilter(request, response);
     }
@@ -79,21 +72,5 @@ public class JwtFilter extends OncePerRequestFilter {
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-    }
-
-    private boolean validateSecret(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        final String requestSecretHeader = request.getHeader(TOKEN_HEADER);
-        if (requestSecretHeader != null) {
-            if (requestSecretHeader.equals(jwtSecret)) {
-                List<GrantedAuthority> authorityList = new ArrayList<>();
-                authorityList.add(new SimpleGrantedAuthority("TEST"));
-                UserDetails userDetails = new org.springframework.security.core.userdetails
-                        .User("test@email", "test", authorityList);
-                setAuthentication(request, userDetails);
-                filterChain.doFilter(request, response);
-                return true;
-            }
-        }
-        return false;
     }
 }
