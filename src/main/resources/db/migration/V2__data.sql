@@ -17,11 +17,11 @@ VALUES ('a905cc74-980a-4138-94f5-e01278c7a77e', 'CAN_ACCEPT_DECLINE_OFFER');
 INSERT INTO app.privileges(id, privilege)
 VALUES ('bf22153e-9657-4c00-b74c-d9d7c7b635b0', 'CAN_UPLOAD_CONTRACT');
 
-INSERT INTO app.roles(id, role)
+INSERT INTO app.roles(id, role_type)
 VALUES ('d1bdaa3d-3d8a-404f-990d-2e36a42f0329', 'CONTRACTOR');
-INSERT INTO app.roles(id, role)
+INSERT INTO app.roles(id, role_type)
 VALUES ('ac1139bd-5834-45f5-8632-04e6b073a5f4', 'BIDDER');
-INSERT INTO app.roles(id, role)
+INSERT INTO app.roles(id, role_type)
 VALUES ('41d6bce0-d501-4fba-80ac-3b32234d64bc', 'ADMIN');
 
 INSERT INTO app.role_privilege(role_id, privilege_id)
