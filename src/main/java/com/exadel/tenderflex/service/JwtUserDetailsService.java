@@ -25,8 +25,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) {
-        JwtUserDetailsService proxy = getProxy();
-        User user = proxy.getUser(email);
+        User user = getProxy().getUser(email);
         this.validate(email, user);
         boolean enabled = user.getStatus().equals(EUserStatus.ACTIVATED);
         boolean nonLocked = !user.getStatus().equals(EUserStatus.DEACTIVATED);

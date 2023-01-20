@@ -19,12 +19,11 @@ import org.aopalliance.aop.AspectException;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -36,92 +35,84 @@ public class UserService implements IUserService, IUserManager {
     private final JwtUserDetailsService jwtUserDetailsService;
     private final UserMapper userMapper;
     private final JwtTokenUtil jwtTokenUtil;
-    private final PasswordEncoder encoder;
 
     @Override
     @Transactional
     public User save(User user) {
-        return this.userRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
     public Page<User> get(Pageable pageable) {
-        return this.userRepository.findAll(pageable);
+        return userRepository.findAll(pageable);
     }
 
     @Override
     public User get(UUID id) {
-        return this.userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     public User update(User user, UUID id, Long version) {
-        User currentEntity = this.userRepository.findById(id).orElseThrow();
+        User currentEntity = userRepository.findById(id).orElseThrow(NoSuchElementException::new);
         this.userValidator.optimisticLockCheck(version, currentEntity);
         this.userMapper.updateEntityFields(user, currentEntity);
-        UserService proxy = getProxy();
-        return proxy.save(currentEntity);
+        return getProxy().save(currentEntity);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User getUser(String email) {
-        return this.userRepository.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public UserDtoOutput saveDto(UserDtoInput userDtoInput) {
         User entityToSave = userMapper.inputMapping(userDtoInput);
-        this.userValidator.validateEntity(entityToSave);
-        this.roleService.setRoles(entityToSave);
-        UserService proxy = getProxy();
-        User user = proxy.save(entityToSave);
+        userValidator.validateEntity(entityToSave);
+        roleService.setRoles(entityToSave);
+        User user = getProxy().save(entityToSave);
         return userMapper.outputMapping(user);
     }
 
     @Override
-    public PageDtoOutput getDto(Pageable pageable) {
-        return userMapper.outputPageMapping(this.get(pageable));
+    public PageDtoOutput<UserDtoOutput> getDto(Pageable pageable) {
+        return userMapper.outputPageMapping(get(pageable));
     }
 
     @Override
     public UserDtoOutput getDto(UUID id) {
-        User menu = this.get(id);
+        User menu = get(id);
         return userMapper.outputMapping(menu);
     }
 
     @Override
     public UserDtoOutput updateDto(UserDtoInput dtoInput, UUID id, Long version) {
         User entityToSave = userMapper.inputMapping(dtoInput);
-        this.userValidator.validateEntity(entityToSave);
-        User user = this.update(entityToSave, id, version);
+        userValidator.validateEntity(entityToSave);
+        User user = update(entityToSave, id, version);
         return userMapper.outputMapping(user);
     }
 
     @Override
     public UserLoginDtoOutput login(UserDtoLogin userDtoLogin) {
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userDtoLogin.getEmail());
-        if (!encoder.matches(userDtoLogin.getPassword(), userDetails.getPassword()) || !userDetails.isEnabled()) {
-            throw new BadCredentialsException("User login or password is incorrect or user is not activated");
-        }
+        userValidator.validateUser(userDtoLogin, userDetails);
         String token = jwtTokenUtil.generateToken(userDetails);
-        return this.userMapper.loginOutputMapping(userDetails, token);
+        return userMapper.loginOutputMapping(userDetails, token);
     }
 
     @Override
     public UserLoginDtoOutput saveUser(UserDtoRegistration userDtoRegistration) {
         User entityToSave = userMapper.userInputMapping(userDtoRegistration);
-        this.userValidator.validateEntity(entityToSave);
-        this.roleService.setRoles(entityToSave);
-        UserService proxy = getProxy();
-        User user = proxy.save(entityToSave);
+        userValidator.validateEntity(entityToSave);
+        roleService.setRoles(entityToSave);
+        User user = getProxy().save(entityToSave);
         return userMapper.registerOutputMapping(user);
     }
 
     @Override
     public UserDtoOutput getUserDto(String email) {
-        UserService proxy = getProxy();
-        User user = proxy.getUser(email);
+        User user = getProxy().getUser(email);
         return this.userMapper.outputMapping(user);
     }
 
