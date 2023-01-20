@@ -4,7 +4,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
-import com.exadel.tenderflex.manager.api.IUserManager;
+import com.exadel.tenderflex.service.api.IUserManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +28,7 @@ public class UserLoginController {
     protected ResponseEntity<UserDtoOutput> getCurrentUser() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-        return ResponseEntity.ok(this.userManager.getUser(username));
+        return ResponseEntity.ok(this.userManager.getUserDto(username));
     }
 
     @PostMapping("/login")
