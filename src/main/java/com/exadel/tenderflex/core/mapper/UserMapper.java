@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Component
@@ -74,7 +75,7 @@ public class UserMapper {
                 .dtUpdate(user.getDtUpdate())
                 .email(user.getEmail())
                 .username(user.getUsername())
-                .role(user.getRoles().stream().findFirst().orElseThrow().getRoleType())
+                .role(user.getRoles().stream().findFirst().orElseThrow(NoSuchElementException::new).getRoleType())
                 .status(user.getStatus())
                 .build();
     }
