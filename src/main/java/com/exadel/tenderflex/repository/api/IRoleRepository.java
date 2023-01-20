@@ -8,5 +8,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IRoleRepository extends JpaRepository<Role, UUID> {
-    Optional<Role> getRoleByRole(EUserRole role);
+    Optional<Role> getRoleByRoleType(EUserRole role);
 }

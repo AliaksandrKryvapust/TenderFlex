@@ -6,14 +6,22 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+
+import static com.exadel.tenderflex.core.Constants.USER_ENTITY_GRAPH;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@NamedEntityGraph(
+        name = USER_ENTITY_GRAPH,
+        attributeNodes = @NamedAttributeNode(value = "roles", subgraph = "role.privileges"),
+        subgraphs = @NamedSubgraph(name = "role.privileges",
+                attributeNodes = @NamedAttributeNode(value = "privileges"))
+)
 @Table(name = "users", schema = "app")
 public class User {
     @Id
@@ -32,8 +40,8 @@ public class User {
     @Setter
     @ManyToMany
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roles;
     @Setter
     @Enumerated(EnumType.STRING)
     private EUserStatus status;
