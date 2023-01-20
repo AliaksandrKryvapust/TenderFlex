@@ -16,11 +16,11 @@ import java.util.UUID;
 
 @RestController
 @Validated
-@RequestMapping("/api/v1/users")
-public class UserController {
+@RequestMapping("/api/v1/admin")
+public class UserAdminController {
     private final IUserManager userManager;
 
-    public UserController(IUserManager userManager) {
+    public UserAdminController(IUserManager userManager) {
         this.userManager = userManager;
     }
 
