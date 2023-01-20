@@ -22,7 +22,7 @@ public class Role {
     private UUID id;
     @Setter
     @Enumerated(EnumType.STRING)
-    private EUserRole role;
+    private EUserRole roleType;
     @Setter
     @ManyToMany
     @JoinTable(name = "role_privilege", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
@@ -37,7 +37,7 @@ public class Role {
     public String toString() {
         return "Role{" +
                 "id=" + id +
-                ", role=" + role +
+                ", role=" + roleType +
                 ", dtCreate=" + dtCreate +
                 ", dtUpdate=" + dtUpdate +
                 '}';
@@ -51,7 +51,7 @@ public class Role {
         Role role1 = (Role) o;
 
         if (!getId().equals(role1.getId())) return false;
-        if (getRole() != role1.getRole()) return false;
+        if (getRoleType() != role1.getRoleType()) return false;
         if (!getDtCreate().equals(role1.getDtCreate())) return false;
         return getDtUpdate().equals(role1.getDtUpdate());
     }
@@ -59,7 +59,7 @@ public class Role {
     @Override
     public int hashCode() {
         int result = getId().hashCode();
-        result = 31 * result + getRole().hashCode();
+        result = 31 * result + getRoleType().hashCode();
         result = 31 * result + getDtCreate().hashCode();
         result = 31 * result + getDtUpdate().hashCode();
         return result;

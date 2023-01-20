@@ -21,7 +21,7 @@ ALTER TABLE IF EXISTS app.privileges
 CREATE TABLE app.roles
 (
     id        uuid,
-    role      character varying           NOT NULL,
+    role_type character varying NOT NULL,
     dt_create timestamp without time zone NOT NULL DEFAULT 'now()',
     dt_update timestamp without time zone NOT NULL DEFAULT 'now()',
     PRIMARY KEY (id)
