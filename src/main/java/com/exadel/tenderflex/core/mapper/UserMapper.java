@@ -69,7 +69,7 @@ public class UserMapper {
 
     public UserDtoOutput outputMapping(User user) {
         return UserDtoOutput.builder()
-                .id(user.getId())
+                .id(String.valueOf(user.getId()))
                 .dtCreate(user.getDtCreate())
                 .dtUpdate(user.getDtUpdate())
                 .email(user.getEmail())

@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @Data
 public class UserDtoOutput {
-    private final @NonNull UUID id;
+    private final @NonNull String id;
     private final @NonNull String username;
     private final @NonNull String email;
     private final @NonNull EUserRole role;
