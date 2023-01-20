@@ -24,7 +24,7 @@ public class UserLoginController {
         this.userManager = userManager;
     }
 
-    @GetMapping("/me")
+    @GetMapping
     protected ResponseEntity<UserDtoOutput> getCurrentUser() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
