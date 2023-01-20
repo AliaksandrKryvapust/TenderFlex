@@ -1,33 +1,46 @@
 package com.exadel.tenderflex.service;
 
-import com.exadel.tenderflex.repository.api.IRoleRepository;
+import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
+import com.exadel.tenderflex.core.dto.input.UserDtoInput;
+import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
+import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
+import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
-import com.exadel.tenderflex.repository.entity.Role;
 import com.exadel.tenderflex.repository.entity.User;
+import com.exadel.tenderflex.service.api.IRoleService;
+import com.exadel.tenderflex.service.api.IUserManager;
 import com.exadel.tenderflex.service.api.IUserService;
+import com.exadel.tenderflex.service.validator.api.IUserValidator;
+import lombok.RequiredArgsConstructor;
+import org.aopalliance.aop.AspectException;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.OptimisticLockException;
-import java.util.*;
+import java.util.UUID;
 
 @Service
-public class UserService implements IUserService {
+@RequiredArgsConstructor
+public class UserService implements IUserService, IUserManager {
     private final IUserRepository userRepository;
-    private final IRoleRepository roleRepository;
-
-    public UserService(IUserRepository userRepository, IRoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-    }
+    private final IRoleService roleService;
+    private final IUserValidator userValidator;
+    private final JwtUserDetailsService jwtUserDetailsService;
+    private final UserMapper userMapper;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final PasswordEncoder encoder;
 
     @Override
     @Transactional
     public User save(User user) {
-        this.validate(user);
-        this.setRoles(user);
         return this.userRepository.save(user);
     }
 
@@ -42,13 +55,12 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @Transactional
     public User update(User user, UUID id, Long version) {
-        this.validate(user);
         User currentEntity = this.userRepository.findById(id).orElseThrow();
-        this.optimisticLockCheck(version, currentEntity);
-        this.updateEntityFields(user, currentEntity);
-        return null;
+        this.userValidator.optimisticLockCheck(version, currentEntity);
+        this.userMapper.updateEntityFields(user, currentEntity);
+        UserService proxy = getProxy();
+        return proxy.save(currentEntity);
     }
 
     @Override
@@ -57,32 +69,67 @@ public class UserService implements IUserService {
         return this.userRepository.findByEmail(email);
     }
 
-    private void validate(User user) {
-        if (user.getId() != null || user.getDtUpdate() != null) {
-            throw new IllegalStateException("User id should be empty");
+    @Override
+    public UserDtoOutput saveDto(UserDtoInput userDtoInput) {
+        User entityToSave = userMapper.inputMapping(userDtoInput);
+        this.userValidator.validateEntity(entityToSave);
+        this.roleService.setRoles(entityToSave);
+        UserService proxy = getProxy();
+        User user = proxy.save(entityToSave);
+        return userMapper.outputMapping(user);
+    }
+
+    @Override
+    public PageDtoOutput getDto(Pageable pageable) {
+        return userMapper.outputPageMapping(this.get(pageable));
+    }
+
+    @Override
+    public UserDtoOutput getDto(UUID id) {
+        User menu = this.get(id);
+        return userMapper.outputMapping(menu);
+    }
+
+    @Override
+    public UserDtoOutput updateDto(UserDtoInput dtoInput, UUID id, Long version) {
+        User entityToSave = userMapper.inputMapping(dtoInput);
+        this.userValidator.validateEntity(entityToSave);
+        User user = this.update(entityToSave, id, version);
+        return userMapper.outputMapping(user);
+    }
+
+    @Override
+    public UserLoginDtoOutput login(UserDtoLogin userDtoLogin) {
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userDtoLogin.getEmail());
+        if (!encoder.matches(userDtoLogin.getPassword(), userDetails.getPassword()) || !userDetails.isEnabled()) {
+            throw new BadCredentialsException("User login or password is incorrect or user is not activated");
         }
+        String token = jwtTokenUtil.generateToken(userDetails);
+        return this.userMapper.loginOutputMapping(userDetails, token);
     }
 
-    private void optimisticLockCheck(Long version, User currentEntity) {
-        Long currentVersion = currentEntity.getDtUpdate().toEpochMilli();
-        if (!currentVersion.equals(version)) {
-            throw new OptimisticLockException("user table update failed, version does not match update denied");
+    @Override
+    public UserLoginDtoOutput saveUser(UserDtoRegistration userDtoRegistration) {
+        User entityToSave = userMapper.userInputMapping(userDtoRegistration);
+        this.userValidator.validateEntity(entityToSave);
+        this.roleService.setRoles(entityToSave);
+        UserService proxy = getProxy();
+        User user = proxy.save(entityToSave);
+        return userMapper.registerOutputMapping(user);
+    }
+
+    @Override
+    public UserDtoOutput getUserDto(String email) {
+        UserService proxy = getProxy();
+        User user = proxy.getUser(email);
+        return this.userMapper.outputMapping(user);
+    }
+
+    private UserService getProxy() {
+        try {
+            return (UserService) AopContext.currentProxy();
+        } catch (AspectException e) {
+            return this;
         }
-    }
-
-    private void updateEntityFields(User user, User currentEntity) {
-        currentEntity.setUsername(user.getUsername());
-        currentEntity.setPassword(user.getPassword());
-        currentEntity.setEmail(user.getEmail());
-        currentEntity.setStatus(user.getStatus());
-    }
-
-    private void setRoles(User user) {
-        List<Role> roles = new ArrayList<>();
-        user.getRoles().forEach((i) -> {
-            Role userRole = this.roleRepository.getRoleByRole(i.getRole()).orElseThrow();
-            roles.add(userRole);
-        });
-        user.setRoles(roles);
     }
 }

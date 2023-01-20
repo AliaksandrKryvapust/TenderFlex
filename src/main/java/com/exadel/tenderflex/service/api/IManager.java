@@ -1,4 +1,4 @@
-package com.exadel.tenderflex.manager.api;
+package com.exadel.tenderflex.service.api;
 
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import org.springframework.data.domain.Pageable;
@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface IManager<TYPE, TYPE2> {
-    TYPE save(TYPE2 type);
-    PageDtoOutput get(Pageable pageable);
-    TYPE get(UUID id);
+    TYPE saveDto(TYPE2 type);
+    PageDtoOutput getDto(Pageable pageable);
+    TYPE getDto(UUID id);
 }
