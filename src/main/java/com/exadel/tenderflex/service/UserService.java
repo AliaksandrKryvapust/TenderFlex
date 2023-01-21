@@ -1,8 +1,6 @@
 package com.exadel.tenderflex.service;
 
-import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
 import com.exadel.tenderflex.core.dto.input.UserDtoInput;
-import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
@@ -19,7 +17,6 @@ import org.aopalliance.aop.AspectException;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,9 +49,9 @@ public class UserService implements IUserService, IUserManager {
 
     @Override
     public User update(User user, UUID id, Long version) {
-        User currentEntity = userRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        this.userValidator.optimisticLockCheck(version, currentEntity);
-        this.userMapper.updateEntityFields(user, currentEntity);
+        User currentEntity = get(id);
+        userValidator.optimisticLockCheck(version, currentEntity);
+        userMapper.updateEntityFields(user, currentEntity);
         return getProxy().save(currentEntity);
     }
 
