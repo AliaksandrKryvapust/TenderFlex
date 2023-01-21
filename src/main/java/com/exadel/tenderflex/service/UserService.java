@@ -13,12 +13,9 @@ import com.exadel.tenderflex.service.api.IUserManager;
 import com.exadel.tenderflex.service.api.IUserService;
 import com.exadel.tenderflex.service.validator.api.IUserValidator;
 import lombok.RequiredArgsConstructor;
-import org.aopalliance.aop.AspectException;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -32,7 +29,6 @@ public class UserService implements IUserService, IUserManager {
     private final UserMapper userMapper;
 
     @Override
-    @Transactional
     public User save(User user) {
         return userRepository.save(user);
     }
@@ -52,7 +48,7 @@ public class UserService implements IUserService, IUserManager {
         User currentEntity = get(id);
         userValidator.optimisticLockCheck(version, currentEntity);
         userMapper.updateEntityFields(user, currentEntity);
-        return getProxy().save(currentEntity);
+        return save(currentEntity);
     }
 
     @Override
@@ -65,7 +61,7 @@ public class UserService implements IUserService, IUserManager {
         User entityToSave = userMapper.inputMapping(userDtoInput);
         userValidator.validateEntity(entityToSave);
         roleService.setRoles(entityToSave);
-        User user = getProxy().save(entityToSave);
+        User user = save(entityToSave);
         return userMapper.outputMapping(user);
     }
 
@@ -93,21 +89,13 @@ public class UserService implements IUserService, IUserManager {
         User entityToSave = userMapper.userInputMapping(userDtoRegistration);
         userValidator.validateEntity(entityToSave);
         roleService.setRoles(entityToSave);
-        User user = getProxy().save(entityToSave);
+        User user = save(entityToSave);
         return userMapper.registerOutputMapping(user);
     }
 
     @Override
     public UserDtoOutput getUserDto(String email) {
-        User user = getProxy().getUser(email);
+        User user = getUser(email);
         return this.userMapper.outputMapping(user);
-    }
-
-    private UserService getProxy() {
-        try {
-            return (UserService) AopContext.currentProxy();
-        } catch (AspectException e) {
-            return this;
-        }
     }
 }

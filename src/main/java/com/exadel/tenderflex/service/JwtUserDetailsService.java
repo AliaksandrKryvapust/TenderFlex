@@ -10,14 +10,11 @@ import com.exadel.tenderflex.repository.entity.Privilege;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
 import lombok.RequiredArgsConstructor;
-import org.aopalliance.aop.AspectException;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +29,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) {
-        User user = getProxy().getUser(email);
+        User user = userRepository.findByEmail(email);
         userDetailsValidator.validate(email, user);
         boolean enabled = user.getStatus().equals(EUserStatus.ACTIVATED);
         boolean nonLocked = !user.getStatus().equals(EUserStatus.DEACTIVATED);
@@ -47,23 +44,10 @@ public class JwtUserDetailsService implements UserDetailsService {
                 true, true, nonLocked, authorityList);
     }
 
-    @Transactional(readOnly = true)
-    public User getUser(String email) {
-        return this.userRepository.findByEmail(email);
-    }
-
     public UserLoginDtoOutput login(UserDtoLogin userDtoLogin) {
         UserDetails userDetails = loadUserByUsername(userDtoLogin.getEmail());
         userDetailsValidator.validateLogin(userDtoLogin, userDetails);
         String token = jwtTokenUtil.generateToken(userDetails);
         return userMapper.loginOutputMapping(userDetails, token);
-    }
-
-    private JwtUserDetailsService getProxy() {
-        try {
-            return (JwtUserDetailsService) AopContext.currentProxy();
-        } catch (AspectException e) {
-            return this;
-        }
     }
 }
