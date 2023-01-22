@@ -1,7 +1,10 @@
 package com.exadel.tenderflex.service;
 
 import com.exadel.tenderflex.core.dto.input.UserDtoInput;
+import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.entity.*;
@@ -48,6 +51,7 @@ class UserServiceTest {
     final String username = "someone";
     final UUID id = UUID.fromString("1d63d7df-f1b3-4e92-95a3-6c7efad96901");
     final String password = "kdrL556D";
+    final String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBteWZpdC5jb20iLCJpYXQiOjE2NzM1MzE5MzEsImV4cCI6MTY3MzUzNTUzMX0.ncZiUNsJK1LFh2U59moFgWhzcWZyW3p0TL9O_hWVcvw";
 
     @Test
     void save() {
@@ -57,19 +61,19 @@ class UserServiceTest {
         Mockito.when(userRepository.save(userInput)).thenReturn(userOutput);
 
         //test
-        User test = userService.save(userInput);
+        User actual = userService.save(userInput);
 
         // assert
-        assertNotNull(test);
-        assertNotNull(test.getRoles());
-        assertEquals(id, test.getId());
-        assertEquals(email, test.getEmail());
-        assertEquals(password, test.getPassword());
-        assertEquals(username, test.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, test.getStatus());
-        assertEquals(dtCreate, test.getDtCreate());
-        assertEquals(dtUpdate, test.getDtUpdate());
-        for (Role roles : test.getRoles()) {
+        assertNotNull(actual);
+        assertNotNull(actual.getRoles());
+        assertEquals(id, actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(password, actual.getPassword());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+        for (Role roles : actual.getRoles()) {
             assertNotNull(roles.getPrivileges());
             assertEquals(id, roles.getId());
             assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
@@ -93,13 +97,13 @@ class UserServiceTest {
         Mockito.when(userRepository.findAll(pageable)).thenReturn(page);
 
         //test
-        Page<User> test = userService.get(pageable);
+        Page<User> actual = userService.get(pageable);
 
         // assert
-        assertNotNull(test);
-        assertEquals(1, test.getTotalPages());
-        Assertions.assertTrue(test.isFirst());
-        for (User user : test.getContent()) {
+        assertNotNull(actual);
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.isFirst());
+        for (User user : actual.getContent()) {
             assertNotNull(user.getRoles());
             assertEquals(id, user.getId());
             assertEquals(email, user.getEmail());
@@ -131,19 +135,19 @@ class UserServiceTest {
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(userOutput));
 
         //test
-        User test = userService.get(id);
+        User actual = userService.get(id);
 
         // assert
-        assertNotNull(test);
-        assertNotNull(test.getRoles());
-        assertEquals(id, test.getId());
-        assertEquals(email, test.getEmail());
-        assertEquals(password, test.getPassword());
-        assertEquals(username, test.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, test.getStatus());
-        assertEquals(dtCreate, test.getDtCreate());
-        assertEquals(dtUpdate, test.getDtUpdate());
-        for (Role roles : test.getRoles()) {
+        assertNotNull(actual);
+        assertNotNull(actual.getRoles());
+        assertEquals(id, actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(password, actual.getPassword());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+        for (Role roles : actual.getRoles()) {
             assertNotNull(roles.getPrivileges());
             assertEquals(id, roles.getId());
             assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
@@ -208,19 +212,19 @@ class UserServiceTest {
         Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
 
         //test
-        User test = userService.getUser(email);
+        User actual = userService.getUser(email);
 
         // assert
-        assertNotNull(test);
-        assertNotNull(test.getRoles());
-        assertEquals(id, test.getId());
-        assertEquals(email, test.getEmail());
-        assertEquals(password, test.getPassword());
-        assertEquals(username, test.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, test.getStatus());
-        assertEquals(dtCreate, test.getDtCreate());
-        assertEquals(dtUpdate, test.getDtUpdate());
-        for (Role roles : test.getRoles()) {
+        assertNotNull(actual);
+        assertNotNull(actual.getRoles());
+        assertEquals(id, actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(password, actual.getPassword());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+        for (Role roles : actual.getRoles()) {
             assertNotNull(roles.getPrivileges());
             assertEquals(id, roles.getId());
             assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
@@ -248,16 +252,72 @@ class UserServiceTest {
         ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
 
         //test
-        UserDtoOutput test = userService.saveDto(dtoInput);
+        UserDtoOutput actual = userService.saveDto(dtoInput);
         Mockito.verify(userValidator, Mockito.times(1)).validateEntity(actualUser.capture());
         Mockito.verify(roleService, Mockito.times(1)).setRoles(actualUser.capture());
 
         // assert
         assertEquals(userInput, actualUser.getValue());
+        assertNotNull(actual);
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+    }
+
+    @Test
+    void getDto() {
+        // preconditions
+        final User userOutput = getPreparedUserOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<User> page = new PageImpl<>(Collections.singletonList(userOutput), pageable, 1);
+        final PageDtoOutput<UserDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        Mockito.when(userRepository.findAll(pageable)).thenReturn(page);
+        Mockito.when(userMapper.outputPageMapping(page)).thenReturn(pageDtoOutput);
+
+        //test
+        PageDtoOutput<UserDtoOutput> actual = userService.getDto(pageable);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.getFirst());
+        Assertions.assertTrue(actual.getLast());
+        assertEquals(2, actual.getNumber());
+        assertEquals(1, actual.getNumberOfElements());
+        assertEquals(1, actual.getSize());
+        assertEquals(1, actual.getTotalPages());
+        assertEquals(1, actual.getTotalElements());
+        for (UserDtoOutput user : actual.getContent()) {
+            assertEquals(EUserRole.CONTRACTOR, user.getRole());
+            assertEquals(id.toString(), user.getId());
+            assertEquals(email, user.getEmail());
+            assertEquals(username, user.getUsername());
+            assertEquals(EUserStatus.ACTIVATED, user.getStatus());
+            assertEquals(dtCreate, user.getDtCreate());
+            assertEquals(dtUpdate, user.getDtUpdate());
+        }
+    }
+
+    @Test
+    void testGetDto() {
+        // preconditions
+        final User userOutput = getPreparedUserOutput();
+        final UserDtoOutput userDtoOutput = getPreparedUserDtoOutput();
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(userOutput));
+        Mockito.when(userMapper.outputMapping(userOutput)).thenReturn(userDtoOutput);
+
+        //test
+        UserDtoOutput test = userService.getDto(id);
+
+        // assert
         assertNotNull(test);
+        assertEquals(EUserRole.CONTRACTOR, test.getRole());
         assertEquals(id.toString(), test.getId());
         assertEquals(email, test.getEmail());
-        assertEquals(EUserRole.CONTRACTOR, test.getRole());
         assertEquals(username, test.getUsername());
         assertEquals(EUserStatus.ACTIVATED, test.getStatus());
         assertEquals(dtCreate, test.getDtCreate());
@@ -265,23 +325,82 @@ class UserServiceTest {
     }
 
     @Test
-    void getDto() {
-    }
-
-    @Test
-    void testGetDto() {
-    }
-
-    @Test
     void updateDto() {
+        // preconditions
+        final User userInput = getPreparedUserOutput();
+        final UserDtoInput dtoInput = getPreparedUserDtoInput();
+        final UserDtoOutput dtoOutput = getPreparedUserDtoOutput();
+        Mockito.when(userMapper.inputMapping(dtoInput)).thenReturn(userInput);
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(userInput));
+        Mockito.when(userRepository.save(userInput)).thenReturn(userInput);
+        Mockito.when(userMapper.outputMapping(userInput)).thenReturn(dtoOutput);
+        ArgumentCaptor<Long> actualVersion = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
+
+        //test
+        UserDtoOutput actual = userService.updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+        Mockito.verify(userValidator, Mockito.times(1)).validateEntity(actualUser.capture());
+        Mockito.verify(userValidator, Mockito.times(1)).optimisticLockCheck(actualVersion.capture(),
+                actualUser.capture());
+        Mockito.verify(userMapper, Mockito.times(1)).updateEntityFields(actualUser.capture(),
+                actualUser.capture());
+
+        // assert
+        assertEquals(dtUpdate.toEpochMilli(), actualVersion.getValue());
+        assertEquals(userInput, actualUser.getValue());
+        assertNotNull(actual);
+        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
     }
 
     @Test
     void saveUser() {
+        // preconditions
+        final User userInput = getPreparedUserOutput();
+        final UserDtoRegistration dtoInput = getPreparedUserDtoRegistration();
+        final UserLoginDtoOutput dtoOutput = getPreparedUserLoginDtoOutput();
+        Mockito.when(userMapper.userInputMapping(dtoInput)).thenReturn(userInput);
+        Mockito.when(userRepository.save(userInput)).thenReturn(userInput);
+        Mockito.when(userMapper.registerOutputMapping(userInput)).thenReturn(dtoOutput);
+        ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
+
+        //test
+        UserLoginDtoOutput actual = userService.saveUser(dtoInput);
+        Mockito.verify(userValidator, Mockito.times(1)).validateEntity(actualUser.capture());
+        Mockito.verify(roleService, Mockito.times(1)).setRoles(actualUser.capture());
+
+        // assert
+        assertEquals(userInput, actualUser.getValue());
+        assertNotNull(actual);
+        assertEquals(email, actual.getEmail());
+        assertEquals(token, actual.getToken());
     }
 
     @Test
     void getUserDto() {
+        // preconditions
+        final User userOutput = getPreparedUserOutput();
+        final UserDtoOutput userDtoOutput = getPreparedUserDtoOutput();
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        Mockito.when(userMapper.outputMapping(userOutput)).thenReturn(userDtoOutput);
+
+        //test
+        UserDtoOutput actual = userService.getUserDto(email);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
     }
 
     User getPreparedUserOutput() {
@@ -323,6 +442,19 @@ class UserServiceTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED).build();
     }
+    UserDtoRegistration getPreparedUserDtoRegistration() {
+        return UserDtoRegistration.builder()
+                .email(email)
+                .password(password)
+                .username(username)
+                .role(EUserRole.CONTRACTOR).build();
+    }
+
+    UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
+        return UserLoginDtoOutput.builder()
+                .email(email)
+                .token(token).build();
+    }
 
     UserDtoInput getPreparedUserDtoInput() {
         return UserDtoInput.builder()
@@ -342,5 +474,18 @@ class UserServiceTest {
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate).build();
+    }
+
+    PageDtoOutput<UserDtoOutput> getPreparedPageDtoOutput() {
+        return PageDtoOutput.<UserDtoOutput>builder()
+                .number(2)
+                .size(1)
+                .totalPages(1)
+                .totalElements(1L)
+                .first(true)
+                .numberOfElements(1)
+                .last(true)
+                .content(Collections.singletonList(getPreparedUserDtoOutput()))
+                .build();
     }
 }
