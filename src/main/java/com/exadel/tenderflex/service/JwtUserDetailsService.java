@@ -22,6 +22,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
+    private static final Set<String> tokenBlackList = new HashSet<>();
     private final IUserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final IUserDetailsValidator userDetailsValidator;
@@ -49,5 +50,14 @@ public class JwtUserDetailsService implements UserDetailsService {
         userDetailsValidator.validateLogin(userDtoLogin, userDetails);
         String token = jwtTokenUtil.generateToken(userDetails);
         return userMapper.loginOutputMapping(userDetails, token);
+    }
+
+    public void logout(String requestTokenHeader) {
+        String jwtToken = requestTokenHeader.substring(7);
+        tokenBlackList.add(jwtToken);
+    }
+
+    public boolean tokenIsInBlackList(String token){
+        return tokenBlackList.stream().anyMatch((i)->i.equals(token));
     }
 }
