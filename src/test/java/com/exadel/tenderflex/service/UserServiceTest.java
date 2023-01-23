@@ -65,27 +65,7 @@ class UserServiceTest {
 
         // assert
         assertNotNull(actual);
-        assertNotNull(actual.getRoles());
-        assertEquals(id, actual.getId());
-        assertEquals(email, actual.getEmail());
-        assertEquals(password, actual.getPassword());
-        assertEquals(username, actual.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
-        assertEquals(dtCreate, actual.getDtCreate());
-        assertEquals(dtUpdate, actual.getDtUpdate());
-        for (Role roles : actual.getRoles()) {
-            assertNotNull(roles.getPrivileges());
-            assertEquals(id, roles.getId());
-            assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
-            assertEquals(dtCreate, roles.getDtCreate());
-            assertEquals(dtUpdate, roles.getDtUpdate());
-            for (Privilege privileges : roles.getPrivileges()) {
-                assertEquals(id, privileges.getId());
-                assertEquals(ERolePrivilege.CAN_READ_OFFER, privileges.getPrivilege());
-                assertEquals(dtCreate, privileges.getDtCreate());
-                assertEquals(dtUpdate, privileges.getDtUpdate());
-            }
-        }
+        checkUserOutputFields(actual);
     }
 
     @Test
@@ -104,27 +84,7 @@ class UserServiceTest {
         assertEquals(1, actual.getTotalPages());
         Assertions.assertTrue(actual.isFirst());
         for (User user : actual.getContent()) {
-            assertNotNull(user.getRoles());
-            assertEquals(id, user.getId());
-            assertEquals(email, user.getEmail());
-            assertEquals(password, user.getPassword());
-            assertEquals(username, user.getUsername());
-            assertEquals(EUserStatus.ACTIVATED, user.getStatus());
-            assertEquals(dtCreate, user.getDtCreate());
-            assertEquals(dtUpdate, user.getDtUpdate());
-            for (Role roles : user.getRoles()) {
-                assertNotNull(roles.getPrivileges());
-                assertEquals(id, roles.getId());
-                assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
-                assertEquals(dtCreate, roles.getDtCreate());
-                assertEquals(dtUpdate, roles.getDtUpdate());
-                for (Privilege privileges : roles.getPrivileges()) {
-                    assertEquals(id, privileges.getId());
-                    assertEquals(ERolePrivilege.CAN_READ_OFFER, privileges.getPrivilege());
-                    assertEquals(dtCreate, privileges.getDtCreate());
-                    assertEquals(dtUpdate, privileges.getDtUpdate());
-                }
-            }
+            checkUserOutputFields(user);
         }
     }
 
@@ -139,27 +99,7 @@ class UserServiceTest {
 
         // assert
         assertNotNull(actual);
-        assertNotNull(actual.getRoles());
-        assertEquals(id, actual.getId());
-        assertEquals(email, actual.getEmail());
-        assertEquals(password, actual.getPassword());
-        assertEquals(username, actual.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
-        assertEquals(dtCreate, actual.getDtCreate());
-        assertEquals(dtUpdate, actual.getDtUpdate());
-        for (Role roles : actual.getRoles()) {
-            assertNotNull(roles.getPrivileges());
-            assertEquals(id, roles.getId());
-            assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
-            assertEquals(dtCreate, roles.getDtCreate());
-            assertEquals(dtUpdate, roles.getDtUpdate());
-            for (Privilege privileges : roles.getPrivileges()) {
-                assertEquals(id, privileges.getId());
-                assertEquals(ERolePrivilege.CAN_READ_OFFER, privileges.getPrivilege());
-                assertEquals(dtCreate, privileges.getDtCreate());
-                assertEquals(dtUpdate, privileges.getDtUpdate());
-            }
-        }
+        checkUserOutputFields(actual);
     }
 
     @Test
@@ -182,27 +122,7 @@ class UserServiceTest {
         assertEquals(dtUpdate.toEpochMilli(), actualVersion.getValue());
         assertEquals(userInput, actualUser.getValue());
         assertNotNull(actual);
-        assertNotNull(actual.getRoles());
-        assertEquals(id, actual.getId());
-        assertEquals(email, actual.getEmail());
-        assertEquals(password, actual.getPassword());
-        assertEquals(username, actual.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
-        assertEquals(dtCreate, actual.getDtCreate());
-        assertEquals(dtUpdate, actual.getDtUpdate());
-        for (Role roles : actual.getRoles()) {
-            assertNotNull(roles.getPrivileges());
-            assertEquals(id, roles.getId());
-            assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
-            assertEquals(dtCreate, roles.getDtCreate());
-            assertEquals(dtUpdate, roles.getDtUpdate());
-            for (Privilege privileges : roles.getPrivileges()) {
-                assertEquals(id, privileges.getId());
-                assertEquals(ERolePrivilege.CAN_READ_OFFER, privileges.getPrivilege());
-                assertEquals(dtCreate, privileges.getDtCreate());
-                assertEquals(dtUpdate, privileges.getDtUpdate());
-            }
-        }
+        checkUserOutputFields(actual);
     }
 
     @Test
@@ -216,27 +136,7 @@ class UserServiceTest {
 
         // assert
         assertNotNull(actual);
-        assertNotNull(actual.getRoles());
-        assertEquals(id, actual.getId());
-        assertEquals(email, actual.getEmail());
-        assertEquals(password, actual.getPassword());
-        assertEquals(username, actual.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
-        assertEquals(dtCreate, actual.getDtCreate());
-        assertEquals(dtUpdate, actual.getDtUpdate());
-        for (Role roles : actual.getRoles()) {
-            assertNotNull(roles.getPrivileges());
-            assertEquals(id, roles.getId());
-            assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
-            assertEquals(dtCreate, roles.getDtCreate());
-            assertEquals(dtUpdate, roles.getDtUpdate());
-            for (Privilege privileges : roles.getPrivileges()) {
-                assertEquals(id, privileges.getId());
-                assertEquals(ERolePrivilege.CAN_READ_OFFER, privileges.getPrivilege());
-                assertEquals(dtCreate, privileges.getDtCreate());
-                assertEquals(dtUpdate, privileges.getDtUpdate());
-            }
-        }
+        checkUserOutputFields(actual);
     }
 
     @Test
@@ -259,13 +159,7 @@ class UserServiceTest {
         // assert
         assertEquals(userInput, actualUser.getValue());
         assertNotNull(actual);
-        assertEquals(id.toString(), actual.getId());
-        assertEquals(email, actual.getEmail());
-        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
-        assertEquals(username, actual.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
-        assertEquals(dtCreate, actual.getDtCreate());
-        assertEquals(dtUpdate, actual.getDtUpdate());
+        checkUserDtoOutputFields(actual);
     }
 
     @Test
@@ -283,22 +177,9 @@ class UserServiceTest {
 
         // assert
         assertNotNull(actual);
-        assertEquals(1, actual.getTotalPages());
-        Assertions.assertTrue(actual.getFirst());
-        Assertions.assertTrue(actual.getLast());
-        assertEquals(2, actual.getNumber());
-        assertEquals(1, actual.getNumberOfElements());
-        assertEquals(1, actual.getSize());
-        assertEquals(1, actual.getTotalPages());
-        assertEquals(1, actual.getTotalElements());
+        checkPageDtoOutputFields(actual);
         for (UserDtoOutput user : actual.getContent()) {
-            assertEquals(EUserRole.CONTRACTOR, user.getRole());
-            assertEquals(id.toString(), user.getId());
-            assertEquals(email, user.getEmail());
-            assertEquals(username, user.getUsername());
-            assertEquals(EUserStatus.ACTIVATED, user.getStatus());
-            assertEquals(dtCreate, user.getDtCreate());
-            assertEquals(dtUpdate, user.getDtUpdate());
+            checkUserDtoOutputFields(user);
         }
     }
 
@@ -311,17 +192,11 @@ class UserServiceTest {
         Mockito.when(userMapper.outputMapping(userOutput)).thenReturn(userDtoOutput);
 
         //test
-        UserDtoOutput test = userService.getDto(id);
+        UserDtoOutput actual = userService.getDto(id);
 
         // assert
-        assertNotNull(test);
-        assertEquals(EUserRole.CONTRACTOR, test.getRole());
-        assertEquals(id.toString(), test.getId());
-        assertEquals(email, test.getEmail());
-        assertEquals(username, test.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, test.getStatus());
-        assertEquals(dtCreate, test.getDtCreate());
-        assertEquals(dtUpdate, test.getDtUpdate());
+        assertNotNull(actual);
+        checkUserDtoOutputFields(actual);
     }
 
     @Test
@@ -349,13 +224,7 @@ class UserServiceTest {
         assertEquals(dtUpdate.toEpochMilli(), actualVersion.getValue());
         assertEquals(userInput, actualUser.getValue());
         assertNotNull(actual);
-        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
-        assertEquals(id.toString(), actual.getId());
-        assertEquals(email, actual.getEmail());
-        assertEquals(username, actual.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
-        assertEquals(dtCreate, actual.getDtCreate());
-        assertEquals(dtUpdate, actual.getDtUpdate());
+        checkUserDtoOutputFields(actual);
     }
 
     @Test
@@ -394,13 +263,7 @@ class UserServiceTest {
 
         // assert
         assertNotNull(actual);
-        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
-        assertEquals(id.toString(), actual.getId());
-        assertEquals(email, actual.getEmail());
-        assertEquals(username, actual.getUsername());
-        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
-        assertEquals(dtCreate, actual.getDtCreate());
-        assertEquals(dtUpdate, actual.getDtUpdate());
+        checkUserDtoOutputFields(actual);
     }
 
     User getPreparedUserOutput() {
@@ -487,5 +350,50 @@ class UserServiceTest {
                 .last(true)
                 .content(Collections.singletonList(getPreparedUserDtoOutput()))
                 .build();
+    }
+
+    private void checkUserOutputFields(User actual) {
+        assertNotNull(actual.getRoles());
+        assertEquals(id, actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(password, actual.getPassword());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+        for (Role roles : actual.getRoles()) {
+            assertNotNull(roles.getPrivileges());
+            assertEquals(id, roles.getId());
+            assertEquals(EUserRole.CONTRACTOR, roles.getRoleType());
+            assertEquals(dtCreate, roles.getDtCreate());
+            assertEquals(dtUpdate, roles.getDtUpdate());
+            for (Privilege privileges : roles.getPrivileges()) {
+                assertEquals(id, privileges.getId());
+                assertEquals(ERolePrivilege.CAN_READ_OFFER, privileges.getPrivilege());
+                assertEquals(dtCreate, privileges.getDtCreate());
+                assertEquals(dtUpdate, privileges.getDtUpdate());
+            }
+        }
+    }
+
+    private void checkUserDtoOutputFields(UserDtoOutput actual) {
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
+        assertEquals(username, actual.getUsername());
+        assertEquals(EUserStatus.ACTIVATED, actual.getStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+    }
+
+    private void checkPageDtoOutputFields(PageDtoOutput<UserDtoOutput> actual) {
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.getFirst());
+        Assertions.assertTrue(actual.getLast());
+        assertEquals(2, actual.getNumber());
+        assertEquals(1, actual.getNumberOfElements());
+        assertEquals(1, actual.getSize());
+        assertEquals(1, actual.getTotalPages());
+        assertEquals(1, actual.getTotalElements());
     }
 }
