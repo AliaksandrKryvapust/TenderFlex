@@ -24,8 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class JwtUserDetailsServiceTest {
@@ -100,6 +99,15 @@ class JwtUserDetailsServiceTest {
         assertNotNull(actual);
         assertEquals(email, actual.getEmail());
         assertEquals(token, actual.getToken());
+    }
+
+    @Test
+    void logout() {
+        //test
+        jwtUserDetailsService.logout(token);
+
+        // assert
+        assertTrue(jwtUserDetailsService.tokenIsInBlackList(token.substring(7)));
     }
 
     User getPreparedUserOutput() {
