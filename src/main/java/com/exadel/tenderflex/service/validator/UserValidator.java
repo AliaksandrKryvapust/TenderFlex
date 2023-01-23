@@ -9,7 +9,6 @@ import javax.persistence.OptimisticLockException;
 @Component
 public class UserValidator implements IUserValidator {
 
-
     @Override
     public void validateEntity(User user) {
         checkAuxiliaryFields(user);
