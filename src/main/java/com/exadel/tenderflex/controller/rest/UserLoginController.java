@@ -14,7 +14,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @Validated
@@ -29,6 +32,13 @@ public class UserLoginController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         return ResponseEntity.ok(this.userManager.getUserDto(username));
+    }
+
+    @GetMapping("/logout")
+    protected ResponseEntity<Object> logout(HttpServletRequest request) {
+        String requestTokenHeader = request.getHeader(AUTHORIZATION);
+        userDetailsService.logout(requestTokenHeader);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/login")
