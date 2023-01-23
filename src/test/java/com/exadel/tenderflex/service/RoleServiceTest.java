@@ -42,7 +42,7 @@ class RoleServiceTest {
         ArgumentCaptor<EUserRole> actualUserRole = ArgumentCaptor.forClass(EUserRole.class);
 
         //test
-        roleService.setRoles(userInput);
+        roleService.assignRoles(userInput);
         Mockito.verify(roleRepository, Mockito.times(1)).getRoleByRoleType(actualUserRole.capture());
 
         // assert
