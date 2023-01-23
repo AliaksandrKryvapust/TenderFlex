@@ -254,7 +254,7 @@ class UserServiceTest {
         //test
         UserDtoOutput actual = userService.saveDto(dtoInput);
         Mockito.verify(userValidator, Mockito.times(1)).validateEntity(actualUser.capture());
-        Mockito.verify(roleService, Mockito.times(1)).setRoles(actualUser.capture());
+        Mockito.verify(roleService, Mockito.times(1)).assignRoles(actualUser.capture());
 
         // assert
         assertEquals(userInput, actualUser.getValue());
@@ -372,7 +372,7 @@ class UserServiceTest {
         //test
         UserLoginDtoOutput actual = userService.saveUser(dtoInput);
         Mockito.verify(userValidator, Mockito.times(1)).validateEntity(actualUser.capture());
-        Mockito.verify(roleService, Mockito.times(1)).setRoles(actualUser.capture());
+        Mockito.verify(roleService, Mockito.times(1)).assignRoles(actualUser.capture());
 
         // assert
         assertEquals(userInput, actualUser.getValue());
