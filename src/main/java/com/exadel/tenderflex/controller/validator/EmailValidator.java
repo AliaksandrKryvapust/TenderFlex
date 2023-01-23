@@ -16,7 +16,11 @@ public class EmailValidator implements ConstraintValidator<IValidEmail, String> 
     }
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context){
-        return (validateEmail(email));
+        if (email==null){
+            return false;
+        } else {
+            return (validateEmail(email));
+        }
     }
     private boolean validateEmail(String email) {
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
