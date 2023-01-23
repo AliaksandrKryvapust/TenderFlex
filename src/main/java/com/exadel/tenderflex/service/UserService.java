@@ -60,7 +60,7 @@ public class UserService implements IUserService, IUserManager {
     public UserDtoOutput saveDto(UserDtoInput userDtoInput) {
         User entityToSave = userMapper.inputMapping(userDtoInput);
         userValidator.validateEntity(entityToSave);
-        roleService.setRoles(entityToSave);
+        roleService.assignRoles(entityToSave);
         User user = save(entityToSave);
         return userMapper.outputMapping(user);
     }
@@ -88,7 +88,7 @@ public class UserService implements IUserService, IUserManager {
     public UserLoginDtoOutput saveUser(UserDtoRegistration userDtoRegistration) {
         User entityToSave = userMapper.userInputMapping(userDtoRegistration);
         userValidator.validateEntity(entityToSave);
-        roleService.setRoles(entityToSave);
+        roleService.assignRoles(entityToSave);
         User user = save(entityToSave);
         return userMapper.registerOutputMapping(user);
     }

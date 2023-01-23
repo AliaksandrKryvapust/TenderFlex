@@ -15,7 +15,7 @@ public class RoleService implements IRoleService {
     private final IRoleRepository roleRepository;
 
     @Override
-    public void setRoles(User user) {
+    public void assignRoles(User user) {
         Set<Role> roles = new HashSet<>();
         user.getRoles().forEach((i) -> {
             Role userRole = this.roleRepository.getRoleByRoleType(i.getRoleType()).orElseThrow(NoSuchElementException::new);
