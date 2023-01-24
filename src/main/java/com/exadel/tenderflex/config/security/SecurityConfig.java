@@ -1,7 +1,7 @@
 package com.exadel.tenderflex.config.security;
 
 import com.exadel.tenderflex.controller.filter.JwtFilter;
-import com.exadel.tenderflex.repository.entity.UserRole;
+import com.exadel.tenderflex.repository.entity.EUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,8 +48,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/v1/users/registration", "/api/v1/users/registration/**",
                         "/api/v1/users/login").permitAll()
-                .antMatchers( "/api/v1/users/me").authenticated()
-                .antMatchers("/api/v1/users", "/api/v1/users/**").hasAuthority(UserRole.ADMIN.name())
+                .antMatchers("/api/v1/admin", "/api/v1/admin/**").hasRole(EUserRole.ADMIN.name())
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
@@ -61,11 +60,6 @@ public class SecurityConfig {
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean

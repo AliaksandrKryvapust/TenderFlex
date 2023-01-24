@@ -1,38 +1,53 @@
 package com.exadel.tenderflex.service;
 
+import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
+import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
+import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.mapper.UserMapper;
+import com.exadel.tenderflex.repository.api.IUserRepository;
+import com.exadel.tenderflex.repository.entity.EUserStatus;
+import com.exadel.tenderflex.repository.entity.Privilege;
+import com.exadel.tenderflex.repository.entity.User;
+import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
     private final IUserRepository userRepository;
-
-    public JwtUserDetailsService(IUserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final JwtTokenUtil jwtTokenUtil;
+    private final IUserDetailsValidator userDetailsValidator;
+    private final UserMapper userMapper;
 
     @Override
     public UserDetails loadUserByUsername(String email) {
-        User user = this.userRepository.findByEmail(email);
-        this.validate(email, user);
-        boolean enabled = user.getStatus().equals(UserStatus.ACTIVATED);
-        boolean nonLocked = !user.getStatus().equals(UserStatus.DEACTIVATED);
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority(user.getRole().name()));
+        User user = userRepository.findByEmail(email);
+        userDetailsValidator.validate(email, user);
+        boolean enabled = user.getStatus().equals(EUserStatus.ACTIVATED);
+        boolean nonLocked = !user.getStatus().equals(EUserStatus.DEACTIVATED);
+        Set<GrantedAuthority> authorityList = new HashSet<>();
+        user.getRoles().forEach((i) -> {
+            authorityList.add(new SimpleGrantedAuthority("ROLE_" + i.getRoleType().name()));
+            for (Privilege privilege : i.getPrivileges()) {
+                authorityList.add(new SimpleGrantedAuthority(privilege.getPrivilege().name()));
+            }
+        });
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), enabled,
                 true, true, nonLocked, authorityList);
     }
 
-    private void validate(String email, User user) {
-        if (user == null) {
-            throw new NoSuchElementException("There is no such user" + email);
-        }
+    public UserLoginDtoOutput login(UserDtoLogin userDtoLogin) {
+        UserDetails userDetails = loadUserByUsername(userDtoLogin.getEmail());
+        userDetailsValidator.validateLogin(userDtoLogin, userDetails);
+        String token = jwtTokenUtil.generateToken(userDetails);
+        return userMapper.loginOutputMapping(userDetails, token);
     }
 }

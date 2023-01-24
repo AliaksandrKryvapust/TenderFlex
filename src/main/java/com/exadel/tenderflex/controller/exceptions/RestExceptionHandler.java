@@ -26,7 +26,7 @@ import java.util.Objects;
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({DataIntegrityViolationException.class, NoSuchElementException.class})
+    @ExceptionHandler({DataIntegrityViolationException.class, NoSuchElementException.class, IllegalArgumentException.class})
     public ResponseEntity<SingleExceptionDto> handleBadRequest(Exception ex) {
         this.makeLog(ex);
         SingleExceptionDto message = SingleExceptionDto.builder().logref("error")
