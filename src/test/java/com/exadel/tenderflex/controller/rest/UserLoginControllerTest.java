@@ -25,8 +25,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @WebMvcTest(controllers = UserLoginController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
@@ -120,7 +122,7 @@ class UserLoginControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         //test
-        Mockito.verify(userDetailsService, Mockito.times(1)).logout(token);
+        Mockito.verify(userDetailsService, Mockito.times(1)).logout(any(HttpServletRequest.class));
     }
 
     @Test
