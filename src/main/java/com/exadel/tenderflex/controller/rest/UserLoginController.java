@@ -36,8 +36,7 @@ public class UserLoginController {
 
     @GetMapping("/logout")
     protected ResponseEntity<Object> logout(HttpServletRequest request) {
-        String requestTokenHeader = request.getHeader(AUTHORIZATION);
-        userDetailsService.logout(requestTokenHeader);
+        userDetailsService.logout(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
