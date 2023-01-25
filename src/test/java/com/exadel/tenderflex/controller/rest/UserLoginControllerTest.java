@@ -25,7 +25,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @WebMvcTest(controllers = UserLoginController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @AutoConfigureMockMvc
@@ -57,6 +61,7 @@ class UserLoginControllerTest {
     @Test
     @WithMockUser(username = "admin@tenderflex.com", password = "kdrL556D", roles = {"ADMIN"})
     void getCurrentUser() throws Exception {
+        // preconditions
         final UserDtoOutput userDtoOutput = getPreparedUserDtoOutput();
         Mockito.when(userManager.getUserDto(email)).thenReturn(userDtoOutput);
 
@@ -109,6 +114,16 @@ class UserLoginControllerTest {
         Mockito.verify(userManager).saveUser(userDtoRegistration);
     }
 
+    @Test
+    @WithMockUser(username = "admin@tenderflex.com", password = "kdrL556D", roles = {"ADMIN"})
+    void logout() throws Exception {
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/logout").header(AUTHORIZATION, token))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        //test
+        Mockito.verify(userDetailsService, Mockito.times(1)).logout(any(HttpServletRequest.class));
+    }
 
     @Test
     void validateUserDtoLoginEmptyEmail() throws Exception {

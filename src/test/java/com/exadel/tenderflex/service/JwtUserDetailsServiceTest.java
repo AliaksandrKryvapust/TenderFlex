@@ -5,27 +5,29 @@ import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
+import com.exadel.tenderflex.repository.cache.CacheStorage;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.Matchers.any;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @ExtendWith(MockitoExtension.class)
 class JwtUserDetailsServiceTest {
@@ -39,6 +41,8 @@ class JwtUserDetailsServiceTest {
     private IUserDetailsValidator userDetailsValidator;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private CacheStorage<Object> tokenBlackList;
 
     // preconditions
     final Instant dtCreate = Instant.ofEpochMilli(1673532204657L);
@@ -53,7 +57,7 @@ class JwtUserDetailsServiceTest {
     void loadUserByUsername() {
         // preconditions
         final User userOutput = getPreparedUserOutput();
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        when(userRepository.findByEmail(email)).thenReturn(userOutput);
         ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
 
@@ -80,9 +84,9 @@ class JwtUserDetailsServiceTest {
         final UserLoginDtoOutput dtoOutput = getPreparedUserLoginDtoOutput();
         final User userOutput = getPreparedUserOutput();
         final UserDetails userDetails = getPreparedUserDetails();
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
-        Mockito.when(jwtTokenUtil.generateToken(userDetails)).thenReturn(token);
-        Mockito.when(userMapper.loginOutputMapping(userDetails, token)).thenReturn(dtoOutput);
+        when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        when(jwtTokenUtil.generateToken(userDetails)).thenReturn(token);
+        when(userMapper.loginOutputMapping(userDetails, token)).thenReturn(dtoOutput);
         ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
         ArgumentCaptor<UserDtoLogin> actualUserDtoLogin = ArgumentCaptor.forClass(UserDtoLogin.class);
@@ -100,6 +104,33 @@ class JwtUserDetailsServiceTest {
         assertNotNull(actual);
         assertEquals(email, actual.getEmail());
         assertEquals(token, actual.getToken());
+    }
+
+    @Test
+    void logout() {
+        // preconditions
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader(AUTHORIZATION)).thenReturn(token);
+
+        //test
+        jwtUserDetailsService.logout(request);
+        Mockito.verify(tokenBlackList, Mockito.times(1)).add(ArgumentMatchers.any(String.class),
+                ArgumentMatchers.any(Object.class));
+    }
+
+    @Test
+    void tokenIsInBlackList() {
+        // preconditions
+        when(tokenBlackList.get(token)).thenReturn(token);
+        ArgumentCaptor<String> actualToken = ArgumentCaptor.forClass(String.class);
+
+        //test
+        boolean actual = jwtUserDetailsService.tokenIsInBlackList(token);
+        Mockito.verify(tokenBlackList, Mockito.times(1)).get(actualToken.capture());
+
+        // assert
+        assertEquals(token, actualToken.getValue());
+        assertTrue(actual);
     }
 
     User getPreparedUserOutput() {
