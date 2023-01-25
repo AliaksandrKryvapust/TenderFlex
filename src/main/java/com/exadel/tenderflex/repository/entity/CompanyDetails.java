@@ -3,7 +3,6 @@ package com.exadel.tenderflex.repository.entity;
 import com.exadel.tenderflex.repository.entity.enums.ECountry;
 import lombok.*;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Getter
@@ -14,7 +13,6 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class CompanyDetails {
     private String officialName;
-    @Column(unique = true)
     private String registrationNumber;
     private ECountry country;
     private String town;

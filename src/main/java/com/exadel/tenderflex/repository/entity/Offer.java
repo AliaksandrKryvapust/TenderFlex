@@ -1,5 +1,7 @@
 package com.exadel.tenderflex.repository.entity;
 
+import com.exadel.tenderflex.repository.entity.enums.ECurrency;
+import com.exadel.tenderflex.repository.entity.enums.EOfferStatus;
 import lombok.*;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GenericGenerator;
@@ -19,6 +21,14 @@ public class Offer {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
+    @OneToOne
+    @JoinColumn(name = "offer_id", referencedColumnName = "id")
+    @Setter
+    private Contract contract;
+    @OneToOne
+    @JoinColumn(name = "id", referencedColumnName = "offer_id")
+    @Setter
+    private RejectDecision rejectDecision;
     @Setter
     @Embedded
     private CompanyDetails bidder;

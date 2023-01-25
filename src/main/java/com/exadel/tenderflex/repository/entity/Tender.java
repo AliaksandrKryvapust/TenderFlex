@@ -1,5 +1,8 @@
 package com.exadel.tenderflex.repository.entity;
 
+import com.exadel.tenderflex.repository.entity.enums.ECurrency;
+import com.exadel.tenderflex.repository.entity.enums.ETenderStatus;
+import com.exadel.tenderflex.repository.entity.enums.ETenderType;
 import lombok.*;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GenericGenerator;
@@ -28,9 +31,13 @@ public class Tender {
     @Setter
     private User user;
     @OneToOne
-    @JoinColumn(name = "tender_id", referencedColumnName = "id")
+    @JoinColumn(name = "id", referencedColumnName = "tender_id")
     @Setter
     private Contract contract;
+    @OneToOne
+    @JoinColumn(name = "id", referencedColumnName = "tender_id")
+    @Setter
+    private RejectDecision rejectDecision;
     @OneToMany
     @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
     @Setter
@@ -63,12 +70,6 @@ public class Tender {
     @Setter
     @Enumerated(EnumType.STRING)
     private ETenderStatus tenderStatus;
-//    @Setter
-//    @Enumerated(EnumType.STRING)
-//    private EAwardCriteria awardCriteria;
-//    @Setter
-//    private LocalDate standstillPeriod;
-
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version
