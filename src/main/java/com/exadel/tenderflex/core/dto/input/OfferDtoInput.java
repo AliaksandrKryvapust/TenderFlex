@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
@@ -29,7 +30,7 @@ public class OfferDtoInput {
     @NotNull(message = "currency cannot be null")
     @IValidEnum(enumClass = ECurrency.class, message = "currency does not match")
     private String currency;
-    @NotNull(message = "offer status cannot be null")
-    @IValidEnum(enumClass = EOfferStatus.class, message = "offer status does not match")
-    private String offerStatus;
+    @NotNull(message = "proposition file cannot be null")
+    @NotBlank(message = "proposition file cannot be blank")
+    private String propositionFile;
 }

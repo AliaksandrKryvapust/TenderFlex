@@ -43,6 +43,8 @@ public class Offer {
     @Setter
     @Enumerated(EnumType.STRING)
     private EOfferStatus offerStatus;
+    @Setter
+    private String propositionFile;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version
