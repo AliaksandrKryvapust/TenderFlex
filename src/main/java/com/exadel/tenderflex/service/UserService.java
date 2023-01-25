@@ -98,9 +98,4 @@ public class UserService implements IUserService, IUserManager {
         User user = getUser(email);
         return this.userMapper.outputMapping(user);
     }
-
-    @Override
-    public User getUser(String email) {
-        return this.userRepository.findByEmail(email);
-    }
 }

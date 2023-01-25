@@ -33,7 +33,6 @@ public class JwtUserDetailsService implements UserDetailsService {
     private final UserMapper userMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findByEmail(email);
         userDetailsValidator.validate(email, user);
