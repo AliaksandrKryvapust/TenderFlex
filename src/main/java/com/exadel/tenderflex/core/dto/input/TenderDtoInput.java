@@ -24,7 +24,7 @@ public class TenderDtoInput {
     private final ContactPersonDtoInput contactPerson;
     @NotNull(message = "cpv Code cannot be null")
     private final String cpvCode;
-    @NotNull(message = "user role cannot be null")
+    @NotNull(message = "tender type cannot be null")
     @IValidEnum(enumClass = ETenderType.class, message = "tender type does not match")
     private final String tenderType;
     @Nullable
@@ -47,5 +47,5 @@ public class TenderDtoInput {
     private final LocalDate submissionDeadline;
     @Valid
     @NotNull(message = "contact data cannot be null")
-    private final FilesDtoInput filesDtoInput;
+    private final FilesDtoInput files;
 }
