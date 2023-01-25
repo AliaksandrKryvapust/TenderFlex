@@ -2,7 +2,6 @@ package com.exadel.tenderflex.core.dto.input;
 
 import com.exadel.tenderflex.controller.validator.api.IValidEnum;
 import com.exadel.tenderflex.repository.entity.enums.ECurrency;
-import com.exadel.tenderflex.repository.entity.enums.ETenderStatus;
 import com.exadel.tenderflex.repository.entity.enums.ETenderType;
 import lombok.Builder;
 import lombok.Data;
@@ -46,7 +45,7 @@ public class TenderDtoInput {
     @NotNull(message = "submission deadline cannot be null")
     @Future(message = "submission deadline should refer to moment in the future")
     private LocalDate submissionDeadline;
-    @NotNull(message = "tender status cannot be null")
-    @IValidEnum(enumClass = ETenderStatus.class, message = "tender status does not match")
-    private ETenderStatus tenderStatus;
+    @Valid
+    @NotNull(message = "contact data cannot be null")
+    private FilesDtoInput filesDtoInput;
 }
