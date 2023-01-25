@@ -5,7 +5,6 @@ import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
-import com.exadel.tenderflex.repository.cache.CacheStorage;
 import com.exadel.tenderflex.repository.entity.EUserStatus;
 import com.exadel.tenderflex.repository.entity.Privilege;
 import com.exadel.tenderflex.repository.entity.User;
@@ -17,16 +16,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
 @RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
-    private final CacheStorage<Object> tokenBlackList;
     private final IUserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final IUserDetailsValidator userDetailsValidator;
@@ -54,15 +49,5 @@ public class JwtUserDetailsService implements UserDetailsService {
         userDetailsValidator.validateLogin(userDtoLogin, userDetails);
         String token = jwtTokenUtil.generateToken(userDetails);
         return userMapper.loginOutputMapping(userDetails, token);
-    }
-
-    public void logout(HttpServletRequest request) {
-        String requestTokenHeader = request.getHeader(AUTHORIZATION);
-        String jwtToken = requestTokenHeader.substring(7);
-        this.tokenBlackList.add(jwtToken, new Object());
-    }
-
-    public boolean tokenIsInBlackList(String token) {
-        return tokenBlackList.get(token) != null;
     }
 }

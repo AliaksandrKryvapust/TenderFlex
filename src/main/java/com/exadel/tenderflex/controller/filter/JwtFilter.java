@@ -45,9 +45,6 @@ public class JwtFilter extends OncePerRequestFilter {
         final String requestTokenHeader = request.getHeader(AUTHORIZATION);
         if (StringUtils.startsWithIgnoreCase(requestTokenHeader, "Bearer ")) {
             String jwtToken = requestTokenHeader.substring(7);
-            if (jwtUserDetailsService.tokenIsInBlackList(jwtToken)){
-                return;
-            }
             try {
                 String username = jwtTokenUtil.getUsername(jwtToken);
                 if (!username.isBlank() && SecurityContextHolder.getContext().getAuthentication() == null) {
