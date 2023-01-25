@@ -18,34 +18,34 @@ import java.time.LocalDate;
 public class TenderDtoInput {
     @Valid
     @NotNull(message = "company details cannot be null")
-    private CompanyDetailsDtoInput contractor;
+    private final CompanyDetailsDtoInput contractor;
     @Valid
     @NotNull(message = "contact person cannot be null")
-    private ContactPersonDtoInput contactPerson;
+    private final ContactPersonDtoInput contactPerson;
     @NotNull(message = "cpv Code cannot be null")
-    private String cpvCode;
+    private final String cpvCode;
     @NotNull(message = "user role cannot be null")
     @IValidEnum(enumClass = ETenderType.class, message = "tender type does not match")
-    private String tenderType;
+    private final String tenderType;
     @Nullable
     @Size(max = 250, message = "description should contain less than 250 letters")
-    private String description;
+    private final String description;
     @NotNull(message = "minimal price cannot be null")
     @Positive(message = "minimal price cannot be negative")
-    private Integer minPrice;
+    private final Integer minPrice;
     @NotNull(message = "maximal price cannot be null")
     @Positive(message = "maximal price cannot be negative")
-    private Integer maxPrice;
+    private final Integer maxPrice;
     @NotNull(message = "currency cannot be null")
     @IValidEnum(enumClass = ECurrency.class, message = "currency does not match")
-    private String currency;
+    private final String currency;
     @NotNull(message = "publication date cannot be null")
     @Past(message = "publication date should refer to moment in the past")
-    private LocalDate publication;
+    private final LocalDate publication;
     @NotNull(message = "submission deadline cannot be null")
     @Future(message = "submission deadline should refer to moment in the future")
-    private LocalDate submissionDeadline;
+    private final LocalDate submissionDeadline;
     @Valid
     @NotNull(message = "contact data cannot be null")
-    private FilesDtoInput filesDtoInput;
+    private final FilesDtoInput filesDtoInput;
 }

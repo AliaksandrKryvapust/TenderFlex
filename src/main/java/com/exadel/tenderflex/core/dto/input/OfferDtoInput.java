@@ -20,17 +20,17 @@ import javax.validation.constraints.Positive;
 public class OfferDtoInput {
     @Valid
     @NotNull(message = "company details cannot be null")
-    private CompanyDetails bidder;
+    private final CompanyDetails bidder;
     @Valid
     @NotNull(message = "contact person cannot be null")
-    private ContactPerson contactPerson;
+    private final ContactPerson contactPerson;
     @NotNull(message = "bid price cannot be null")
     @Positive(message = "bid price cannot be negative")
-    private Integer bidPrice;
+    private final Integer bidPrice;
     @NotNull(message = "currency cannot be null")
     @IValidEnum(enumClass = ECurrency.class, message = "currency does not match")
-    private String currency;
+    private final String currency;
     @NotNull(message = "proposition file cannot be null")
     @NotBlank(message = "proposition file cannot be blank")
-    private String propositionFile;
+    private final String propositionFile;
 }

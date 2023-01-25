@@ -16,14 +16,14 @@ import java.util.UUID;
 public class FilesDtoInput {
     @NotNull(message = "contract deadline cannot be null")
     @Future(message = "contract deadline should refer to moment in the future")
-    private LocalDate contractDeadline;
+    private final LocalDate contractDeadline;
     @NotNull(message = "contract file cannot be null")
     @NotBlank(message = "contract file cannot be blank")
-    private UUID contractFile;
+    private final UUID contractFile;
     @NotNull(message = "award decision file cannot be null")
     @NotBlank(message = "award decision file cannot be blank")
-    private UUID awardDecisionFile;
+    private final UUID awardDecisionFile;
     @NotNull(message = "reject decision file cannot be null")
     @NotBlank(message = "reject decision file cannot be blank")
-    private UUID rejectDecisionFile;
+    private final UUID rejectDecisionFile;
 }

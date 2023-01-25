@@ -14,11 +14,11 @@ import javax.validation.constraints.Size;
 public class ContactPersonDtoInput {
     @NotNull(message = "contact name cannot be null")
     @Size(min = 2, max = 50, message = "contact name should contain from 2 to 50 letters")
-    private String name;
+    private final String name;
     @NotNull(message = "contact surname cannot be null")
     @Size(min = 2, max = 50, message = "contact surname should contain from 2 to 50 letters")
-    private String surname;
+    private final String surname;
     @NotNull(message = "phone number cannot be null")
     @Positive (message = "phone number should be positive")
-    private Integer phoneNumber;
+    private final Integer phoneNumber;
 }
