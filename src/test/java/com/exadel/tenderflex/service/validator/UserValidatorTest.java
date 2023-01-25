@@ -1,6 +1,9 @@
 package com.exadel.tenderflex.service.validator;
 
 import com.exadel.tenderflex.repository.entity.*;
+import com.exadel.tenderflex.repository.entity.enums.ERolePrivilege;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

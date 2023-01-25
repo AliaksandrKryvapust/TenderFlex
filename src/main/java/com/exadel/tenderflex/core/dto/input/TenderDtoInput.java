@@ -1,9 +1,9 @@
 package com.exadel.tenderflex.core.dto.input;
 
 import com.exadel.tenderflex.controller.validator.api.IValidEnum;
-import com.exadel.tenderflex.repository.entity.ECurrency;
-import com.exadel.tenderflex.repository.entity.ETenderStatus;
-import com.exadel.tenderflex.repository.entity.ETenderType;
+import com.exadel.tenderflex.repository.entity.enums.ECurrency;
+import com.exadel.tenderflex.repository.entity.enums.ETenderStatus;
+import com.exadel.tenderflex.repository.entity.enums.ETenderType;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;

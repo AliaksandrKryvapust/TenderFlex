@@ -6,7 +6,7 @@ import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.cache.CacheStorage;
-import com.exadel.tenderflex.repository.entity.EUserStatus;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.repository.entity.Privilege;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;

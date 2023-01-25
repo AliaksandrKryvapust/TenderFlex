@@ -1,4 +1,4 @@
-package com.exadel.tenderflex.repository.entity;
+package com.exadel.tenderflex.repository.entity.enums;
 
 public enum ERolePrivilege {
     CAN_READ_TENDER, CAN_CREATE_OFFER, CAN_READ_OFFER, CAN_READ_CONTRACT_STATUS, CAN_READ_CONTRACT_PDF,

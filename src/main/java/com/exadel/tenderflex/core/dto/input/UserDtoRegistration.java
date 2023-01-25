@@ -2,12 +2,11 @@ package com.exadel.tenderflex.core.dto.input;
 
 import com.exadel.tenderflex.controller.validator.api.IUserRoleRegistrationSubset;
 import com.exadel.tenderflex.controller.validator.api.IValidEmail;
-import com.exadel.tenderflex.repository.entity.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 

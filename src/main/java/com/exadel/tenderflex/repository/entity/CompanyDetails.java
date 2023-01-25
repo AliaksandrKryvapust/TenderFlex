@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.repository.entity;
 
+import com.exadel.tenderflex.repository.entity.enums.ECountry;
 import lombok.*;
 
 import javax.persistence.Column;

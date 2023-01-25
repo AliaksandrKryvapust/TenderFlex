@@ -1,4 +1,4 @@
-package com.exadel.tenderflex.repository.entity;
+package com.exadel.tenderflex.repository.entity.enums;
 
 public enum ECountry {
     AUSTRIA, BELGIUM, BULGARIA, CROATIA, CYPRUS, CZECHIA, DENMARK, ESTONIA, FINLAND, FRANCE, GERMANY, GREECE, HUNGARY,
