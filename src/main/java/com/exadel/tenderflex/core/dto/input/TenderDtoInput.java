@@ -3,6 +3,9 @@ package com.exadel.tenderflex.core.dto.input;
 import com.exadel.tenderflex.controller.validator.api.IValidEnum;
 import com.exadel.tenderflex.repository.entity.enums.ECurrency;
 import com.exadel.tenderflex.repository.entity.enums.ETenderType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -41,9 +44,12 @@ public class TenderDtoInput {
     private final String currency;
     @NotNull(message = "publication date cannot be null")
     @Past(message = "publication date should refer to moment in the past")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private final LocalDate publication;
     @NotNull(message = "submission deadline cannot be null")
     @Future(message = "submission deadline should refer to moment in the future")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private final LocalDate submissionDeadline;
     @Valid
     @NotNull(message = "contact data cannot be null")
