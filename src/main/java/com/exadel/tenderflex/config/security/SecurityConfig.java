@@ -1,10 +1,12 @@
 package com.exadel.tenderflex.config.security;
 
 import com.exadel.tenderflex.controller.filter.JwtFilter;
+import com.exadel.tenderflex.repository.entity.enums.ERolePrivilege;
 import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -46,6 +48,10 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/v1/users/registration", "/api/v1/users/registration/**",
                         "/api/v1/users/login").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/tender").hasAuthority(ERolePrivilege.CAN_READ_TENDER.name())
+                .antMatchers(HttpMethod.GET,"/api/v1/tender/**").hasAuthority(ERolePrivilege.CAN_READ_TENDER.name())
+                .antMatchers(HttpMethod.POST,"/api/v1/tender").hasAuthority(ERolePrivilege.CAN_CREATE_AND_PUBLISH_TENDER.name())
+                .antMatchers(HttpMethod.PUT,"/api/v1/tender/**").hasAuthority(ERolePrivilege.CAN_CREATE_AND_PUBLISH_TENDER.name())
                 .antMatchers("/api/v1/admin", "/api/v1/admin/**").hasRole(EUserRole.ADMIN.name())
                 .anyRequest().authenticated()
                 .and()
