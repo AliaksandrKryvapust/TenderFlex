@@ -17,13 +17,10 @@ public class FilesDtoInput {
     @NotNull(message = "contract deadline cannot be null")
     @Future(message = "contract deadline should refer to moment in the future")
     private final LocalDate contractDeadline;
-    @NotNull(message = "contract file cannot be null")
     @NotBlank(message = "contract file cannot be blank")
     private final UUID contractFile;
-    @NotNull(message = "award decision file cannot be null")
     @NotBlank(message = "award decision file cannot be blank")
     private final UUID awardDecisionFile;
-    @NotNull(message = "reject decision file cannot be null")
     @NotBlank(message = "reject decision file cannot be blank")
     private final UUID rejectDecisionFile;
 }
