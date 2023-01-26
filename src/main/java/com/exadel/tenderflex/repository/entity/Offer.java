@@ -22,11 +22,11 @@ public class Offer {
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
     @OneToOne
-    @JoinColumn(name = "offer_id", referencedColumnName = "id")
+    @JoinColumn(name = "id", referencedColumnName = "offer_id")
     @Setter
     private Contract contract;
     @OneToOne
-    @JoinColumn(name = "offer_id", referencedColumnName = "id")
+    @JoinColumn(name = "id", referencedColumnName = "offer_id")
     @Setter
     private RejectDecision rejectDecision;
     @Setter

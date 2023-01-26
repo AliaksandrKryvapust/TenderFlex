@@ -31,11 +31,11 @@ public class Tender {
     @Setter
     private User user;
     @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "tender_id", referencedColumnName = "id")
+    @JoinColumn(name = "id", referencedColumnName = "tender_id")
     @Setter
     private Contract contract;
     @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id", referencedColumnName = "tender_id", nullable = false)
     @Setter
     private RejectDecision rejectDecision;
     @OneToMany
