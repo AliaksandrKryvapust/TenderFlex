@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS app.contracts
     id                  uuid,
     contract_file       uuid,
     award_decision_file uuid,
-    contract_deadline   date                        NOT NULL,
+    contract_deadline   date,
     dt_create           timestamp without time zone NOT NULL DEFAULT now(),
     dt_update           timestamp without time zone NOT NULL DEFAULT now(),
     offer_id            uuid REFERENCES app.offers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
