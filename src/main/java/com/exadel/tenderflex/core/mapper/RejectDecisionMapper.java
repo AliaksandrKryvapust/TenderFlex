@@ -16,10 +16,17 @@ public class RejectDecisionMapper {
     }
 
     public RejectDecisionDtoOutput outputMapping(RejectDecision rejectDecision) {
-        return RejectDecisionDtoOutput.builder()
-                .id(rejectDecision.getId().toString())
-                .rejectDecisionFile(rejectDecision.getRejectDecisionFile().toString())
-                .dtCreate(rejectDecision.getDtCreate())
-                .dtUpdate(rejectDecision.getDtUpdate()).build();
+        if (rejectDecision.getRejectDecisionFile() != null) {
+            return RejectDecisionDtoOutput.builder()
+                    .id(rejectDecision.getId().toString())
+                    .rejectDecisionFile(rejectDecision.getRejectDecisionFile().toString())
+                    .dtCreate(rejectDecision.getDtCreate())
+                    .dtUpdate(rejectDecision.getDtUpdate()).build();
+        } else {
+            return RejectDecisionDtoOutput.builder()
+                    .id(rejectDecision.getId().toString())
+                    .dtCreate(rejectDecision.getDtCreate())
+                    .dtUpdate(rejectDecision.getDtUpdate()).build();
+        }
     }
 }

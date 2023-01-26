@@ -18,12 +18,27 @@ public class ContractMapper {
     }
 
     public ContractDtoOutput outputMapping(Contract contract) {
-        return ContractDtoOutput.builder()
-                .id(contract.getId().toString())
-                .contractFile(contract.getContractFile().toString())
-                .awardDecisionFile(contract.getAwardDecisionFile().toString())
-                .contractDeadline(contract.getContractDeadline())
-                .dtCreate(contract.getDtCreate())
-                .dtUpdate(contract.getDtUpdate()).build();
+        if (contract.getContractFile() != null && contract.getAwardDecisionFile() != null) {
+            return ContractDtoOutput.builder()
+                    .id(contract.getId().toString())
+                    .contractFile(contract.getContractFile().toString())
+                    .awardDecisionFile(contract.getAwardDecisionFile().toString())
+                    .contractDeadline(contract.getContractDeadline())
+                    .dtCreate(contract.getDtCreate())
+                    .dtUpdate(contract.getDtUpdate()).build();
+        } else if (contract.getContractFile() != null) {
+            return ContractDtoOutput.builder()
+                    .id(contract.getId().toString())
+                    .contractFile(contract.getContractFile().toString())
+                    .contractDeadline(contract.getContractDeadline())
+                    .dtCreate(contract.getDtCreate())
+                    .dtUpdate(contract.getDtUpdate()).build();
+        } else {
+            return ContractDtoOutput.builder()
+                    .id(contract.getId().toString())
+                    .contractDeadline(contract.getContractDeadline())
+                    .dtCreate(contract.getDtCreate())
+                    .dtUpdate(contract.getDtUpdate()).build();
+        }
     }
 }
