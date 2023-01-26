@@ -26,7 +26,7 @@ public class Offer {
     @Setter
     private Contract contract;
     @OneToOne
-    @JoinColumn(name = "id", referencedColumnName = "offer_id")
+    @JoinColumn(name = "offer_id", referencedColumnName = "id")
     @Setter
     private RejectDecision rejectDecision;
     @Setter

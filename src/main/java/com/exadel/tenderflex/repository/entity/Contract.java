@@ -25,6 +25,7 @@ public class Contract {
     @Setter
     private UUID awardDecisionFile;
     @Setter
+    @Column(updatable = false)
     private LocalDate contractDeadline;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
