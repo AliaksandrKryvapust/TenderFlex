@@ -68,4 +68,31 @@ public class TenderMapper {
                 .dtCreate(tender.getDtCreate())
                 .dtUpdate(tender.getDtUpdate()).build();
     }
+
+    public void updateEntityFields(Tender tender, Tender currentEntity){
+        currentEntity.getContactPerson().setName(tender.getContactPerson().getName());
+        currentEntity.getContactPerson().setSurname(tender.getContactPerson().getSurname());
+        currentEntity.getContactPerson().setPhoneNumber(tender.getContactPerson().getPhoneNumber());
+        currentEntity.getCompanyDetails().setOfficialName(tender.getCompanyDetails().getOfficialName());
+        currentEntity.getCompanyDetails().setRegistrationNumber(tender.getCompanyDetails().getRegistrationNumber());
+        currentEntity.getCompanyDetails().setCountry(tender.getCompanyDetails().getCountry());
+        currentEntity.getCompanyDetails().setTown(tender.getCompanyDetails().getTown());
+        currentEntity.getContract().setContractDeadline(tender.getContract().getContractDeadline());
+        currentEntity.getContract().setContractFile(tender.getContract().getContractFile());
+        currentEntity.getContract().setAwardDecisionFile(tender.getContract().getAwardDecisionFile());
+        if (tender.getRejectDecision()!=null){
+            if (currentEntity.getRejectDecision()==null){
+                currentEntity.setRejectDecision(tender.getRejectDecision());
+            } else {
+                currentEntity.getRejectDecision().setRejectDecisionFile(tender.getRejectDecision().getRejectDecisionFile());
+            }
+        }
+        currentEntity.setCpvCode(tender.getCpvCode());
+        currentEntity.setTenderType(tender.getTenderType());
+        currentEntity.setDescription(tender.getDescription());
+        currentEntity.setMinPrice(tender.getMinPrice());
+        currentEntity.setMaxPrice(tender.getMaxPrice());
+        currentEntity.setCurrency(tender.getCurrency());
+        currentEntity.setSubmissionDeadline(tender.getSubmissionDeadline());
+    }
 }
