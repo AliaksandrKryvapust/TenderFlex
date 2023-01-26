@@ -14,7 +14,8 @@ public class ContactPersonMapper {
         return ContactPerson.builder()
                 .name(dtoInput.getName())
                 .surname(dtoInput.getSurname())
-                .phoneNumber(dtoInput.getPhoneNumber()).build();
+                .phoneNumber(dtoInput.getPhoneNumber())
+                .build();
     }
 
     public ContactPersonDtoOutput outputMapping(ContactPerson contactPerson){

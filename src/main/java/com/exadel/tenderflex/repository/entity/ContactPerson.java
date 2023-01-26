@@ -13,7 +13,7 @@ import javax.persistence.Embeddable;
 public class ContactPerson {
     private String name;
     private String surname;
-    private Integer phoneNumber;
+    private Long phoneNumber;
 
     @Override
     public String toString() {

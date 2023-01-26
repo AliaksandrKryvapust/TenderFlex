@@ -9,5 +9,5 @@ import lombok.NonNull;
 public class ContactPersonDtoOutput {
     private final @NonNull String name;
     private final @NonNull String surname;
-    private final @NonNull Integer phoneNumber;
+    private final @NonNull Long phoneNumber;
 }

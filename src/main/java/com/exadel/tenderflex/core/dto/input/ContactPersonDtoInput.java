@@ -20,5 +20,5 @@ public class ContactPersonDtoInput {
     private final String surname;
     @NotNull(message = "phone number cannot be null")
     @Positive (message = "phone number should be positive")
-    private final Integer phoneNumber;
+    private final Long phoneNumber;
 }
