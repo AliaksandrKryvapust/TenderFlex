@@ -2,12 +2,18 @@ package com.exadel.tenderflex.core.mapper;
 
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
+import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -18,6 +24,7 @@ public class TenderMapper {
     private final ContractMapper contractMapper;
     private final RejectDecisionMapper rejectDecisionMapper;
     private final UserMapper userMapper;
+    private final OfferMapper offerMapper;
 
     public Tender inputMapping(TenderDtoInput dtoInput, User user) {
         CompanyDetails companyDetails = companyDetailsMapper.inputMapping(dtoInput.getContractor());
@@ -67,6 +74,55 @@ public class TenderMapper {
                 .tenderStatus(tender.getTenderStatus().name())
                 .dtCreate(tender.getDtCreate())
                 .dtUpdate(tender.getDtUpdate()).build();
+    }
+
+    public TenderPageDtoOutput tenderPageOutputMapping(Tender tender){
+        UserLoginDtoOutput user = userMapper.registerOutputMapping(tender.getUser());
+        if (!tender.getTenderStatus().equals(ETenderStatus.CLOSED)){
+            if (tender.getOffers() != null) {
+                Set<OfferDtoOutput> offers = offerMapper.listOutputMapping(tender.getOffers());
+                return TenderPageDtoOutput.builder()
+                        .id(tender.getId().toString())
+                        .user(user)
+                        .cpvCode(tender.getCpvCode())
+                        .officialName(tender.getCompanyDetails().getOfficialName())
+                        .tenderStatus(tender.getTenderStatus().name())
+                        .submissionDeadline(tender.getSubmissionDeadline())
+                        .offers(offers)
+                        .offersAmount(offers.size()).build();
+            } else {
+                return TenderPageDtoOutput.builder()
+                        .id(tender.getId().toString())
+                        .user(user)
+                        .cpvCode(tender.getCpvCode())
+                        .officialName(tender.getCompanyDetails().getOfficialName())
+                        .tenderStatus(tender.getTenderStatus().name())
+                        .submissionDeadline(tender.getSubmissionDeadline())
+                        .offersAmount(0).build();
+            }
+        } else {
+            return TenderPageDtoOutput.builder()
+                    .id(tender.getId().toString())
+                    .user(user)
+                    .cpvCode(tender.getCpvCode())
+                    .officialName(tender.getCompanyDetails().getOfficialName())
+                    .tenderStatus(tender.getTenderStatus().name())
+                    .submissionDeadline(tender.getSubmissionDeadline()).build();
+        }
+    }
+
+    public PageDtoOutput<TenderPageDtoOutput> outputPageMapping(Page<Tender> record){
+        Set<TenderPageDtoOutput> outputs = record.getContent().stream().map(this::tenderPageOutputMapping).collect(Collectors.toSet());
+        return PageDtoOutput.<TenderPageDtoOutput>builder()
+                .number(record.getNumber() + 1)
+                .size(record.getSize())
+                .totalPages(record.getTotalPages())
+                .totalElements(record.getTotalElements())
+                .first(record.isFirst())
+                .numberOfElements(record.getNumberOfElements())
+                .last(record.isLast())
+                .content(outputs)
+                .build();
     }
 
     public void updateEntityFields(Tender tender, Tender currentEntity){
