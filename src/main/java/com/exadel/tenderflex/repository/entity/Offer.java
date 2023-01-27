@@ -21,14 +21,9 @@ public class Offer {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    @OneToOne
-    @JoinColumn(name = "id", referencedColumnName = "offer_id")
+    @OneToOne(mappedBy = "offer")
     @Setter
     private Contract contract;
-    @OneToOne
-    @JoinColumn(name = "id", referencedColumnName = "offer_id")
-    @Setter
-    private RejectDecision rejectDecision;
     @Setter
     @Embedded
     private CompanyDetails bidder;

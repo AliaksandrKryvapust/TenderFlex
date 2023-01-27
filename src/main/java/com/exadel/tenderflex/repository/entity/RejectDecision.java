@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -23,6 +24,10 @@ public class RejectDecision {
     @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
     @Setter
     private Tender tender;
+    @OneToMany
+    @JoinColumn(name = "reject_decision_id", referencedColumnName = "id")
+    @Setter
+    private Set<Offer> offers;
     @Setter
     private UUID rejectDecisionFile;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)

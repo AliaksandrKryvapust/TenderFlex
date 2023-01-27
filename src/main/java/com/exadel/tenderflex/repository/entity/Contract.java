@@ -24,6 +24,10 @@ public class Contract {
     @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
     @Setter
     private Tender tender;
+    @OneToOne
+    @JoinColumn(name = "offer_id", referencedColumnName = "id", nullable = false)
+    @Setter
+    private Offer offer;
     @Setter
     private UUID contractFile;
     @Setter
