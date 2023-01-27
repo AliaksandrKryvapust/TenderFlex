@@ -51,7 +51,9 @@ public class TenderDtoInput {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private final LocalDate submissionDeadline;
-    @Valid
-    @NotNull(message = "contact data cannot be null")
-    private final FilesDtoInput files;
+    @NotNull(message = "contract deadline cannot be null")
+    @Future(message = "contract deadline should refer to moment in the future")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private final LocalDate contractDeadline;
 }
