@@ -63,6 +63,11 @@
             <artifactId>guava</artifactId>
             <version>31.1-jre</version>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.292</version>
+        </dependency>
         <!--       Build tools -->
         <dependency>
             <groupId>org.projectlombok</groupId>
