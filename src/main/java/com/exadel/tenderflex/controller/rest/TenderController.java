@@ -9,11 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -38,6 +42,18 @@ public class TenderController {
     @PostMapping
     protected ResponseEntity<TenderDtoOutput> post(@RequestBody @Valid TenderDtoInput dtoInput) {
         return new ResponseEntity<>(this.tenderManager.saveDto(dtoInput), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/upload", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    protected ResponseEntity<TenderDtoOutput> postWithFile(@RequestParam(value = "tender") String tender,
+                                                           @RequestParam(value = "contract", required = false) MultipartFile contract,
+                                                           @RequestParam(value = "award", required = false) MultipartFile award,
+                                                           @RequestParam(value = "reject", required = false) MultipartFile reject) {
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(contract);
+        files.add(award);
+        files.add(reject);
+        return new ResponseEntity<>(this.tenderManager.saveFormData(tender, files), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/dt_update/{version}")
