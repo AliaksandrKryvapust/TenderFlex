@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.core.dto.output;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -26,7 +27,9 @@ public class TenderDtoOutput {
     private final @NotNull Integer minPrice;
     private final @NotNull Integer maxPrice;
     private final @NotNull String currency;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private final @NotNull LocalDate publication;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private final @NotNull LocalDate submissionDeadline;
     private final @NotNull String tenderStatus;
     private final @NonNull Instant dtCreate;
