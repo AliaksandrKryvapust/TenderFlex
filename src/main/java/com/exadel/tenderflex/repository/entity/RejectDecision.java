@@ -19,6 +19,10 @@ public class RejectDecision {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
+    @OneToOne
+    @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
+    @Setter
+    private Tender tender;
     @Setter
     private UUID rejectDecisionFile;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)

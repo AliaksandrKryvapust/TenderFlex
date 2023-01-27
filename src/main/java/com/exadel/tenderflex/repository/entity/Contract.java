@@ -20,6 +20,10 @@ public class Contract {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
+    @OneToOne
+    @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
+    @Setter
+    private Tender tender;
     @Setter
     private UUID contractFile;
     @Setter

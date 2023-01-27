@@ -30,12 +30,10 @@ public class Tender {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Setter
     private User user;
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id", referencedColumnName = "tender_id")
+    @OneToOne(mappedBy = "tender")
     @Setter
     private Contract contract;
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id", referencedColumnName = "tender_id", nullable = false)
+    @OneToOne(mappedBy = "tender")
     @Setter
     private RejectDecision rejectDecision;
     @OneToMany
