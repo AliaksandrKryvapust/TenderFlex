@@ -160,8 +160,9 @@ CREATE TABLE IF NOT EXISTS app.files
     content_type character varying           NOT NULL,
     file_name    character varying           NOT NULL,
     url          character varying           NOT NULL,
-    dt_update    timestamp without time zone NOT NULL DEFAULT 'now()',
-    dt_create    timestamp without time zone NOT NULL DEFAULT 'now()',
+    file_key     character varying           NOT NULL,
+    dt_update    timestamp without time zone NOT NULL DEFAULT now(),
+    dt_create    timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
 

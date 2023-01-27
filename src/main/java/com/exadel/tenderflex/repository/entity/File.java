@@ -29,6 +29,8 @@ public class File {
     private String fileName;
     @Setter
     private String url;
+    @Setter
+    private String fileKey;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version
