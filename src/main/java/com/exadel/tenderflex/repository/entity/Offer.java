@@ -38,10 +38,55 @@ public class Offer {
     @Setter
     @Enumerated(EnumType.STRING)
     private EOfferStatus offerStatus;
+    @OneToOne
+    @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
     @Setter
-    private String propositionFile;
+    private File propositionFile;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version
     private Instant dtUpdate;
+
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "id=" + id +
+                ", contactPerson=" + contactPerson +
+                ", bidPrice=" + bidPrice +
+                ", currency=" + currency +
+                ", offerStatus=" + offerStatus +
+                ", dtCreate=" + dtCreate +
+                ", dtUpdate=" + dtUpdate +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Offer offer = (Offer) o;
+
+        if (!getId().equals(offer.getId())) return false;
+        if (!getBidder().equals(offer.getBidder())) return false;
+        if (!getContactPerson().equals(offer.getContactPerson())) return false;
+        if (!getBidPrice().equals(offer.getBidPrice())) return false;
+        if (getCurrency() != offer.getCurrency()) return false;
+        if (getOfferStatus() != offer.getOfferStatus()) return false;
+        if (!getDtCreate().equals(offer.getDtCreate())) return false;
+        return getDtUpdate().equals(offer.getDtUpdate());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getBidder().hashCode();
+        result = 31 * result + getContactPerson().hashCode();
+        result = 31 * result + getBidPrice().hashCode();
+        result = 31 * result + getCurrency().hashCode();
+        result = 31 * result + getOfferStatus().hashCode();
+        result = 31 * result + getDtCreate().hashCode();
+        result = 31 * result + getDtUpdate().hashCode();
+        return result;
+    }
 }

@@ -40,4 +40,36 @@ public class Contract {
     private Instant dtCreate;
     @Version
     private Instant dtUpdate;
+
+    @Override
+    public String toString() {
+        return "Contract{" +
+                "id=" + id +
+                ", contractDeadline=" + contractDeadline +
+                ", dtCreate=" + dtCreate +
+                ", dtUpdate=" + dtUpdate +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Contract contract = (Contract) o;
+
+        if (!getId().equals(contract.getId())) return false;
+        if (!getContractDeadline().equals(contract.getContractDeadline())) return false;
+        if (!getDtCreate().equals(contract.getDtCreate())) return false;
+        return getDtUpdate().equals(contract.getDtUpdate());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getContractDeadline().hashCode();
+        result = 31 * result + getDtCreate().hashCode();
+        result = 31 * result + getDtUpdate().hashCode();
+        return result;
+    }
 }
