@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -28,10 +29,10 @@ public class Contract {
     @JoinColumn(name = "offer_id", referencedColumnName = "id", nullable = false)
     @Setter
     private Offer offer;
+    @OneToMany
+    @JoinColumn(name = "contract_id", referencedColumnName = "id")
     @Setter
-    private UUID contractFile;
-    @Setter
-    private UUID awardDecisionFile;
+    private Set<File> files;
     @Setter
     @Column(updatable = false)
     private LocalDate contractDeadline;

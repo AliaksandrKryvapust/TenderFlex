@@ -28,8 +28,10 @@ public class RejectDecision {
     @JoinColumn(name = "reject_decision_id", referencedColumnName = "id")
     @Setter
     private Set<Offer> offers;
+    @OneToOne
+    @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
     @Setter
-    private UUID rejectDecisionFile;
+    private File file;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version
