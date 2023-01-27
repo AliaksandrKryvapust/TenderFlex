@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.service;
 
+import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
@@ -8,6 +9,8 @@ import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.Tender;
 import com.exadel.tenderflex.repository.entity.User;
+import com.exadel.tenderflex.repository.entity.enums.EFileType;
+import com.exadel.tenderflex.service.api.IAwsS3Service;
 import com.exadel.tenderflex.service.api.ITenderManager;
 import com.exadel.tenderflex.service.api.ITenderService;
 import com.exadel.tenderflex.service.transactional.api.ITenderTransactionalService;
@@ -20,7 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -32,6 +35,7 @@ public class TenderService implements ITenderService, ITenderManager {
     private final TenderMapper tenderMapper;
     private final UserService userService;
     private final ITenderTransactionalService tenderTransactionalService;
+    private final IAwsS3Service awsS3Service;
 
     @Override
     public Tender save(Tender tender) {
@@ -57,9 +61,11 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
-    public TenderDtoOutput saveDto(TenderDtoInput dtoInput) {
+    public TenderDtoOutput saveDto(String tenderJson, Map<EFileType, MultipartFile> files) {
+        TenderDtoInput dtoInput = tenderMapper.extractJson(tenderJson);
+        Map<EFileType, AwsS3FileDto> urls = awsS3Service.generateUrls(files);
         User currentUser = getUserFromSecurityContext();
-        Tender entityToSave = tenderMapper.inputMapping(dtoInput, currentUser);
+        Tender entityToSave = tenderMapper.inputMapping(dtoInput, currentUser, files, urls);
         tenderValidator.validateEntity(entityToSave);
         Tender tender = save(entityToSave);
         return tenderMapper.outputMapping(tender);
@@ -77,9 +83,11 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
-    public TenderDtoOutput updateDto(TenderDtoInput dtoInput, UUID id, Long version) {
+    public TenderDtoOutput updateDto(String tenderJson, Map<EFileType, MultipartFile> fileMap, UUID id, Long version) {
+        TenderDtoInput dtoInput = tenderMapper.extractJson(tenderJson);
+        Map<EFileType, AwsS3FileDto> urls = awsS3Service.generateUrls(fileMap);
         User currentUser = getUserFromSecurityContext();
-        Tender entityToSave = tenderMapper.inputMapping(dtoInput, currentUser);
+        Tender entityToSave = tenderMapper.inputMapping(dtoInput, currentUser, fileMap, urls);
         tenderValidator.validateEntity(entityToSave);
         Tender tender = update(entityToSave, id, version);
         return tenderMapper.outputMapping(tender);
@@ -88,16 +96,5 @@ public class TenderService implements ITenderService, ITenderManager {
     private User getUserFromSecurityContext() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userService.getUser(userDetails.getUsername());
-    }
-
-    @Override
-    public TenderDtoOutput saveFormData(String tenderJson, List<MultipartFile> files) {
-        TenderDtoInput dtoInput = tenderMapper.extractJson(tenderJson);
-        int fileCountTest = files.size();
-        User currentUser = getUserFromSecurityContext();
-        Tender entityToSave = tenderMapper.inputMapping(dtoInput, currentUser);
-        tenderValidator.validateEntity(entityToSave);
-        Tender tender = save(entityToSave);
-        return tenderMapper.outputMapping(tender);
     }
 }
