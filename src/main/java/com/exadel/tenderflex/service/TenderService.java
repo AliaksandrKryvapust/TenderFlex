@@ -33,8 +33,7 @@ public class TenderService implements ITenderService, ITenderManager {
 
     @Override
     public Tender save(Tender tender) {
-//        return tenderTransactionalService.saveTransactional(tender);
-        return tenderRepository.save(tender);
+        return tenderTransactionalService.saveTransactional(tender);
     }
 
     @Override
