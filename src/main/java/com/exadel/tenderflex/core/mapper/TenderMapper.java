@@ -6,6 +6,8 @@ import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -25,6 +27,15 @@ public class TenderMapper {
     private final RejectDecisionMapper rejectDecisionMapper;
     private final UserMapper userMapper;
     private final OfferMapper offerMapper;
+    private final ObjectMapper objectMapper;
+
+    public TenderDtoInput extractJson(String tender) {
+        try {
+            return objectMapper.readValue(tender, TenderDtoInput.class);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Wrong json format for entity tender: " + tender);
+        }
+    }
 
     public Tender inputMapping(TenderDtoInput dtoInput, User user) {
         CompanyDetails companyDetails = companyDetailsMapper.inputMapping(dtoInput.getContractor());

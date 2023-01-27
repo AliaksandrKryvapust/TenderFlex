@@ -18,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -86,5 +88,16 @@ public class TenderService implements ITenderService, ITenderManager {
     private User getUserFromSecurityContext() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userService.getUser(userDetails.getUsername());
+    }
+
+    @Override
+    public TenderDtoOutput saveFormData(String tenderJson, List<MultipartFile> files) {
+        TenderDtoInput dtoInput = tenderMapper.extractJson(tenderJson);
+        int fileCountTest = files.size();
+        User currentUser = getUserFromSecurityContext();
+        Tender entityToSave = tenderMapper.inputMapping(dtoInput, currentUser);
+        tenderValidator.validateEntity(entityToSave);
+        Tender tender = save(entityToSave);
+        return tenderMapper.outputMapping(tender);
     }
 }
