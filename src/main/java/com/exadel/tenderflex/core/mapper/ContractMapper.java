@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.core.mapper;
 
+import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.output.ContractDtoOutput;
 import com.exadel.tenderflex.core.dto.output.FileDtoOutput;
 import com.exadel.tenderflex.repository.entity.Contract;
@@ -22,7 +23,7 @@ public class ContractMapper {
     private final FileMapper fileMapper;
 
     public Contract inputMapping(LocalDate contractDeadline, Map<EFileType, MultipartFile> dtoInput,
-                                 Map<EFileType, String> urls) {
+                                 Map<EFileType, AwsS3FileDto> urls) {
         Set<File> files = fileMapper.inputContractMapping(dtoInput, urls);
         return Contract.builder()
                 .files(files)

@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.core.mapper;
 
+import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.output.FileDtoOutput;
 import com.exadel.tenderflex.core.dto.output.RejectDecisionDtoOutput;
 import com.exadel.tenderflex.repository.entity.File;
@@ -19,7 +20,7 @@ import java.util.Map;
 public class RejectDecisionMapper {
     private final FileMapper fileMapper;
 
-    public RejectDecision inputMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, String> urls) {
+    public RejectDecision inputMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, AwsS3FileDto> urls) {
         File file = fileMapper.inputRejectMapping(dtoInput, urls);
         return RejectDecision.builder()
                 .file(file).build();
