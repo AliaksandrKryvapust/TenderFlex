@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS app.tenders
     phone_number        bigint                      NOT NULL,
     cpv_code            character varying           NOT NULL,
     tender_type         character varying           NOT NULL,
-    description         character varying(250)      NOT NULL,
+    description         character varying(250),
     min_price           bigint                      NOT NULL,
     max_price           bigint                      NOT NULL,
     currency            character varying           NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS app.contracts
     dt_create           timestamp without time zone NOT NULL DEFAULT now(),
     dt_update           timestamp without time zone NOT NULL DEFAULT now(),
     offer_id            uuid REFERENCES app.offers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    tender_id           uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    tender_id           uuid NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
     PRIMARY KEY (id)
 );
 
@@ -135,12 +135,12 @@ ALTER TABLE IF EXISTS app.contracts
 
 CREATE TABLE IF NOT EXISTS app.reject_decision
 (
-    id              uuid,
-    offer_id        uuid REFERENCES app.offers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    tender_id       uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    reject_decision uuid                        NOT NULL,
-    dt_create       timestamp without time zone NOT NULL DEFAULT now(),
-    dt_update       timestamp without time zone NOT NULL DEFAULT now(),
+    id                   uuid,
+    offer_id             uuid REFERENCES app.offers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    tender_id            uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    reject_decision_file uuid,
+    dt_create            timestamp without time zone NOT NULL DEFAULT now(),
+    dt_update            timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
 
