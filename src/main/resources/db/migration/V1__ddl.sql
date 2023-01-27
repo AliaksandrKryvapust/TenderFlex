@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS app.offers
     phone_number        bigint                      NOT NULL,
     bid_price           bigint                      NOT NULL,
     currency            character varying           NOT NULL,
-    proposition_file    uuid,
+    file_id             uuid,
     dt_create           timestamp without time zone NOT NULL DEFAULT now(),
     dt_update           timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
@@ -170,6 +170,13 @@ ALTER TABLE IF EXISTS app.files
 
 ALTER TABLE IF EXISTS app.reject_decision
     ADD CONSTRAINT reject_decision_file_fkey FOREIGN KEY (file_id)
+        REFERENCES app.files (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID;
+
+ALTER TABLE IF EXISTS app.offers
+    ADD CONSTRAINT offers_file_fkey FOREIGN KEY (file_id)
         REFERENCES app.files (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
