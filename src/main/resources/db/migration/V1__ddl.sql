@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS app.offers
     id                  uuid                        NOT NULL,
     user_id             uuid                        NOT NULL REFERENCES app.users (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
     tender_id           uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    reject_decision_id  uuid,
     offer_status        character varying           NOT NULL,
     official_name       character varying(50)       NOT NULL,
     registration_number character varying(50)       NOT NULL,
@@ -136,7 +137,6 @@ ALTER TABLE IF EXISTS app.contracts
 CREATE TABLE IF NOT EXISTS app.reject_decision
 (
     id                   uuid,
-    offer_id             uuid REFERENCES app.offers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
     tender_id            uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
     reject_decision_file uuid,
     dt_create            timestamp without time zone NOT NULL DEFAULT now(),
@@ -146,3 +146,10 @@ CREATE TABLE IF NOT EXISTS app.reject_decision
 
 ALTER TABLE IF EXISTS app.reject_decision
     OWNER to app;
+
+ALTER TABLE IF EXISTS app.offers
+    ADD CONSTRAINT offers_reject_decision_fkey FOREIGN KEY (reject_decision_id)
+        REFERENCES app.reject_decision (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID;
