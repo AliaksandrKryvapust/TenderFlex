@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.core.mapper;
 
+import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
@@ -40,7 +41,7 @@ public class TenderMapper {
     }
 
     public Tender inputMapping(TenderDtoInput dtoInput, User user, Map<EFileType, MultipartFile> mapInput,
-                               Map<EFileType, String> urls) {
+                               Map<EFileType, AwsS3FileDto> urls) {
         CompanyDetails companyDetails = companyDetailsMapper.inputMapping(dtoInput.getContractor());
         ContactPerson contactPerson = contactPersonMapper.inputMapping(dtoInput.getContactPerson());
         Contract contract = contractMapper.inputMapping(dtoInput.getContractDeadline(), mapInput, urls);
