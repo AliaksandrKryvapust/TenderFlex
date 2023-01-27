@@ -121,8 +121,6 @@ ALTER TABLE IF EXISTS app.offers
 CREATE TABLE IF NOT EXISTS app.contracts
 (
     id                  uuid,
-    contract_file       uuid,
-    award_decision_file uuid,
     contract_deadline   date,
     dt_create           timestamp without time zone NOT NULL DEFAULT now(),
     dt_update           timestamp without time zone NOT NULL DEFAULT now(),
@@ -136,11 +134,11 @@ ALTER TABLE IF EXISTS app.contracts
 
 CREATE TABLE IF NOT EXISTS app.reject_decision
 (
-    id                   uuid,
-    tender_id            uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    reject_decision_file uuid,
-    dt_create            timestamp without time zone NOT NULL DEFAULT now(),
-    dt_update            timestamp without time zone NOT NULL DEFAULT now(),
+    id        uuid,
+    tender_id uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    file_id   uuid                        NOT NULL,
+    dt_create timestamp without time zone NOT NULL DEFAULT now(),
+    dt_update timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
 
@@ -150,6 +148,29 @@ ALTER TABLE IF EXISTS app.reject_decision
 ALTER TABLE IF EXISTS app.offers
     ADD CONSTRAINT offers_reject_decision_fkey FOREIGN KEY (reject_decision_id)
         REFERENCES app.reject_decision (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID;
+
+CREATE TABLE IF NOT EXISTS app.files
+(
+    id           uuid,
+    file_type    character varying           NOT NULL,
+    contract_id  uuid REFERENCES app.contracts (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    content_type character varying           NOT NULL,
+    file_name    character varying           NOT NULL,
+    url          character varying           NOT NULL,
+    dt_update    timestamp without time zone NOT NULL DEFAULT 'now()',
+    dt_create    timestamp without time zone NOT NULL DEFAULT 'now()',
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS app.files
+    OWNER to app;
+
+ALTER TABLE IF EXISTS app.reject_decision
+    ADD CONSTRAINT reject_decision_file_fkey FOREIGN KEY (file_id)
+        REFERENCES app.files (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID;
