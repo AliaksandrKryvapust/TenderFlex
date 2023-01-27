@@ -25,7 +25,7 @@ public class AwsS3Service implements IAwsS3Service {
     @Override
     public AwsS3FileDto sendFileToS3(MultipartFile file) {
         String fileName = UUID.randomUUID() + file.getContentType();
-        FileMetadata metadata = new FileMetadata(Objects.requireNonNull(file.getContentType()), String.valueOf(file.getSize()));
+        FileMetadata metadata = new FileMetadata(Objects.requireNonNull(file.getContentType()),file.getSize());
         try {
             amazonS3.putObject(BUCKET_NAME, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {

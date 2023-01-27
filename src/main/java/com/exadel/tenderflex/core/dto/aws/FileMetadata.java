@@ -11,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class FileMetadata extends ObjectMetadata {
     private final @NonNull String contentType;
-    private final @NonNull String contentLength;
+    private final long contentLength;
 }
