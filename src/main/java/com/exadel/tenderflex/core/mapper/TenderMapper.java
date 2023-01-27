@@ -13,7 +13,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,11 +39,12 @@ public class TenderMapper {
         }
     }
 
-    public Tender inputMapping(TenderDtoInput dtoInput, User user) {
+    public Tender inputMapping(TenderDtoInput dtoInput, User user, Map<EFileType, MultipartFile> mapInput,
+                               Map<EFileType, String> urls) {
         CompanyDetails companyDetails = companyDetailsMapper.inputMapping(dtoInput.getContractor());
         ContactPerson contactPerson = contactPersonMapper.inputMapping(dtoInput.getContactPerson());
-        Contract contract = contractMapper.inputMapping(dtoInput.getFiles());
-        RejectDecision rejectDecision = rejectDecisionMapper.inputMapping(dtoInput.getFiles());
+        Contract contract = contractMapper.inputMapping(dtoInput.getContractDeadline(), mapInput, urls);
+        RejectDecision rejectDecision = rejectDecisionMapper.inputMapping(mapInput, urls);
         return Tender.builder()
                 .user(user)
                 .contactPerson(contactPerson)
@@ -136,7 +139,7 @@ public class TenderMapper {
                 .build();
     }
 
-    public void updateEntityFields(Tender tender, Tender currentEntity){
+    public void updateEntityFields(Tender tender, Tender currentEntity) {
         currentEntity.getContactPerson().setName(tender.getContactPerson().getName());
         currentEntity.getContactPerson().setSurname(tender.getContactPerson().getSurname());
         currentEntity.getContactPerson().setPhoneNumber(tender.getContactPerson().getPhoneNumber());
@@ -144,14 +147,19 @@ public class TenderMapper {
         currentEntity.getCompanyDetails().setRegistrationNumber(tender.getCompanyDetails().getRegistrationNumber());
         currentEntity.getCompanyDetails().setCountry(tender.getCompanyDetails().getCountry());
         currentEntity.getCompanyDetails().setTown(tender.getCompanyDetails().getTown());
-        currentEntity.getContract().setContractDeadline(tender.getContract().getContractDeadline());
-        currentEntity.getContract().setContractFile(tender.getContract().getContractFile());
-        currentEntity.getContract().setAwardDecisionFile(tender.getContract().getAwardDecisionFile());
-        if (tender.getRejectDecision()!=null){
-            if (currentEntity.getRejectDecision()==null){
+        if (tender.getContract() != null) {
+            if (currentEntity.getContract() == null) {
+                currentEntity.setContract(tender.getContract());
+            } else {
+                currentEntity.getContract().setContractDeadline(tender.getContract().getContractDeadline());
+                currentEntity.getContract().setFiles(tender.getContract().getFiles());
+            }
+        }
+        if (tender.getRejectDecision() != null) {
+            if (currentEntity.getRejectDecision() == null) {
                 currentEntity.setRejectDecision(tender.getRejectDecision());
             } else {
-                currentEntity.getRejectDecision().setRejectDecisionFile(tender.getRejectDecision().getRejectDecisionFile());
+                currentEntity.getRejectDecision().setFile(tender.getRejectDecision().getFile());
             }
         }
         currentEntity.setCpvCode(tender.getCpvCode());

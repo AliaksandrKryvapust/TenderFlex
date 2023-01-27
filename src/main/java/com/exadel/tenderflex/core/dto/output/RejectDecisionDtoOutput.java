@@ -11,7 +11,7 @@ import java.time.Instant;
 @Data
 public class RejectDecisionDtoOutput {
     private final @NotNull String id;
-    private final @NotNull String rejectDecisionFile;
+    private final @NotNull FileDtoOutput rejectDecision;
     private final @NonNull Instant dtCreate;
     private final @NonNull Instant dtUpdate;
 }

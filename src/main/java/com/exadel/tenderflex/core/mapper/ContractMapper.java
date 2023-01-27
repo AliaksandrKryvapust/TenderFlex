@@ -1,35 +1,40 @@
 package com.exadel.tenderflex.core.mapper;
 
-import com.exadel.tenderflex.core.dto.input.FilesDtoInput;
 import com.exadel.tenderflex.core.dto.output.ContractDtoOutput;
+import com.exadel.tenderflex.core.dto.output.FileDtoOutput;
 import com.exadel.tenderflex.repository.entity.Contract;
+import com.exadel.tenderflex.repository.entity.File;
+import com.exadel.tenderflex.repository.entity.enums.EFileType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 @Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@RequiredArgsConstructor
 public class ContractMapper {
-    public Contract inputMapping(FilesDtoInput dtoInput) {
+    private final FileMapper fileMapper;
+
+    public Contract inputMapping(LocalDate contractDeadline, Map<EFileType, MultipartFile> dtoInput,
+                                 Map<EFileType, String> urls) {
+        Set<File> files = fileMapper.inputContractMapping(dtoInput, urls);
         return Contract.builder()
-                .contractFile(dtoInput.getContractFile()) //TODO
-                .awardDecisionFile(dtoInput.getAwardDecisionFile()) //TODO
-                .contractDeadline(dtoInput.getContractDeadline()).build();
+                .files(files)
+                .contractDeadline(contractDeadline).build();
     }
 
     public ContractDtoOutput outputMapping(Contract contract) {
-        if (contract.getContractFile() != null && contract.getAwardDecisionFile() != null) {
+        if (contract.getFiles() != null) {
+            Set<FileDtoOutput> outputs = fileMapper.outputSetMapping(contract.getFiles());
             return ContractDtoOutput.builder()
                     .id(contract.getId().toString())
-                    .contractFile(contract.getContractFile().toString())
-                    .awardDecisionFile(contract.getAwardDecisionFile().toString())
-                    .contractDeadline(contract.getContractDeadline())
-                    .dtCreate(contract.getDtCreate())
-                    .dtUpdate(contract.getDtUpdate()).build();
-        } else if (contract.getContractFile() != null) {
-            return ContractDtoOutput.builder()
-                    .id(contract.getId().toString())
-                    .contractFile(contract.getContractFile().toString())
+                    .files(outputs)
                     .contractDeadline(contract.getContractDeadline())
                     .dtCreate(contract.getDtCreate())
                     .dtUpdate(contract.getDtUpdate()).build();
