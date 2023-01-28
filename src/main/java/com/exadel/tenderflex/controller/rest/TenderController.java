@@ -48,16 +48,7 @@ public class TenderController {
         return new ResponseEntity<>(this.tenderManager.saveDto(tender, files), HttpStatus.CREATED);
     }
 
-    @NonNull
-    private Map<EFileType, MultipartFile> collectFiles(MultipartFile contract, MultipartFile award, MultipartFile reject) {
-        Map<EFileType, MultipartFile> files = new HashMap<>();
-        files.put(EFileType.CONTRACT, contract);
-        files.put(EFileType.AWARD_DECISION, award);
-        files.put(EFileType.REJECT_DECISION, reject);
-        return files;
-    }
-
-    @PutMapping("/{id}/dt_update/{version}")
+    @PutMapping(path = "/{id}/dt_update/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     protected ResponseEntity<TenderDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                   @RequestParam(value = "tender") String tender,
                                                   @RequestParam(value = "contract", required = false) MultipartFile contract,
@@ -65,5 +56,14 @@ public class TenderController {
                                                   @RequestParam(value = "reject", required = false) MultipartFile reject) {
         Map<EFileType, MultipartFile> files = collectFiles(contract, award, reject);
         return ResponseEntity.ok(this.tenderManager.updateDto(tender, files, id, Long.valueOf(version)));
+    }
+
+    @NonNull
+    private Map<EFileType, MultipartFile> collectFiles(MultipartFile contract, MultipartFile award, MultipartFile reject) {
+        Map<EFileType, MultipartFile> files = new HashMap<>();
+        files.put(EFileType.CONTRACT, contract);
+        files.put(EFileType.AWARD_DECISION, award);
+        files.put(EFileType.REJECT_DECISION, reject);
+        return files;
     }
 }
