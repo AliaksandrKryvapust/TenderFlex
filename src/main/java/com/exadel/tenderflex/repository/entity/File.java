@@ -56,24 +56,29 @@ public class File {
 
         File file = (File) o;
 
-        if (!getId().equals(file.getId())) return false;
+        if (getId() != null ? !getId().equals(file.getId()) : file.getId() != null) return false;
         if (getFileType() != file.getFileType()) return false;
-        if (!getContentType().equals(file.getContentType())) return false;
-        if (!getFileName().equals(file.getFileName())) return false;
-        if (!getUrl().equals(file.getUrl())) return false;
-        if (!getDtCreate().equals(file.getDtCreate())) return false;
-        return getDtUpdate().equals(file.getDtUpdate());
+        if (getContentType() != null ? !getContentType().equals(file.getContentType()) : file.getContentType() != null)
+            return false;
+        if (getFileName() != null ? !getFileName().equals(file.getFileName()) : file.getFileName() != null)
+            return false;
+        if (getUrl() != null ? !getUrl().equals(file.getUrl()) : file.getUrl() != null) return false;
+        if (getFileKey() != null ? !getFileKey().equals(file.getFileKey()) : file.getFileKey() != null) return false;
+        if (getDtCreate() != null ? !getDtCreate().equals(file.getDtCreate()) : file.getDtCreate() != null)
+            return false;
+        return getDtUpdate() != null ? getDtUpdate().equals(file.getDtUpdate()) : file.getDtUpdate() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getId().hashCode();
-        result = 31 * result + getFileType().hashCode();
-        result = 31 * result + getContentType().hashCode();
-        result = 31 * result + getFileName().hashCode();
-        result = 31 * result + getUrl().hashCode();
-        result = 31 * result + getDtCreate().hashCode();
-        result = 31 * result + getDtUpdate().hashCode();
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getFileType() != null ? getFileType().hashCode() : 0);
+        result = 31 * result + (getContentType() != null ? getContentType().hashCode() : 0);
+        result = 31 * result + (getFileName() != null ? getFileName().hashCode() : 0);
+        result = 31 * result + (getUrl() != null ? getUrl().hashCode() : 0);
+        result = 31 * result + (getFileKey() != null ? getFileKey().hashCode() : 0);
+        result = 31 * result + (getDtCreate() != null ? getDtCreate().hashCode() : 0);
+        result = 31 * result + (getDtUpdate() != null ? getDtUpdate().hashCode() : 0);
         return result;
     }
 }
