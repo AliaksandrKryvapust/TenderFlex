@@ -7,7 +7,6 @@ import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.*;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.ITenderManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +37,6 @@ class TenderControllerTest {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
     @MockBean
     private ITenderManager tenderManager;
     @MockBean
@@ -53,11 +50,8 @@ class TenderControllerTest {
     final Instant dtCreate = Instant.ofEpochMilli(1673532204657L);
     final Instant dtUpdate = Instant.ofEpochMilli(1673532532870L);
     final String email = "contractor@gmail.com";
-    final String username = "contractorTest";
     final String id = "58c635ab-8bac-4899-bc30-b0bb4524c28b";
-    final String password = "55ffg89";
     final String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb250cmFjdG9yQGdtYWlsLmNvbSIsImlhdCI6MTY3NDU2Nzk1OCwiZXhwIjoxNjc0NTcxNTU4fQ.nSk39xKnJPOmuci9TLzIzZyya-sTIm9IZIgAINNFRCw";
-    final String multipleError = "structured_error";
     final String cpvCode = "45262420-1 Structural steel erection work for structures";
     final String officialName = "TenderCompany";
     final String registrationNumber = "ULG BE 0325 777 171";
