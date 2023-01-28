@@ -24,15 +24,16 @@ public class AwsS3Service implements IAwsS3Service {
 
     @Override
     public AwsS3FileDto sendFileToS3(MultipartFile file) {
-        String fileName = UUID.randomUUID() + file.getContentType();
+        String awsFileName = UUID.randomUUID() + "." + Objects.requireNonNull(file.getContentType())
+                .substring(file.getContentType().indexOf("/")+1);
         FileMetadata metadata = new FileMetadata(Objects.requireNonNull(file.getContentType()),file.getSize());
         try {
-            amazonS3.putObject(BUCKET_NAME, fileName, file.getInputStream(), metadata);
+            amazonS3.putObject(BUCKET_NAME, awsFileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to send to AWS S3 file " + file.getOriginalFilename());
         }
-        String url = amazonS3.getUrl(BUCKET_NAME, fileName).toString();
-        return new AwsS3FileDto(url, fileName);
+        String url = amazonS3.getUrl(BUCKET_NAME, awsFileName).toString();
+        return new AwsS3FileDto(url, awsFileName);
     }
 
     @Override
