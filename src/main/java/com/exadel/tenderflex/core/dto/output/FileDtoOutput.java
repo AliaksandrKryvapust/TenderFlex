@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 @Data
 public class FileDtoOutput {
-    private final @NonNull UUID id;
+    private final @NonNull String id;
     private final @NonNull String fileType;
     private final @NonNull String contentType;
     private final @NonNull String fileName;

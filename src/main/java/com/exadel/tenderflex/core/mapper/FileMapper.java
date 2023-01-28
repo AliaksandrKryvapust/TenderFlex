@@ -50,7 +50,7 @@ public class FileMapper {
 
     FileDtoOutput outputMapping(File file) {
         return FileDtoOutput.builder()
-                .id(file.getId())
+                .id(file.getId().toString())
                 .contentType(file.getContentType())
                 .fileType(file.getFileType().name())
                 .fileName(file.getFileName())
