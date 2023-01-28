@@ -29,8 +29,8 @@ public class Contract {
     @JoinColumn(name = "offer_id", referencedColumnName = "id", nullable = false)
     @Setter
     private Offer offer;
-    @OneToMany
-    @JoinColumn(name = "contract_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "contract_id", referencedColumnName = "id", nullable = false)
     @Setter
     private Set<File> files;
     @Setter

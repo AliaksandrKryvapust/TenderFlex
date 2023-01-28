@@ -28,7 +28,7 @@ public class RejectDecision {
     @JoinColumn(name = "reject_decision_id", referencedColumnName = "id")
     @Setter
     private Set<Offer> offers;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
     @Setter
     private File file;
