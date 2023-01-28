@@ -351,7 +351,7 @@ class UserServiceTest {
                 .first(true)
                 .numberOfElements(1)
                 .last(true)
-                .content(Collections.singletonList(getPreparedUserDtoOutput()))
+                .content(Collections.singleton(getPreparedUserDtoOutput()))
                 .build();
     }
 
