@@ -100,38 +100,40 @@ public class Tender {
 
         Tender tender = (Tender) o;
 
-        if (!getId().equals(tender.getId())) return false;
+        if (getId() != null ? !getId().equals(tender.getId()) : tender.getId() != null) return false;
         if (!getCompanyDetails().equals(tender.getCompanyDetails())) return false;
         if (!getContactPerson().equals(tender.getContactPerson())) return false;
         if (!getCpvCode().equals(tender.getCpvCode())) return false;
         if (getTenderType() != tender.getTenderType()) return false;
-        if (!getDescription().equals(tender.getDescription())) return false;
+        if (getDescription() != null ? !getDescription().equals(tender.getDescription()) : tender.getDescription() != null)
+            return false;
         if (!getMinPrice().equals(tender.getMinPrice())) return false;
         if (!getMaxPrice().equals(tender.getMaxPrice())) return false;
         if (getCurrency() != tender.getCurrency()) return false;
         if (!getPublication().equals(tender.getPublication())) return false;
         if (!getSubmissionDeadline().equals(tender.getSubmissionDeadline())) return false;
         if (getTenderStatus() != tender.getTenderStatus()) return false;
-        if (!getDtCreate().equals(tender.getDtCreate())) return false;
-        return getDtUpdate().equals(tender.getDtUpdate());
+        if (getDtCreate() != null ? !getDtCreate().equals(tender.getDtCreate()) : tender.getDtCreate() != null)
+            return false;
+        return getDtUpdate() != null ? getDtUpdate().equals(tender.getDtUpdate()) : tender.getDtUpdate() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getId().hashCode();
+        int result = getId() != null ? getId().hashCode() : 0;
         result = 31 * result + getCompanyDetails().hashCode();
         result = 31 * result + getContactPerson().hashCode();
         result = 31 * result + getCpvCode().hashCode();
         result = 31 * result + getTenderType().hashCode();
-        result = 31 * result + getDescription().hashCode();
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
         result = 31 * result + getMinPrice().hashCode();
         result = 31 * result + getMaxPrice().hashCode();
         result = 31 * result + getCurrency().hashCode();
         result = 31 * result + getPublication().hashCode();
         result = 31 * result + getSubmissionDeadline().hashCode();
         result = 31 * result + getTenderStatus().hashCode();
-        result = 31 * result + getDtCreate().hashCode();
-        result = 31 * result + getDtUpdate().hashCode();
+        result = 31 * result + (getDtCreate() != null ? getDtCreate().hashCode() : 0);
+        result = 31 * result + (getDtUpdate() != null ? getDtUpdate().hashCode() : 0);
         return result;
     }
 }
