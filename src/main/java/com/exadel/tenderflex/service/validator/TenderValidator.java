@@ -61,6 +61,12 @@ public class TenderValidator implements ITenderValidator {
         if (tender.getUser() == null) {
             throw new IllegalStateException("User should not be empty for tender: " + tender);
         }
+        if (tender.getContract() == null) {
+            throw new IllegalStateException("Contract should not be empty for tender: " + tender);
+        }
+        if (tender.getRejectDecision() == null) {
+            throw new IllegalStateException("Reject decision should not be empty for tender: " + tender);
+        }
     }
 
     private void checkOfficialName(Tender tender) {
@@ -146,7 +152,7 @@ public class TenderValidator implements ITenderValidator {
 
     private void checkDescription(Tender tender) {
         if (tender.getDescription() != null) {
-            char[] chars = tender.getCompanyDetails().getTown().toCharArray();
+            char[] chars = tender.getDescription().toCharArray();
             if (chars.length < 2 || chars.length > 250) {
                 throw new IllegalArgumentException("Description should contain from 2 to 250 letters for tender:" + tender);
             }
@@ -199,5 +205,4 @@ public class TenderValidator implements ITenderValidator {
             }
         }
     }
-
 }
