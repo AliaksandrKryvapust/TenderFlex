@@ -53,7 +53,7 @@ public class UserService implements IUserService, IUserManager {
 
     @Override
     public User getUser(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
     }
 
     @Override

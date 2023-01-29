@@ -21,10 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -59,7 +56,7 @@ class JwtUserDetailsServiceTest {
     void loadUserByUsername() {
         // preconditions
         final User userOutput = getPreparedUserOutput();
-        when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
 
@@ -86,7 +83,7 @@ class JwtUserDetailsServiceTest {
         final UserLoginDtoOutput dtoOutput = getPreparedUserLoginDtoOutput();
         final User userOutput = getPreparedUserOutput();
         final UserDetails userDetails = getPreparedUserDetails();
-        when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         when(jwtTokenUtil.generateToken(userDetails)).thenReturn(token);
         when(userMapper.loginOutputMapping(userDetails, token)).thenReturn(dtoOutput);
         ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);

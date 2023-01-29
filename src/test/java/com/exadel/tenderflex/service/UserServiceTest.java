@@ -132,7 +132,7 @@ class UserServiceTest {
     void getUser() {
         // preconditions
         final User userOutput = getPreparedUserOutput();
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
 
         //test
         User actual = userService.getUser(email);
@@ -258,7 +258,7 @@ class UserServiceTest {
         // preconditions
         final User userOutput = getPreparedUserOutput();
         final UserDtoOutput userDtoOutput = getPreparedUserDtoOutput();
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         Mockito.when(userMapper.outputMapping(userOutput)).thenReturn(userDtoOutput);
 
         //test

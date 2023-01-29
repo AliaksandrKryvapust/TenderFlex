@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -34,7 +35,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
         userDetailsValidator.validate(email, user);
         boolean enabled = user.getStatus().equals(EUserStatus.ACTIVATED);
         boolean nonLocked = !user.getStatus().equals(EUserStatus.DEACTIVATED);
