@@ -74,7 +74,6 @@ class TenderServiceTest {
     final Long phoneNumber = 48251173301L;
     final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     final LocalDate submissionDeadline = LocalDate.parse("04/04/2023", df);
-    final String deadline = "04/04/2023";
     final Integer offerAmount = 4;
     final String contentType = "application/pdf";
     final String fileName = "testFile";
@@ -360,14 +359,6 @@ class TenderServiceTest {
                 .build();
     }
 
-    File getPreparedFileInput() {
-        return File.builder()
-                .fileType(EFileType.AWARD_DECISION)
-                .contentType(contentType)
-                .fileName(fileName)
-                .url(url).build();
-    }
-
     File getPreparedFileOutput() {
         return File.builder()
                 .id(id)
@@ -380,12 +371,6 @@ class TenderServiceTest {
                 .dtUpdate(dtUpdate).build();
     }
 
-    Contract getPreparedContractInput() {
-        return Contract.builder()
-                .contractDeadline(submissionDeadline)
-                .files(Collections.singleton(getPreparedFileInput())).build();
-    }
-
     Contract getPreparedContractOutput() {
         return Contract.builder()
                 .id(id)
@@ -393,11 +378,6 @@ class TenderServiceTest {
                 .files(Collections.singleton(getPreparedFileOutput()))
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate).build();
-    }
-
-    RejectDecision getPreparedRejectDecisionInput() {
-        return RejectDecision.builder()
-                .file(getPreparedFileOutput()).build();
     }
 
     RejectDecision getPreparedRejectDecisionOutput() {
