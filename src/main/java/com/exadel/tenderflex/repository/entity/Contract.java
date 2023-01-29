@@ -58,18 +58,19 @@ public class Contract {
 
         Contract contract = (Contract) o;
 
-        if (!getId().equals(contract.getId())) return false;
+        if (getId() != null ? !getId().equals(contract.getId()) : contract.getId() != null) return false;
         if (!getContractDeadline().equals(contract.getContractDeadline())) return false;
-        if (!getDtCreate().equals(contract.getDtCreate())) return false;
-        return getDtUpdate().equals(contract.getDtUpdate());
+        if (getDtCreate() != null ? !getDtCreate().equals(contract.getDtCreate()) : contract.getDtCreate() != null)
+            return false;
+        return getDtUpdate() != null ? getDtUpdate().equals(contract.getDtUpdate()) : contract.getDtUpdate() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getId().hashCode();
+        int result = getId() != null ? getId().hashCode() : 0;
         result = 31 * result + getContractDeadline().hashCode();
-        result = 31 * result + getDtCreate().hashCode();
-        result = 31 * result + getDtUpdate().hashCode();
+        result = 31 * result + (getDtCreate() != null ? getDtCreate().hashCode() : 0);
+        result = 31 * result + (getDtUpdate() != null ? getDtUpdate().hashCode() : 0);
         return result;
     }
 }

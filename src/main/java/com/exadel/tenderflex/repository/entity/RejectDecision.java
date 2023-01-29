@@ -53,16 +53,17 @@ public class RejectDecision {
 
         RejectDecision that = (RejectDecision) o;
 
-        if (!getId().equals(that.getId())) return false;
-        if (!getDtCreate().equals(that.getDtCreate())) return false;
-        return getDtUpdate().equals(that.getDtUpdate());
+        if (getId() != null ? !getId().equals(that.getId()) : that.getId() != null) return false;
+        if (getDtCreate() != null ? !getDtCreate().equals(that.getDtCreate()) : that.getDtCreate() != null)
+            return false;
+        return getDtUpdate() != null ? getDtUpdate().equals(that.getDtUpdate()) : that.getDtUpdate() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getId().hashCode();
-        result = 31 * result + getDtCreate().hashCode();
-        result = 31 * result + getDtUpdate().hashCode();
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getDtCreate() != null ? getDtCreate().hashCode() : 0);
+        result = 31 * result + (getDtUpdate() != null ? getDtUpdate().hashCode() : 0);
         return result;
     }
 }
