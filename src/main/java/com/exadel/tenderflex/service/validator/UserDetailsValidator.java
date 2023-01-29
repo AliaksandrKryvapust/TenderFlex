@@ -1,15 +1,12 @@
 package com.exadel.tenderflex.service.validator;
 
 import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
-import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.NoSuchElementException;
 
 @Component
 @RequiredArgsConstructor
