@@ -36,7 +36,6 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
-        userDetailsValidator.validate(email, user);
         boolean enabled = user.getStatus().equals(EUserStatus.ACTIVATED);
         boolean nonLocked = !user.getStatus().equals(EUserStatus.DEACTIVATED);
         Set<GrantedAuthority> authorityList = new HashSet<>();

@@ -57,17 +57,11 @@ class JwtUserDetailsServiceTest {
         // preconditions
         final User userOutput = getPreparedUserOutput();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
-        ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
 
         //test
         UserDetails actual = jwtUserDetailsService.loadUserByUsername(email);
-        Mockito.verify(userDetailsValidator, Mockito.times(1)).validate(actualEmail.capture(),
-                actualUser.capture());
 
         // assert
-        assertEquals(email, actualEmail.getValue());
-        assertEquals(userOutput, actualUser.getValue());
         assertNotNull(actual);
         assertNotNull(actual.getAuthorities());
         assertEquals(email, actual.getUsername());
@@ -78,7 +72,6 @@ class JwtUserDetailsServiceTest {
     @Test
     void login() {
         // preconditions
-        final User userInput = getPreparedUserOutput();
         final UserDtoLogin dtoInput = getPreparedUserDtoLogin();
         final UserLoginDtoOutput dtoOutput = getPreparedUserLoginDtoOutput();
         final User userOutput = getPreparedUserOutput();
@@ -86,20 +79,15 @@ class JwtUserDetailsServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         when(jwtTokenUtil.generateToken(userDetails)).thenReturn(token);
         when(userMapper.loginOutputMapping(userDetails, token)).thenReturn(dtoOutput);
-        ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
         ArgumentCaptor<UserDtoLogin> actualUserDtoLogin = ArgumentCaptor.forClass(UserDtoLogin.class);
         ArgumentCaptor<UserDetails> actualUserDetails = ArgumentCaptor.forClass(UserDetails.class);
 
         //test
         UserLoginDtoOutput actual = jwtUserDetailsService.login(dtoInput);
-        Mockito.verify(userDetailsValidator, Mockito.times(1)).validate(actualEmail.capture(),
-                actualUser.capture());
         Mockito.verify(userDetailsValidator, Mockito.times(1)).validateLogin(actualUserDtoLogin.capture(),
                 actualUserDetails.capture());
 
         // assert
-        assertEquals(userInput, actualUser.getValue());
         assertNotNull(actual);
         assertEquals(email, actual.getEmail());
         assertEquals(token, actual.getToken());

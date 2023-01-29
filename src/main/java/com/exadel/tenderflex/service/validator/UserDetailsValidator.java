@@ -22,11 +22,4 @@ public class UserDetailsValidator implements IUserDetailsValidator {
             throw new BadCredentialsException("User login or password is incorrect or user is not activated");
         }
     }
-
-    @Override
-    public void validate(String email, User user) {
-        if (user == null) {
-            throw new NoSuchElementException("There is no such user" + email);
-        }
-    }
 }
