@@ -22,6 +22,6 @@ public class TenderPageDtoOutput {
     private final @NotNull String tenderStatus;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private final @NotNull LocalDate submissionDeadline;
-    private final @Nullable Set<OfferDtoOutput> offers;
+    private final @Nullable Set<OfferDtoOutput> offers; // TODO recheck DTO fields after applying offer Dto outputs
     private final @Nullable Integer offersAmount;
 }
