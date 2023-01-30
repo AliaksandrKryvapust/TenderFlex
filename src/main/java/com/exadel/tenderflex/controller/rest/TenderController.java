@@ -48,7 +48,7 @@ public class TenderController {
         return new ResponseEntity<>(this.tenderManager.saveDto(tender, files), HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/{id}/dt_update/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/{id}/version/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     protected ResponseEntity<TenderDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                   @RequestParam(value = "tender") String tender,
                                                   @RequestParam(value = "contract", required = false) MultipartFile contract,
