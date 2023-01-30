@@ -44,7 +44,8 @@ public class TenderService implements ITenderService, ITenderManager {
 
     @Override
     public Page<Tender> get(Pageable pageable) {
-        return tenderRepository.findAll(pageable);
+        User currentUser = getUserFromSecurityContext();
+        return tenderRepository.findAllForUser(currentUser.getEmail(), pageable);
     }
 
     @Override
