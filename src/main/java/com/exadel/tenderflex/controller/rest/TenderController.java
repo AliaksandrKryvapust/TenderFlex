@@ -31,7 +31,7 @@ public class TenderController {
     @GetMapping(params = {"page", "size"})
     protected ResponseEntity<PageDtoOutput<TenderPageDtoOutput>> getPage(@RequestParam("page") int page,
                                                                          @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("dt_create").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
         return ResponseEntity.ok(tenderManager.getDto(pageable));
     }
 
