@@ -294,7 +294,8 @@ class TenderServiceTest {
                 .currency(ECurrency.NOK)
                 .tenderStatus(ETenderStatus.IN_PROGRESS)
                 .publication(submissionDeadline)
-                .submissionDeadline(submissionDeadline).build();
+                .submissionDeadline(submissionDeadline)
+                .build();
     }
 
     Tender getPreparedTenderOutput() {
@@ -315,7 +316,8 @@ class TenderServiceTest {
                 .publication(submissionDeadline)
                 .submissionDeadline(submissionDeadline)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     User getPreparedUserOutput() {
@@ -340,7 +342,8 @@ class TenderServiceTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     CompanyDetails getPreparedCompanyDetails() {
@@ -368,7 +371,8 @@ class TenderServiceTest {
                 .fileKey(token)
                 .url(url)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     Contract getPreparedContractOutput() {
@@ -377,7 +381,8 @@ class TenderServiceTest {
                 .contractDeadline(submissionDeadline)
                 .files(Collections.singleton(getPreparedFileOutput()))
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     RejectDecision getPreparedRejectDecisionOutput() {
@@ -385,7 +390,8 @@ class TenderServiceTest {
                 .id(id)
                 .file(getPreparedFileOutput())
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     TenderDtoInput getPreparedTenderDtoInput() {
@@ -400,7 +406,8 @@ class TenderServiceTest {
                 .maxPrice(maxPrice)
                 .currency(ECurrency.NOK.name())
                 .publication(submissionDeadline)
-                .submissionDeadline(submissionDeadline).build();
+                .submissionDeadline(submissionDeadline)
+                .build();
     }
 
     TenderDtoOutput getPreparedTenderDtoOutput() {
@@ -423,7 +430,8 @@ class TenderServiceTest {
                 .publication(submissionDeadline)
                 .submissionDeadline(submissionDeadline)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     PageDtoOutput<TenderPageDtoOutput> getPreparedPageDtoOutput() {
@@ -447,13 +455,15 @@ class TenderServiceTest {
                 .officialName(officialName)
                 .tenderStatus(ETenderStatus.IN_PROGRESS.name())
                 .submissionDeadline(submissionDeadline)
-                .offersAmount(offerAmount).build();
+                .offersAmount(offerAmount)
+                .build();
     }
 
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
-                .token(token).build();
+                .token(token)
+                .build();
     }
 
     CompanyDetailsDtoInput getPreparedCompanyDetailsDtoInput() {
@@ -494,7 +504,8 @@ class TenderServiceTest {
                 .contractDeadline(submissionDeadline)
                 .files(Collections.singleton(getPreparedFileDtoOutput()))
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     RejectDecisionDtoOutput getPreparedRejectDecision() {
@@ -502,7 +513,8 @@ class TenderServiceTest {
                 .id(id.toString())
                 .rejectDecision(getPreparedFileDtoOutput())
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     FileDtoOutput getPreparedFileDtoOutput() {
@@ -513,7 +525,8 @@ class TenderServiceTest {
                 .fileName(fileName)
                 .url(url)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     UserDetails getPreparedUserDetails(){

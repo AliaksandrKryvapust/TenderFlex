@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class OfferMapper {
 
     public OfferDtoOutput outputMapping(Offer offer){
-        return OfferDtoOutput.builder().build(); //TODO
+        return OfferDtoOutput.builder().build(); // TODO
     }
 
     public Set<OfferDtoOutput> listOutputMapping(Set<Offer> offers){

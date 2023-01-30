@@ -16,7 +16,8 @@ public class CompanyDetailsMapper {
                 .officialName(dtoInput.getOfficialName())
                 .registrationNumber(dtoInput.getRegistrationNumber())
                 .country(ECountry.valueOf(dtoInput.getCountry()))
-                .town(dtoInput.getTown()).build();
+                .town(dtoInput.getTown())
+                .build();
     }
 
     public CompanyDetailsDtoOutput outputMapping(CompanyDetails companyDetails){
@@ -24,6 +25,7 @@ public class CompanyDetailsMapper {
                 .officialName(companyDetails.getOfficialName())
                 .registrationNumber(companyDetails.getRegistrationNumber())
                 .country(companyDetails.getCountry().name())
-                .town(companyDetails.getTown()).build();
+                .town(companyDetails.getTown())
+                .build();
     }
 }

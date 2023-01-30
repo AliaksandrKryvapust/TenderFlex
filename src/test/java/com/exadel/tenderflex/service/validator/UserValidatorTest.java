@@ -183,7 +183,8 @@ class UserValidatorTest {
                 .password(password)
                 .username(username)
                 .roles(new HashSet<>(Collections.singleton(role)))
-                .status(EUserStatus.ACTIVATED).build();
+                .status(EUserStatus.ACTIVATED)
+                .build();
     }
 
     User getPreparedUserOutput() {
@@ -208,6 +209,7 @@ class UserValidatorTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 }

@@ -64,7 +64,8 @@ class RoleServiceTest {
                 .password(password)
                 .username(username)
                 .roles(new HashSet<>(Collections.singleton(role)))
-                .status(EUserStatus.ACTIVATED).build();
+                .status(EUserStatus.ACTIVATED)
+                .build();
     }
 
     Role getPreparedRoleOutput() {

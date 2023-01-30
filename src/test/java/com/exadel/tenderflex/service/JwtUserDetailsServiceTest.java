@@ -142,19 +142,22 @@ class JwtUserDetailsServiceTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     UserDtoLogin getPreparedUserDtoLogin() {
         return UserDtoLogin.builder()
                 .email(email)
-                .password(password).build();
+                .password(password)
+                .build();
     }
 
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
-                .token(token).build();
+                .token(token)
+                .build();
     }
 
     UserDetails getPreparedUserDetails() {

@@ -25,7 +25,8 @@ public class FileMapper {
                 .fileType(EFileType.CONTRACT)
                 .fileName(fileContract.getOriginalFilename())
                 .url(urls.get(EFileType.CONTRACT).getUrl())
-                .fileKey(urls.get(EFileType.CONTRACT).getFileKey()).build();
+                .fileKey(urls.get(EFileType.CONTRACT).getFileKey())
+                .build();
         files.add(contract);
         MultipartFile fileAward = dtoInput.get(EFileType.AWARD_DECISION);
         File award = File.builder()
@@ -33,7 +34,8 @@ public class FileMapper {
                 .fileType(EFileType.AWARD_DECISION)
                 .fileName(fileAward.getOriginalFilename())
                 .url(urls.get(EFileType.AWARD_DECISION).getUrl())
-                .fileKey(urls.get(EFileType.AWARD_DECISION).getFileKey()).build();
+                .fileKey(urls.get(EFileType.AWARD_DECISION).getFileKey())
+                .build();
         files.add(award);
         return files;
     }
@@ -45,7 +47,8 @@ public class FileMapper {
                 .fileType(EFileType.REJECT_DECISION)
                 .fileName(fileReject.getOriginalFilename())
                 .url(urls.get(EFileType.REJECT_DECISION).getUrl())
-                .fileKey(urls.get(EFileType.REJECT_DECISION).getFileKey()).build();
+                .fileKey(urls.get(EFileType.REJECT_DECISION).getFileKey())
+                .build();
     }
 
     FileDtoOutput outputMapping(File file) {
@@ -56,7 +59,8 @@ public class FileMapper {
                 .fileName(file.getFileName())
                 .url(file.getUrl())
                 .dtCreate(file.getDtCreate())
-                .dtUpdate(file.getDtUpdate()).build();
+                .dtUpdate(file.getDtUpdate())
+                .build();
     }
 
     Set<FileDtoOutput> outputSetMapping(Set<File> files) {

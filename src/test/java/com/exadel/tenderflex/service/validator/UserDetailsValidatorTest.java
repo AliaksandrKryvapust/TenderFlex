@@ -79,7 +79,8 @@ class UserDetailsValidatorTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     UserDetails getPreparedUserDetails() {
@@ -98,6 +99,7 @@ class UserDetailsValidatorTest {
     UserDtoLogin getPreparedUserDtoLogin() {
         return UserDtoLogin.builder()
                 .email(email)
-                .password(password).build();
+                .password(password)
+                .build();
     }
 }

@@ -23,7 +23,8 @@ public class RejectDecisionMapper {
     public RejectDecision inputMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, AwsS3FileDto> urls) {
         File file = fileMapper.inputRejectMapping(dtoInput, urls);
         return RejectDecision.builder()
-                .file(file).build();
+                .file(file)
+                .build();
     }
 
     public RejectDecisionDtoOutput outputMapping(RejectDecision rejectDecision) {
@@ -33,12 +34,14 @@ public class RejectDecisionMapper {
                     .id(rejectDecision.getId().toString())
                     .rejectDecision(dtoOutput)
                     .dtCreate(rejectDecision.getDtCreate())
-                    .dtUpdate(rejectDecision.getDtUpdate()).build();
+                    .dtUpdate(rejectDecision.getDtUpdate())
+                    .build();
         } else {
             return RejectDecisionDtoOutput.builder()
                     .id(rejectDecision.getId().toString())
                     .dtCreate(rejectDecision.getDtCreate())
-                    .dtUpdate(rejectDecision.getDtUpdate()).build();
+                    .dtUpdate(rejectDecision.getDtUpdate())
+                    .build();
         }
     }
 }

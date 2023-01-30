@@ -22,6 +22,7 @@ public class ContactPersonMapper {
         return ContactPersonDtoOutput.builder()
                 .name(contactPerson.getName())
                 .surname(contactPerson.getSurname())
-                .phoneNumber(contactPerson.getPhoneNumber()).build();
+                .phoneNumber(contactPerson.getPhoneNumber())
+                .build();
     }
 }

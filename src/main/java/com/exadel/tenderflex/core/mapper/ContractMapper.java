@@ -27,7 +27,8 @@ public class ContractMapper {
         Set<File> files = fileMapper.inputContractMapping(dtoInput, urls);
         return Contract.builder()
                 .files(files)
-                .contractDeadline(contractDeadline).build();
+                .contractDeadline(contractDeadline)
+                .build();
     }
 
     public ContractDtoOutput outputMapping(Contract contract) {
@@ -38,13 +39,15 @@ public class ContractMapper {
                     .files(outputs)
                     .contractDeadline(contract.getContractDeadline())
                     .dtCreate(contract.getDtCreate())
-                    .dtUpdate(contract.getDtUpdate()).build();
+                    .dtUpdate(contract.getDtUpdate())
+                    .build();
         } else {
             return ContractDtoOutput.builder()
                     .id(contract.getId().toString())
                     .contractDeadline(contract.getContractDeadline())
                     .dtCreate(contract.getDtCreate())
-                    .dtUpdate(contract.getDtUpdate()).build();
+                    .dtUpdate(contract.getDtUpdate())
+                    .build();
         }
     }
 }

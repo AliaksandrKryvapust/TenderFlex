@@ -512,7 +512,8 @@ class TenderValidatorTest {
                 .currency(ECurrency.NOK)
                 .tenderStatus(ETenderStatus.IN_PROGRESS)
                 .publication(submissionDeadline)
-                .submissionDeadline(submissionDeadline).build();
+                .submissionDeadline(submissionDeadline)
+                .build();
     }
 
     Tender getPreparedTenderOutput() {
@@ -533,7 +534,8 @@ class TenderValidatorTest {
                 .publication(submissionDeadline)
                 .submissionDeadline(submissionDeadline)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     User getPreparedUserOutput() {
@@ -558,7 +560,8 @@ class TenderValidatorTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     CompanyDetails getPreparedCompanyDetails() {
@@ -586,7 +589,8 @@ class TenderValidatorTest {
                 .fileKey(token)
                 .url(url)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     Contract getPreparedContractOutput() {
@@ -595,7 +599,8 @@ class TenderValidatorTest {
                 .contractDeadline(submissionDeadline)
                 .files(Collections.singleton(getPreparedFileOutput()))
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     RejectDecision getPreparedRejectDecisionOutput() {
@@ -603,6 +608,7 @@ class TenderValidatorTest {
                 .id(id)
                 .file(getPreparedFileOutput())
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 }

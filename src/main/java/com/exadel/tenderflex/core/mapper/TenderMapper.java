@@ -60,7 +60,8 @@ public class TenderMapper {
                 .currency(ECurrency.valueOf(dtoInput.getCurrency()))
                 .publication(dtoInput.getPublication())
                 .submissionDeadline(dtoInput.getSubmissionDeadline())
-                .tenderStatus(ETenderStatus.IN_PROGRESS).build();
+                .tenderStatus(ETenderStatus.IN_PROGRESS)
+                .build();
     }
 
     public TenderDtoOutput outputMapping(Tender tender) {
@@ -88,7 +89,8 @@ public class TenderMapper {
                 .submissionDeadline(tender.getSubmissionDeadline())
                 .tenderStatus(tender.getTenderStatus().name())
                 .dtCreate(tender.getDtCreate())
-                .dtUpdate(tender.getDtUpdate()).build();
+                .dtUpdate(tender.getDtUpdate())
+                .build();
     }
 
     public TenderPageDtoOutput tenderPageOutputMapping(Tender tender){
@@ -104,7 +106,8 @@ public class TenderMapper {
                         .tenderStatus(tender.getTenderStatus().name())
                         .submissionDeadline(tender.getSubmissionDeadline())
                         .offers(offers)
-                        .offersAmount(offers.size()).build();
+                        .offersAmount(offers.size())
+                        .build();
             } else {
                 return TenderPageDtoOutput.builder()
                         .id(tender.getId().toString())
@@ -113,7 +116,8 @@ public class TenderMapper {
                         .officialName(tender.getCompanyDetails().getOfficialName())
                         .tenderStatus(tender.getTenderStatus().name())
                         .submissionDeadline(tender.getSubmissionDeadline())
-                        .offersAmount(0).build();
+                        .offersAmount(0)
+                        .build();
             }
         } else {
             return TenderPageDtoOutput.builder()
@@ -122,7 +126,8 @@ public class TenderMapper {
                     .cpvCode(tender.getCpvCode())
                     .officialName(tender.getCompanyDetails().getOfficialName())
                     .tenderStatus(tender.getTenderStatus().name())
-                    .submissionDeadline(tender.getSubmissionDeadline()).build();
+                    .submissionDeadline(tender.getSubmissionDeadline())
+                    .build();
         }
     }
 

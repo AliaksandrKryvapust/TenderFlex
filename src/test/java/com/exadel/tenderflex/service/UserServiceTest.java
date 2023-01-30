@@ -291,7 +291,8 @@ class UserServiceTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     User getPreparedUserInput() {
@@ -306,20 +307,23 @@ class UserServiceTest {
                 .password(password)
                 .username(username)
                 .roles(new HashSet<>(Collections.singleton(role)))
-                .status(EUserStatus.ACTIVATED).build();
+                .status(EUserStatus.ACTIVATED)
+                .build();
     }
     UserDtoRegistration getPreparedUserDtoRegistration() {
         return UserDtoRegistration.builder()
                 .email(email)
                 .password(password)
                 .username(username)
-                .role(EUserRole.CONTRACTOR).build();
+                .role(EUserRole.CONTRACTOR)
+                .build();
     }
 
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
-                .token(token).build();
+                .token(token)
+                .build();
     }
 
     UserDtoInput getPreparedUserDtoInput() {
@@ -328,7 +332,8 @@ class UserServiceTest {
                 .password(password)
                 .username(username)
                 .role(EUserRole.CONTRACTOR.name())
-                .status(EUserStatus.ACTIVATED.name()).build();
+                .status(EUserStatus.ACTIVATED.name())
+                .build();
     }
 
     UserDtoOutput getPreparedUserDtoOutput() {
@@ -339,7 +344,8 @@ class UserServiceTest {
                 .role(EUserRole.CONTRACTOR)
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     PageDtoOutput<UserDtoOutput> getPreparedPageDtoOutput() {
