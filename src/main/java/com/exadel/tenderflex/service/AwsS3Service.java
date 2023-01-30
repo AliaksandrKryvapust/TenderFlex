@@ -35,10 +35,15 @@ public class AwsS3Service implements IAwsS3Service {
         } catch (IOException e) {
             throw new IllegalStateException("Failed to send to AWS S3 file " + file.getOriginalFilename());
         }
+        String url = generateUrl(awsFileName);
+        return new AwsS3FileDto(url, awsFileName);
+    }
+
+    @Override
+    public String generateUrl(String awsFileName) {
         Calendar calendar = generateExpirationTime();
         awsS3Validator.validateFileKeyToStorage(BUCKET_NAME, awsFileName);
-        String url = amazonS3.generatePresignedUrl(BUCKET_NAME, awsFileName, calendar.getTime(), HttpMethod.GET).toString();
-        return new AwsS3FileDto(url, awsFileName);
+        return amazonS3.generatePresignedUrl(BUCKET_NAME, awsFileName, calendar.getTime(), HttpMethod.GET).toString();
     }
 
     @Override
