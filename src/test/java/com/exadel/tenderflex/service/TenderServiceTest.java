@@ -114,16 +114,21 @@ class TenderServiceTest {
 
         // assert
         assertNotNull(actual);
-        checkUserOutputFields(actual);
+        checkTenderOutputFields(actual);
     }
 
     @Test
     void get() {
         // preconditions
-        final Tender tenderOutput = getPreparedTenderInput();
+        final Tender tenderOutput = getPreparedTenderOutput();
         final Pageable pageable = Pageable.ofSize(1).first();
         final Page<Tender> page = new PageImpl<>(Collections.singletonList(tenderOutput), pageable, 1);
-        Mockito.when(tenderRepository.findAll(pageable)).thenReturn(page);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(tenderRepository.findAllForUser(email, pageable)).thenReturn(page);
 
         //test
         Page<Tender> actual = tenderService.get(pageable);
@@ -133,7 +138,7 @@ class TenderServiceTest {
         assertEquals(1, actual.getTotalPages());
         Assertions.assertTrue(actual.isFirst());
         for (Tender tender : actual.getContent()) {
-            checkUserOutputFields(tender);
+            checkTenderOutputFields(tender);
         }
     }
 
@@ -148,7 +153,7 @@ class TenderServiceTest {
 
         // assert
         assertNotNull(actual);
-        checkUserOutputFields(actual);
+        checkTenderOutputFields(actual);
     }
 
     @Test
@@ -171,7 +176,7 @@ class TenderServiceTest {
         assertEquals(dtUpdate.toEpochMilli(), actualVersion.getValue());
         assertEquals(tenderOutput, actualTender.getValue());
         assertNotNull(actual);
-        checkUserOutputFields(actual);
+        checkTenderOutputFields(actual);
     }
 
     @Test
@@ -212,7 +217,12 @@ class TenderServiceTest {
         final Pageable pageable = Pageable.ofSize(1).first();
         final Page<Tender> page = new PageImpl<>(Collections.singletonList(tenderOutput), pageable, 1);
         final PageDtoOutput<TenderPageDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
-        Mockito.when(tenderRepository.findAll(pageable)).thenReturn(page);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(tenderRepository.findAllForUser(email, pageable)).thenReturn(page);
         Mockito.when(tenderMapper.outputPageMapping(page)).thenReturn(pageDtoOutput);
 
         //test
@@ -543,7 +553,7 @@ class TenderServiceTest {
     }
 
 
-    private void checkUserOutputFields(Tender actual) {
+    private void checkTenderOutputFields(Tender actual) {
         assertNotNull(actual.getCompanyDetails());
         assertNotNull(actual.getContactPerson());
         assertNotNull(actual.getContract());
