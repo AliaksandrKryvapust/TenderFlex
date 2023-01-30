@@ -1,11 +1,16 @@
 package com.exadel.tenderflex.core.mapper;
 
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
+import com.exadel.tenderflex.core.dto.input.FileDtoInput;
 import com.exadel.tenderflex.core.dto.output.FileDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.repository.entity.File;
+import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +22,17 @@ import java.util.stream.Collectors;
 @Component
 @Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class FileMapper {
-    Set<File> inputContractMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, AwsS3FileDto> urls) {
+
+    public File inputMapping(FileDtoInput dtoInput) {
+        return File.builder()
+                .fileType(EFileType.valueOf(dtoInput.getFileType()))
+                .contentType(dtoInput.getContentType())
+                .fileName(dtoInput.getFileName())
+                .url(dtoInput.getUrl())
+                .build();
+    }
+
+    public Set<File> inputContractMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, AwsS3FileDto> urls) {
         Set<File> files = new HashSet<>();
         MultipartFile fileContract = dtoInput.get(EFileType.CONTRACT);
         File contract = File.builder()
@@ -40,7 +55,7 @@ public class FileMapper {
         return files;
     }
 
-    File inputRejectMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, AwsS3FileDto> urls) {
+    public File inputRejectMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, AwsS3FileDto> urls) {
         MultipartFile fileReject = dtoInput.get(EFileType.REJECT_DECISION);
         return File.builder()
                 .contentType(fileReject.getContentType())
@@ -51,7 +66,7 @@ public class FileMapper {
                 .build();
     }
 
-    FileDtoOutput outputMapping(File file) {
+    public FileDtoOutput outputMapping(File file) {
         return FileDtoOutput.builder()
                 .id(file.getId().toString())
                 .contentType(file.getContentType())
@@ -63,7 +78,26 @@ public class FileMapper {
                 .build();
     }
 
-    Set<FileDtoOutput> outputSetMapping(Set<File> files) {
+    public PageDtoOutput<FileDtoOutput> outputPageMapping(Page<File> record) {
+        Set<FileDtoOutput> outputs = record.getContent().stream().map(this::outputMapping).collect(Collectors.toSet());
+        return PageDtoOutput.<FileDtoOutput>builder()
+                .number(record.getNumber() + 1)
+                .size(record.getSize())
+                .totalPages(record.getTotalPages())
+                .totalElements(record.getTotalElements())
+                .first(record.isFirst())
+                .numberOfElements(record.getNumberOfElements())
+                .last(record.isLast())
+                .content(outputs)
+                .build();
+    }
+
+    public Set<FileDtoOutput> outputSetMapping(Set<File> files) {
         return files.stream().map(this::outputMapping).collect(Collectors.toSet());
+    }
+
+    public void updateEntityFields(File file, File currentEntity) {
+        currentEntity.setContentType(file.getContentType());
+        currentEntity.setFileName(file.getFileName());
     }
 }
