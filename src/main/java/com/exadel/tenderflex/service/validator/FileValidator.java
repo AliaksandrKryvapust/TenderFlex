@@ -2,9 +2,11 @@ package com.exadel.tenderflex.service.validator;
 
 import com.exadel.tenderflex.repository.entity.File;
 import com.exadel.tenderflex.service.validator.api.IFileValidator;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.OptimisticLockException;
 
+@Component
 public class FileValidator implements IFileValidator {
 
     @Override
