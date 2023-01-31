@@ -7,6 +7,7 @@ import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
+import com.exadel.tenderflex.repository.entity.Offer;
 import com.exadel.tenderflex.repository.entity.Tender;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -59,6 +61,14 @@ public class TenderService implements ITenderService, ITenderManager {
         tenderValidator.optimisticLockCheck(version, currentEntity);
         tenderMapper.updateEntityFields(tender, currentEntity);
         return save(currentEntity);
+    }
+
+    @Override
+    public Tender addOfferToTender(Offer offer, UUID tenderId) {
+        Tender currentEntity = get(tenderId);
+        updateOffersSet(offer, currentEntity);
+        tenderRepository.save(currentEntity);
+        return currentEntity;
     }
 
     @Override
@@ -97,5 +107,11 @@ public class TenderService implements ITenderService, ITenderManager {
     private User getUserFromSecurityContext() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userService.getUser(userDetails.getUsername());
+    }
+
+    private void updateOffersSet(Offer offer, Tender currentEntity) {
+        Set<Offer> offers = currentEntity.getOffers();
+        offers.add(offer);
+        currentEntity.setOffers(offers);
     }
 }
