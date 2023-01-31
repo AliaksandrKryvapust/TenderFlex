@@ -21,15 +21,23 @@ public class Offer {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    @OneToOne(mappedBy = "offer")
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Setter
-    private Contract contract;
+    private User user;
     @Setter
     @Embedded
     private CompanyDetails bidder;
     @Setter
     @Embedded
     private ContactPerson contactPerson;
+    @OneToOne(mappedBy = "offer")
+    @Setter
+    private Contract contract;
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
+    @Setter
+    private File propositionFile;
     @Setter
     private Integer bidPrice;
     @Setter
@@ -38,10 +46,6 @@ public class Offer {
     @Setter
     @Enumerated(EnumType.STRING)
     private EOfferStatus offerStatus;
-    @OneToOne
-    @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
-    @Setter
-    private File propositionFile;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version

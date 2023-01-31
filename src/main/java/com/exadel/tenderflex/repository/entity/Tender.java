@@ -24,8 +24,6 @@ public class Tender {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private UUID userId;
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Setter

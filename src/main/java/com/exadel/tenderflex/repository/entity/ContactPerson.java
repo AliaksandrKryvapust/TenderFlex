@@ -17,7 +17,7 @@ public class ContactPerson {
 
     @Override
     public String toString() {
-        return "ContactPerson{" +
+        return "ContactPersonValidator{" +
                 "name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", phoneNumber=" + phoneNumber +
