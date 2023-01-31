@@ -14,7 +14,9 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -95,7 +97,7 @@ class TenderControllerTest {
     void getPage() throws Exception {
         // preconditions
         final PageDtoOutput<TenderPageDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
-        final Pageable pageable = Pageable.ofSize(1).first();
+        final Pageable pageable = PageRequest.of(0, 1, Sort.by("dtCreate").descending());
         Mockito.when(tenderManager.getDto(pageable)).thenReturn(pageDtoOutput);
 
         // assert
