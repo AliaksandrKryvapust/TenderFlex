@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.OptimisticLockException;
 
+import static com.exadel.tenderflex.core.Constants.BUCKET_NAME;
+
 @Component
 public class FileValidator implements IFileValidator {
 
@@ -46,25 +48,25 @@ public class FileValidator implements IFileValidator {
     }
 
     private void checkContentType(File file) {
-        if (file.getContentType() == null) {
+        if (file.getContentType() == null || file.getContentType().isBlank() || !file.getContentType().contains("/") ) {
             throw new IllegalStateException("Content type is not valid for file: " + file);
         }
     }
 
     private void checkFileName(File file) {
-        if (file.getFileName() == null) {
+        if (file.getFileName() == null || file.getFileName().isBlank() || !file.getFileName().contains(".")) {
             throw new IllegalStateException("File name is not valid for file: " + file);
         }
     }
 
     private void checkUrl(File file) {
-        if (file.getUrl() == null) {
+        if (file.getUrl() == null || file.getUrl().isBlank() || !file.getUrl().contains(BUCKET_NAME)) {
             throw new IllegalStateException("url is not valid for file: " + file);
         }
     }
 
     private void checkFileKey(File file) {
-        if (file.getFileKey() == null) {
+        if (file.getFileKey() == null || file.getFileKey().isBlank()) {
             throw new IllegalStateException("file key is not valid for file: " + file);
         }
     }
