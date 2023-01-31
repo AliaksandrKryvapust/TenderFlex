@@ -192,13 +192,14 @@ class TenderControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "contractor@gmail.com", password = "55ffg89", roles = {"CONTRACTOR"})
     void put() throws Exception {
         // preconditions
         final TenderDtoOutput dtoOutput = getPreparedTenderDtoOutput();
         Mockito.when(tenderManager.updateDto(any(String.class), any(Map.class), any(UUID.class), any(Long.class))).thenReturn(dtoOutput);
 
         // assert
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tender/" + id + "/dt_update/" + dtUpdate.toEpochMilli())
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tender/" + id + "/version/" + dtUpdate.toEpochMilli())
                         .param("tender", json).contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
