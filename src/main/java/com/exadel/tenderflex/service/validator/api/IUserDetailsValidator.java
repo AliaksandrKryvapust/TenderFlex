@@ -6,5 +6,4 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public interface IUserDetailsValidator {
     void validateLogin(UserDtoLogin userDtoLogin, UserDetails userDetails);
-    void validate(String email, User user);
 }

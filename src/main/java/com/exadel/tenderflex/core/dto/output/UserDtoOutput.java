@@ -1,13 +1,12 @@
 package com.exadel.tenderflex.core.dto.output;
 
-import com.exadel.tenderflex.repository.entity.EUserRole;
-import com.exadel.tenderflex.repository.entity.EUserStatus;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Builder
 @Data

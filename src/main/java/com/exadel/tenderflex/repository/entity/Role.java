@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.repository.entity;
 
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import lombok.*;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GenericGenerator;

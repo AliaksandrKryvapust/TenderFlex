@@ -1,6 +1,6 @@
 package com.exadel.tenderflex.repository.api;
 
-import com.exadel.tenderflex.repository.entity.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import com.exadel.tenderflex.repository.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,9 @@
 package com.exadel.tenderflex.service.validator;
 
 import com.exadel.tenderflex.repository.entity.*;
+import com.exadel.tenderflex.repository.entity.enums.ERolePrivilege;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -180,7 +183,8 @@ class UserValidatorTest {
                 .password(password)
                 .username(username)
                 .roles(new HashSet<>(Collections.singleton(role)))
-                .status(EUserStatus.ACTIVATED).build();
+                .status(EUserStatus.ACTIVATED)
+                .build();
     }
 
     User getPreparedUserOutput() {
@@ -205,6 +209,7 @@ class UserValidatorTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 }

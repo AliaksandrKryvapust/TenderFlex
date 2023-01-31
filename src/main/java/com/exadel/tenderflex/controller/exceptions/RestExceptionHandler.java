@@ -42,7 +42,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.LOCKED);
     }
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({Exception.class, IllegalStateException.class})
     public ResponseEntity<SingleExceptionDto> handleInternalServerError(Exception ex) {
         this.makeLog(ex);
         SingleExceptionDto message = SingleExceptionDto.builder().logref("error")

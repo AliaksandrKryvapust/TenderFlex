@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.exadel.tenderflex.core.Constants.USER_ENTITY_GRAPH;
@@ -13,7 +14,7 @@ import static com.exadel.tenderflex.core.Constants.USER_ENTITY_GRAPH;
 public interface IUserRepository extends JpaRepository<User, UUID> {
     @EntityGraph(value = USER_ENTITY_GRAPH)
     @Transactional(readOnly = true)
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     @Override
     @Transactional

@@ -8,6 +8,9 @@ import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.entity.*;
+import com.exadel.tenderflex.repository.entity.enums.ERolePrivilege;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.service.api.IRoleService;
 import com.exadel.tenderflex.service.validator.api.IUserValidator;
 import org.junit.jupiter.api.Assertions;
@@ -129,7 +132,7 @@ class UserServiceTest {
     void getUser() {
         // preconditions
         final User userOutput = getPreparedUserOutput();
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
 
         //test
         User actual = userService.getUser(email);
@@ -255,7 +258,7 @@ class UserServiceTest {
         // preconditions
         final User userOutput = getPreparedUserOutput();
         final UserDtoOutput userDtoOutput = getPreparedUserDtoOutput();
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         Mockito.when(userMapper.outputMapping(userOutput)).thenReturn(userDtoOutput);
 
         //test
@@ -288,7 +291,8 @@ class UserServiceTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     User getPreparedUserInput() {
@@ -303,20 +307,23 @@ class UserServiceTest {
                 .password(password)
                 .username(username)
                 .roles(new HashSet<>(Collections.singleton(role)))
-                .status(EUserStatus.ACTIVATED).build();
+                .status(EUserStatus.ACTIVATED)
+                .build();
     }
     UserDtoRegistration getPreparedUserDtoRegistration() {
         return UserDtoRegistration.builder()
                 .email(email)
                 .password(password)
                 .username(username)
-                .role(EUserRole.CONTRACTOR).build();
+                .role(EUserRole.CONTRACTOR)
+                .build();
     }
 
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
-                .token(token).build();
+                .token(token)
+                .build();
     }
 
     UserDtoInput getPreparedUserDtoInput() {
@@ -325,7 +332,8 @@ class UserServiceTest {
                 .password(password)
                 .username(username)
                 .role(EUserRole.CONTRACTOR.name())
-                .status(EUserStatus.ACTIVATED.name()).build();
+                .status(EUserStatus.ACTIVATED.name())
+                .build();
     }
 
     UserDtoOutput getPreparedUserDtoOutput() {
@@ -336,7 +344,8 @@ class UserServiceTest {
                 .role(EUserRole.CONTRACTOR)
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     PageDtoOutput<UserDtoOutput> getPreparedPageDtoOutput() {
@@ -348,7 +357,7 @@ class UserServiceTest {
                 .first(true)
                 .numberOfElements(1)
                 .last(true)
-                .content(Collections.singletonList(getPreparedUserDtoOutput()))
+                .content(Collections.singleton(getPreparedUserDtoOutput()))
                 .build();
     }
 

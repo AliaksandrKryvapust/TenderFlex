@@ -6,7 +6,7 @@ import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.cache.CacheStorage;
-import com.exadel.tenderflex.repository.entity.EUserStatus;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.repository.entity.Privilege;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -34,8 +35,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) {
-        User user = userRepository.findByEmail(email);
-        userDetailsValidator.validate(email, user);
+        User user = userRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
         boolean enabled = user.getStatus().equals(EUserStatus.ACTIVATED);
         boolean nonLocked = !user.getStatus().equals(EUserStatus.DEACTIVATED);
         Set<GrantedAuthority> authorityList = new HashSet<>();

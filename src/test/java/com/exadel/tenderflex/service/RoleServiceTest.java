@@ -2,6 +2,9 @@ package com.exadel.tenderflex.service;
 
 import com.exadel.tenderflex.repository.api.IRoleRepository;
 import com.exadel.tenderflex.repository.entity.*;
+import com.exadel.tenderflex.repository.entity.enums.ERolePrivilege;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -61,7 +64,8 @@ class RoleServiceTest {
                 .password(password)
                 .username(username)
                 .roles(new HashSet<>(Collections.singleton(role)))
-                .status(EUserStatus.ACTIVATED).build();
+                .status(EUserStatus.ACTIVATED)
+                .build();
     }
 
     Role getPreparedRoleOutput() {

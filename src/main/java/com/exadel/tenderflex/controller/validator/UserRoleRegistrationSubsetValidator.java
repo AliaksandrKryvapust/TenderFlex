@@ -1,7 +1,7 @@
 package com.exadel.tenderflex.controller.validator;
 
 import com.exadel.tenderflex.controller.validator.api.IUserRoleRegistrationSubset;
-import com.exadel.tenderflex.repository.entity.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

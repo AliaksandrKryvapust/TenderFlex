@@ -7,6 +7,9 @@ import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.cache.CacheStorage;
 import com.exadel.tenderflex.repository.entity.*;
+import com.exadel.tenderflex.repository.entity.enums.ERolePrivilege;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +21,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,18 +56,12 @@ class JwtUserDetailsServiceTest {
     void loadUserByUsername() {
         // preconditions
         final User userOutput = getPreparedUserOutput();
-        when(userRepository.findByEmail(email)).thenReturn(userOutput);
-        ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
 
         //test
         UserDetails actual = jwtUserDetailsService.loadUserByUsername(email);
-        Mockito.verify(userDetailsValidator, Mockito.times(1)).validate(actualEmail.capture(),
-                actualUser.capture());
 
         // assert
-        assertEquals(email, actualEmail.getValue());
-        assertEquals(userOutput, actualUser.getValue());
         assertNotNull(actual);
         assertNotNull(actual.getAuthorities());
         assertEquals(email, actual.getUsername());
@@ -79,28 +72,22 @@ class JwtUserDetailsServiceTest {
     @Test
     void login() {
         // preconditions
-        final User userInput = getPreparedUserOutput();
         final UserDtoLogin dtoInput = getPreparedUserDtoLogin();
         final UserLoginDtoOutput dtoOutput = getPreparedUserLoginDtoOutput();
         final User userOutput = getPreparedUserOutput();
         final UserDetails userDetails = getPreparedUserDetails();
-        when(userRepository.findByEmail(email)).thenReturn(userOutput);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         when(jwtTokenUtil.generateToken(userDetails)).thenReturn(token);
         when(userMapper.loginOutputMapping(userDetails, token)).thenReturn(dtoOutput);
-        ArgumentCaptor<String> actualEmail = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
         ArgumentCaptor<UserDtoLogin> actualUserDtoLogin = ArgumentCaptor.forClass(UserDtoLogin.class);
         ArgumentCaptor<UserDetails> actualUserDetails = ArgumentCaptor.forClass(UserDetails.class);
 
         //test
         UserLoginDtoOutput actual = jwtUserDetailsService.login(dtoInput);
-        Mockito.verify(userDetailsValidator, Mockito.times(1)).validate(actualEmail.capture(),
-                actualUser.capture());
         Mockito.verify(userDetailsValidator, Mockito.times(1)).validateLogin(actualUserDtoLogin.capture(),
                 actualUserDetails.capture());
 
         // assert
-        assertEquals(userInput, actualUser.getValue());
         assertNotNull(actual);
         assertEquals(email, actual.getEmail());
         assertEquals(token, actual.getToken());
@@ -155,19 +142,22 @@ class JwtUserDetailsServiceTest {
                 .roles(new HashSet<>(Collections.singleton(role)))
                 .status(EUserStatus.ACTIVATED)
                 .dtCreate(dtCreate)
-                .dtUpdate(dtUpdate).build();
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     UserDtoLogin getPreparedUserDtoLogin() {
         return UserDtoLogin.builder()
                 .email(email)
-                .password(password).build();
+                .password(password)
+                .build();
     }
 
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
-                .token(token).build();
+                .token(token)
+                .build();
     }
 
     UserDetails getPreparedUserDetails() {
