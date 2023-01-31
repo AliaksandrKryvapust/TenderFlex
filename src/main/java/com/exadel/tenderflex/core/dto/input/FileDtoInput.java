@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
 public class FileDtoInput {
     @NotNull(message = "file type cannot be null")
     @IValidEnum(enumClass = EFileType.class, message = "file type does not match")
-    private final @NonNull String fileType;
+    private final String fileType;
     @NotBlank(message = "content type cannot be empty")
-    private final @NonNull String contentType;
-    @NotBlank(message = "content type cannot be empty")
-    private final @NonNull String fileName;
-    @NotBlank(message = "content type cannot be empty")
-    private final @NonNull String url;
+    private final String contentType;
+    @NotBlank(message = "file name cannot be empty")
+    private final String fileName;
+    @NotBlank(message = "url cannot be empty")
+    private final String url;
 }
