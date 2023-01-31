@@ -28,15 +28,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class AwsS3ServiceTest {
-    // preconditions
-    final URL awsUrl;
-    final String fileName = "e6b8e68f-1457-451f-a4ff-5bb65212c8b6";
     @InjectMocks
     private AwsS3Service awsS3Service;
     @Mock
     private AmazonS3 amazonS3;
     @Mock
     private IAwsS3Validator awsS3Validator;
+
+    // preconditions
+    final URL awsUrl;
+    final String fileName = "e6b8e68f-1457-451f-a4ff-5bb65212c8b6";
 
     {
         try {
