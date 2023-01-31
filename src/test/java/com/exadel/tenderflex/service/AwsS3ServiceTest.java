@@ -1,11 +1,14 @@
 package com.exadel.tenderflex.service;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
+import com.exadel.tenderflex.service.validator.api.IAwsS3Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +34,12 @@ class AwsS3ServiceTest {
     private AwsS3Service awsS3Service;
     @Mock
     private AmazonS3 amazonS3;
+    @Mock
+    private IAwsS3Validator awsS3Validator;
     // preconditions
     final URL awsUrl;
+    final String fileName = "e6b8e68f-1457-451f-a4ff-5bb65212c8b6";
+    final String BUCKET_NAME = "javatests3111222";
 
     {
         try {
@@ -40,13 +49,13 @@ class AwsS3ServiceTest {
         }
     }
 
-
     @Test
     void sendFileToS3() {
         // preconditions
         MockMultipartFile jsonFile = new MockMultipartFile("test.json", "", "application/json",
                 "{\"key1\": \"value1\"}".getBytes());
-        Mockito.when(amazonS3.getUrl(anyString(), anyString())).thenReturn(awsUrl);
+        Mockito.when(amazonS3.generatePresignedUrl(BUCKET_NAME, fileName, generateExpirationTime().getTime(),
+                HttpMethod.GET)).thenReturn(awsUrl);
 
         //test
         AwsS3FileDto actual = awsS3Service.sendFileToS3(jsonFile);
@@ -55,6 +64,24 @@ class AwsS3ServiceTest {
 
         // assert
         assertEquals(awsUrl.toString(), actual.getUrl());
+    }
+
+    @Test
+    void generateUrl() {
+        // preconditions
+        Mockito.when(amazonS3.generatePresignedUrl(BUCKET_NAME, fileName, generateExpirationTime().getTime(),
+                HttpMethod.GET)).thenReturn(awsUrl);
+        ArgumentCaptor<String> actualBucketName = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> actualFileName = ArgumentCaptor.forClass(String.class);
+
+        //test
+        String actual = awsS3Service.generateUrl(fileName);
+        Mockito.verify(awsS3Validator, Mockito.times(1)).validateFileKeyToStorage(BUCKET_NAME, fileName);
+
+        // assert
+        assertEquals(awsUrl.toString(), actual);
+        assertEquals(BUCKET_NAME, actualBucketName.getValue());
+        assertEquals(fileName, actualFileName.getValue());
     }
 
     @Test
@@ -77,4 +104,10 @@ class AwsS3ServiceTest {
         assertEquals(3, actual.size());
     }
 
+    Calendar generateExpirationTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 1); // Expiration time 1 day
+        return calendar;
+    }
 }

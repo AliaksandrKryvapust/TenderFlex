@@ -9,18 +9,17 @@ import com.exadel.tenderflex.service.api.IAwsS3Service;
 import com.exadel.tenderflex.service.validator.api.IAwsS3Validator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
 
+import static com.exadel.tenderflex.core.Constants.BUCKET_NAME;
+
 @Service
 @RequiredArgsConstructor
 public class AwsS3Service implements IAwsS3Service {
-    @Value("${amazon.aws.bucket.name}")
-    private String BUCKET_NAME;
     private final AmazonS3 amazonS3;
     private final IAwsS3Validator awsS3Validator;
 
