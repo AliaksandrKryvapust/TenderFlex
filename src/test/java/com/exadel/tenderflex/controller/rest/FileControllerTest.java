@@ -49,6 +49,7 @@ class FileControllerTest {
     final String contentType = "application/pdf";
     final String fileName = "testFile";
     final String url = "http//localhost:8082";
+    final String multipleError = "structured_error";
 
     @Test
     @WithMockUser(username = "contractor@gmail.com", password = "55ffg89", roles = {"CONTRACTOR"})
@@ -72,6 +73,198 @@ class FileControllerTest {
 
         //test
         Mockito.verify(fileManager).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoEmptyFileType() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType(null)
+                .contentType(contentType)
+                .fileName(fileName)
+                .url(url)
+                .build();
+        final String errorMessage = "file type cannot be null";
+        final String field = "fileType";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoIncorrectFileType() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType("test")
+                .contentType(contentType)
+                .fileName(fileName)
+                .url(url)
+                .build();
+        final String errorMessage = "file type does not match";
+        final String field = "fileType";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoEmptyContentType() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType(EFileType.AWARD_DECISION.name())
+                .contentType(null)
+                .fileName(fileName)
+                .url(url)
+                .build();
+        final String errorMessage = "content type cannot be empty";
+        final String field = "contentType";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoBlankContentType() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType(EFileType.AWARD_DECISION.name())
+                .contentType(" ")
+                .fileName(fileName)
+                .url(url)
+                .build();
+        final String errorMessage = "content type cannot be empty";
+        final String field = "contentType";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoEmptyFileName() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType(EFileType.AWARD_DECISION.name())
+                .contentType(contentType)
+                .fileName(null)
+                .url(url)
+                .build();
+        final String errorMessage = "file name cannot be empty";
+        final String field = "fileName";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoBlankFileName() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType(EFileType.AWARD_DECISION.name())
+                .contentType(contentType)
+                .fileName(" ")
+                .url(url)
+                .build();
+        final String errorMessage = "file name cannot be empty";
+        final String field = "fileName";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoEmptyUrl() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType(EFileType.AWARD_DECISION.name())
+                .contentType(contentType)
+                .fileName(fileName)
+                .url(null)
+                .build();
+        final String errorMessage = "url cannot be empty";
+        final String field = "url";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
+    }
+
+    @Test
+    void validateFileDtoBlankUrl() throws Exception {
+        // preconditions
+        final FileDtoInput dtoInput = FileDtoInput.builder()
+                .fileType(EFileType.AWARD_DECISION.name())
+                .contentType(contentType)
+                .fileName(fileName)
+                .url(" ")
+                .build();
+        final String errorMessage = "url cannot be empty";
+        final String field = "url";
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/file/" + id + "/version/" + dtUpdate.toEpochMilli())
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dtoInput)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.logref").value(multipleError))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].field").value(field))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].message").value(errorMessage));
+
+        //test
+        Mockito.verify(fileManager, Mockito.times(0)).updateDto(dtoInput, id, dtUpdate.toEpochMilli());
     }
 
     FileDtoInput getPreparedFileDtoInput() {
