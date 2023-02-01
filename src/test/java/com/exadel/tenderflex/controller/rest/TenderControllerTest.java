@@ -14,7 +14,9 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -95,7 +97,7 @@ class TenderControllerTest {
     void getPage() throws Exception {
         // preconditions
         final PageDtoOutput<TenderPageDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
-        final Pageable pageable = Pageable.ofSize(1).first();
+        final Pageable pageable = PageRequest.of(0, 1, Sort.by("dtCreate").descending());
         Mockito.when(tenderManager.getDto(pageable)).thenReturn(pageDtoOutput);
 
         // assert
@@ -192,13 +194,14 @@ class TenderControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "contractor@gmail.com", password = "55ffg89", roles = {"CONTRACTOR"})
     void put() throws Exception {
         // preconditions
         final TenderDtoOutput dtoOutput = getPreparedTenderDtoOutput();
         Mockito.when(tenderManager.updateDto(any(String.class), any(Map.class), any(UUID.class), any(Long.class))).thenReturn(dtoOutput);
 
         // assert
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tender/" + id + "/dt_update/" + dtUpdate.toEpochMilli())
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tender/" + id + "/version/" + dtUpdate.toEpochMilli())
                         .param("tender", json).contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))

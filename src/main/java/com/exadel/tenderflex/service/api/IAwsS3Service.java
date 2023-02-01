@@ -9,4 +9,5 @@ import java.util.Map;
 public interface IAwsS3Service {
     AwsS3FileDto sendFileToS3(MultipartFile file);
     Map<EFileType, AwsS3FileDto> generateUrls(Map<EFileType, MultipartFile> fileMap);
+    String generateUrl(String fileName);
 }

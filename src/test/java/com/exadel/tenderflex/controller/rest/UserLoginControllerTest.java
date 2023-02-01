@@ -404,6 +404,7 @@ class UserLoginControllerTest {
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
+                .token(token)
                 .build();
     }
 
