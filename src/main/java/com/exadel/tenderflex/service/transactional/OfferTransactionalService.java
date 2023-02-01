@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class OfferTransactionalService implements IOfferTransactionalService {
@@ -18,10 +16,10 @@ public class OfferTransactionalService implements IOfferTransactionalService {
 
     @Override
     @Transactional
-    public Offer saveTransactional(Offer offer, UUID tenderId) {
+    public Offer saveTransactional(Offer offer) {
         Offer savedEntity = offerRepository.save(offer);
-        if (tenderId != null) {
-            tenderService.addOfferToTender(savedEntity, tenderId);
+        if (offer.getTenderId() != null) {
+            tenderService.addOfferToTender(savedEntity);
         }
         return offer;
     }
