@@ -5,7 +5,7 @@ import com.exadel.tenderflex.core.dto.input.ContactPersonDtoInput;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.*;
@@ -216,7 +216,7 @@ class TenderServiceTest {
         final Tender tenderOutput = getPreparedTenderOutput();
         final Pageable pageable = Pageable.ofSize(1).first();
         final Page<Tender> page = new PageImpl<>(Collections.singletonList(tenderOutput), pageable, 1);
-        final PageDtoOutput<TenderPageDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        final PageDtoOutput<TenderPageForContractorDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
         Authentication authentication = Mockito.mock(Authentication.class);
         Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
@@ -226,12 +226,12 @@ class TenderServiceTest {
         Mockito.when(tenderMapper.outputPageMapping(page)).thenReturn(pageDtoOutput);
 
         //test
-        PageDtoOutput<TenderPageDtoOutput> actual = tenderService.getDto(pageable);
+        PageDtoOutput<TenderPageForContractorDtoOutput> actual = tenderService.getDto(pageable);
 
         // assert
         assertNotNull(actual);
         checkPageDtoOutputFields(actual);
-        for (TenderPageDtoOutput tender : actual.getContent()) {
+        for (TenderPageForContractorDtoOutput tender : actual.getContent()) {
             checkTenderPageDtoOutputFields(tender);
         }
     }
@@ -444,8 +444,8 @@ class TenderServiceTest {
                 .build();
     }
 
-    PageDtoOutput<TenderPageDtoOutput> getPreparedPageDtoOutput() {
-        return PageDtoOutput.<TenderPageDtoOutput>builder()
+    PageDtoOutput<TenderPageForContractorDtoOutput> getPreparedPageDtoOutput() {
+        return PageDtoOutput.<TenderPageForContractorDtoOutput>builder()
                 .number(2)
                 .size(1)
                 .totalPages(1)
@@ -457,8 +457,8 @@ class TenderServiceTest {
                 .build();
     }
 
-    TenderPageDtoOutput getPreparedTenderPageDtoOutput() {
-        return TenderPageDtoOutput.builder()
+    TenderPageForContractorDtoOutput getPreparedTenderPageDtoOutput() {
+        return TenderPageForContractorDtoOutput.builder()
                 .id(id.toString())
                 .user(getPreparedUserLoginDtoOutput())
                 .cpvCode(cpvCode)
@@ -651,7 +651,7 @@ class TenderServiceTest {
         assertEquals(dtUpdate, actual.getRejectDecision().getRejectDecision().getDtUpdate());
     }
 
-    private void checkTenderPageDtoOutputFields(TenderPageDtoOutput actual){
+    private void checkTenderPageDtoOutputFields(TenderPageForContractorDtoOutput actual){
         assertEquals(id.toString(), actual.getId());
         assertEquals(cpvCode, actual.getCpvCode());
         assertEquals(ETenderStatus.IN_PROGRESS.name(), actual.getTenderStatus());
@@ -662,7 +662,7 @@ class TenderServiceTest {
         assertEquals(token, actual.getUser().getToken());
     }
 
-    private void checkPageDtoOutputFields(PageDtoOutput<TenderPageDtoOutput> actual) {
+    private void checkPageDtoOutputFields(PageDtoOutput<TenderPageForContractorDtoOutput> actual) {
         assertEquals(1, actual.getTotalPages());
         Assertions.assertTrue(actual.getFirst());
         Assertions.assertTrue(actual.getLast());

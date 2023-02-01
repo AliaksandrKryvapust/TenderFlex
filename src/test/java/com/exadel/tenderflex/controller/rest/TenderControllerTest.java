@@ -3,7 +3,7 @@ package com.exadel.tenderflex.controller.rest;
 import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.*;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.ITenderManager;
@@ -96,7 +96,7 @@ class TenderControllerTest {
     @WithMockUser(username = "contractor@gmail.com", password = "55ffg89", roles = {"CONTRACTOR"})
     void getPage() throws Exception {
         // preconditions
-        final PageDtoOutput<TenderPageDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        final PageDtoOutput<TenderPageForContractorDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
         final Pageable pageable = PageRequest.of(0, 1, Sort.by("dtCreate").descending());
         Mockito.when(tenderManager.getDto(pageable)).thenReturn(pageDtoOutput);
 
@@ -254,8 +254,8 @@ class TenderControllerTest {
                 .dtUpdate(dtUpdate).build();
     }
 
-    PageDtoOutput<TenderPageDtoOutput> getPreparedPageDtoOutput() {
-        return PageDtoOutput.<TenderPageDtoOutput>builder()
+    PageDtoOutput<TenderPageForContractorDtoOutput> getPreparedPageDtoOutput() {
+        return PageDtoOutput.<TenderPageForContractorDtoOutput>builder()
                 .number(2)
                 .size(1)
                 .totalPages(1)
@@ -267,8 +267,8 @@ class TenderControllerTest {
                 .build();
     }
 
-    TenderPageDtoOutput getPreparedTenderPageDtoOutput() {
-        return TenderPageDtoOutput.builder()
+    TenderPageForContractorDtoOutput getPreparedTenderPageDtoOutput() {
+        return TenderPageForContractorDtoOutput.builder()
                 .id(id)
                 .user(getPreparedUserLoginDtoOutput())
                 .cpvCode(cpvCode)

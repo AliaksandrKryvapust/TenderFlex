@@ -2,7 +2,7 @@ package com.exadel.tenderflex.controller.rest;
 
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
 import com.exadel.tenderflex.service.api.ITenderManager;
 import lombok.NonNull;
@@ -29,8 +29,8 @@ public class TenderController {
     private final ITenderManager tenderManager;
 
     @GetMapping(params = {"page", "size"})
-    protected ResponseEntity<PageDtoOutput<TenderPageDtoOutput>> getPage(@RequestParam("page") int page,
-                                                                         @RequestParam("size") int size) {
+    protected ResponseEntity<PageDtoOutput<TenderPageForContractorDtoOutput>> getPage(@RequestParam("page") int page,
+                                                                                      @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
         return ResponseEntity.ok(tenderManager.getDto(pageable));
     }
