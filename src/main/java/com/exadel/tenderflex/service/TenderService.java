@@ -4,7 +4,7 @@ import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.Offer;
@@ -64,8 +64,8 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
-    public Tender addOfferToTender(Offer offer, UUID tenderId) {
-        Tender currentEntity = get(tenderId);
+    public Tender addOfferToTender(Offer offer) {
+        Tender currentEntity = get(offer.getTenderId());
         updateOffersSet(offer, currentEntity);
         tenderRepository.save(currentEntity);
         return currentEntity;
@@ -83,7 +83,7 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
-    public PageDtoOutput<TenderPageDtoOutput> getDto(Pageable pageable) {
+    public PageDtoOutput<TenderPageForContractorDtoOutput> getDto(Pageable pageable) {
         return tenderMapper.outputPageMapping(get(pageable));
     }
 
