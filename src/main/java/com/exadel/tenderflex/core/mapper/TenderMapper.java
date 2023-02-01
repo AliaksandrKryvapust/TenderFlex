@@ -3,8 +3,9 @@ package com.exadel.tenderflex.core.mapper;
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
+import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -93,12 +94,12 @@ public class TenderMapper {
                 .build();
     }
 
-    public TenderPageDtoOutput tenderPageOutputMapping(Tender tender){
+    public TenderPageForContractorDtoOutput tenderPageOutputMapping(Tender tender){
         UserLoginDtoOutput user = userMapper.registerOutputMapping(tender.getUser());
         if (!tender.getTenderStatus().equals(ETenderStatus.CLOSED)){
             if (tender.getOffers() != null) {
-                Set<OfferDtoOutput> offers = offerMapper.listOutputMapping(tender.getOffers());
-                return TenderPageDtoOutput.builder()
+                Set<OfferPageForContractorDtoOutput> offers = offerMapper.listOutputMapping(tender.getOffers());
+                return TenderPageForContractorDtoOutput.builder()
                         .id(tender.getId().toString())
                         .user(user)
                         .cpvCode(tender.getCpvCode())
@@ -109,7 +110,7 @@ public class TenderMapper {
                         .offersAmount(offers.size())
                         .build();
             } else {
-                return TenderPageDtoOutput.builder()
+                return TenderPageForContractorDtoOutput.builder()
                         .id(tender.getId().toString())
                         .user(user)
                         .cpvCode(tender.getCpvCode())
@@ -120,7 +121,7 @@ public class TenderMapper {
                         .build();
             }
         } else {
-            return TenderPageDtoOutput.builder()
+            return TenderPageForContractorDtoOutput.builder()
                     .id(tender.getId().toString())
                     .user(user)
                     .cpvCode(tender.getCpvCode())
@@ -131,9 +132,9 @@ public class TenderMapper {
         }
     }
 
-    public PageDtoOutput<TenderPageDtoOutput> outputPageMapping(Page<Tender> record){
-        Set<TenderPageDtoOutput> outputs = record.getContent().stream().map(this::tenderPageOutputMapping).collect(Collectors.toSet());
-        return PageDtoOutput.<TenderPageDtoOutput>builder()
+    public PageDtoOutput<TenderPageForContractorDtoOutput> outputPageMapping(Page<Tender> record){
+        Set<TenderPageForContractorDtoOutput> outputs = record.getContent().stream().map(this::tenderPageOutputMapping).collect(Collectors.toSet());
+        return PageDtoOutput.<TenderPageForContractorDtoOutput>builder()
                 .number(record.getNumber() + 1)
                 .size(record.getSize())
                 .totalPages(record.getTotalPages())
