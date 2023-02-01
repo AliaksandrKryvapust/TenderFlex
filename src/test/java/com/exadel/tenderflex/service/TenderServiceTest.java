@@ -180,6 +180,22 @@ class TenderServiceTest {
     }
 
     @Test
+    void addOfferToTender() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Tender tenderOutput = getPreparedTenderOutput();
+        Mockito.when(tenderRepository.findById(id)).thenReturn(Optional.of(tenderOutput));
+
+        //test
+        Tender actual = tenderService.addOfferToTender(offerOutput);
+        Mockito.verify(tenderRepository, Mockito.times(1)).save(any(Tender.class));
+
+        // assert
+        assertNotNull(actual);
+        checkTenderOutputFields(actual);
+    }
+
+    @Test
     void saveDto() {
         // preconditions
         final TenderDtoInput dtoInput = getPreparedTenderDtoInput();
@@ -309,6 +325,8 @@ class TenderServiceTest {
     }
 
     Tender getPreparedTenderOutput() {
+        Set<Offer> offers = new HashSet<>();
+        offers.add(getPreparedOfferOutput());
         return Tender.builder()
                 .id(id)
                 .user(getPreparedUserOutput())
@@ -316,6 +334,7 @@ class TenderServiceTest {
                 .contactPerson(getPreparedContactPerson())
                 .contract(getPreparedContractOutput())
                 .rejectDecision(getPreparedRejectDecisionOutput())
+                .offers(offers)
                 .cpvCode(cpvCode)
                 .tenderType(ETenderType.SUPPLY)
                 .description(description)
@@ -649,6 +668,22 @@ class TenderServiceTest {
         assertEquals(EFileType.AWARD_DECISION.name(), actual.getRejectDecision().getRejectDecision().getFileType());
         assertEquals(dtCreate, actual.getRejectDecision().getRejectDecision().getDtCreate());
         assertEquals(dtUpdate, actual.getRejectDecision().getRejectDecision().getDtUpdate());
+    }
+
+    Offer getPreparedOfferOutput() {
+        return Offer.builder()
+                .id(id)
+                .user(getPreparedUserOutput())
+                .bidder(getPreparedCompanyDetails())
+                .contactPerson(getPreparedContactPerson())
+                .propositionFile(getPreparedFileOutput())
+                .tenderId(id)
+                .bidPrice(maxPrice)
+                .currency(ECurrency.NOK)
+                .offerStatus(EOfferStatus.OFFER_SENT)
+                .dtCreate(dtCreate)
+                .dtUpdate(dtUpdate)
+                .build();
     }
 
     private void checkTenderPageDtoOutputFields(TenderPageForContractorDtoOutput actual){
