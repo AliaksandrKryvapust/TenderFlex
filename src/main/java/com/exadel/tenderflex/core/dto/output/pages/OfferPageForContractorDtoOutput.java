@@ -5,5 +5,6 @@ import lombok.Data;
 
 @Builder
 @Data
-public class OfferPageDtoOutput {
+public class OfferPageForContractorDtoOutput {
+    // TODO
 }
