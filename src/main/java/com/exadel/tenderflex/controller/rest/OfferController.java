@@ -29,26 +29,26 @@ public class OfferController {
     private final IOfferManager offerManager;
 
     @GetMapping(params = {"page", "size"})
-    protected ResponseEntity<PageDtoOutput<OfferPageForBidderDtoOutput>> getPage(@RequestParam("page") int page,
+    public ResponseEntity<PageDtoOutput<OfferPageForBidderDtoOutput>> getPage(@RequestParam("page") int page,
                                                                                  @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
         return ResponseEntity.ok(offerManager.getDto(pageable));
     }
 
     @GetMapping("/{id}")
-    protected ResponseEntity<OfferDtoOutput> get(@PathVariable UUID id) {
+    public ResponseEntity<OfferDtoOutput> get(@PathVariable UUID id) {
         return ResponseEntity.ok(offerManager.getDto(id));
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    protected ResponseEntity<OfferDtoOutput> postWithFile(@RequestParam(value = "offer") String offer,
+    public ResponseEntity<OfferDtoOutput> postWithFile(@RequestParam(value = "offer") String offer,
                                                           @RequestParam(value = "proposal", required = false) MultipartFile proposal) {
         Map<EFileType, MultipartFile> files = collectFiles(proposal);
         return new ResponseEntity<>(this.offerManager.saveDto(offer, files), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}/version/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    protected ResponseEntity<OfferDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
+    public ResponseEntity<OfferDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                  @RequestParam(value = "offer") String offer,
                                                  @RequestParam(value = "proposal", required = false) MultipartFile proposal) {
         Map<EFileType, MultipartFile> files = collectFiles(proposal);

@@ -29,19 +29,19 @@ public class TenderController {
     private final ITenderManager tenderManager;
 
     @GetMapping(params = {"page", "size"})
-    protected ResponseEntity<PageDtoOutput<TenderPageForContractorDtoOutput>> getPage(@RequestParam("page") int page,
+    public ResponseEntity<PageDtoOutput<TenderPageForContractorDtoOutput>> getPage(@RequestParam("page") int page,
                                                                                       @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
         return ResponseEntity.ok(tenderManager.getDto(pageable));
     }
 
     @GetMapping("/{id}")
-    protected ResponseEntity<TenderDtoOutput> get(@PathVariable UUID id) {
+    public ResponseEntity<TenderDtoOutput> get(@PathVariable UUID id) {
         return ResponseEntity.ok(tenderManager.getDto(id));
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    protected ResponseEntity<TenderDtoOutput> postWithFile(@RequestParam(value = "tender") String tender,
+    public ResponseEntity<TenderDtoOutput> postWithFile(@RequestParam(value = "tender") String tender,
                                                            @RequestParam(value = "contract", required = false) MultipartFile contract,
                                                            @RequestParam(value = "award", required = false) MultipartFile award,
                                                            @RequestParam(value = "reject", required = false) MultipartFile reject) {
@@ -50,7 +50,7 @@ public class TenderController {
     }
 
     @PutMapping(path = "/{id}/version/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    protected ResponseEntity<TenderDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
+    public ResponseEntity<TenderDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                   @RequestParam(value = "tender") String tender,
                                                   @RequestParam(value = "contract", required = false) MultipartFile contract,
                                                   @RequestParam(value = "award", required = false) MultipartFile award,
