@@ -25,6 +25,8 @@ public class Offer {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Setter
     private User user;
+    @ManyToOne
+    private Tender tender;
     @Setter
     @Embedded
     private CompanyDetails bidder;
@@ -38,6 +40,8 @@ public class Offer {
     @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
     @Setter
     private File propositionFile;
+    @Column(name = "tender_id", insertable = false, updatable = false)
+    private UUID tenderId;
     @Setter
     private Integer bidPrice;
     @Setter

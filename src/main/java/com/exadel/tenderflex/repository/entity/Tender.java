@@ -34,7 +34,7 @@ public class Tender {
     @OneToOne(mappedBy = "tender")
     @Setter
     private RejectDecision rejectDecision;
-    @OneToMany
+    @OneToMany(mappedBy="tender")
     @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
     @Setter
     private Set<Offer> offers;
