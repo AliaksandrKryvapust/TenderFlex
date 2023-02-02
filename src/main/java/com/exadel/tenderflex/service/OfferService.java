@@ -63,6 +63,11 @@ public class OfferService implements IOfferService, IOfferManager {
     }
 
     @Override
+    public Page<Offer> getForTender(String id, Pageable pageable) {
+        return offerRepository.findAllForTender(id, pageable);
+    }
+
+    @Override
     public PageDtoOutput<OfferPageForBidderDtoOutput> getDto(Pageable pageable) {
         return offerMapper.outputBidderPageMapping(get(pageable));
     }
