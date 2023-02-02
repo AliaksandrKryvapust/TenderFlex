@@ -3,8 +3,10 @@ package com.exadel.tenderflex.service;
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
+import com.exadel.tenderflex.core.mapper.OfferMapper;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.Tender;
@@ -38,6 +40,7 @@ public class TenderService implements ITenderService, ITenderManager {
     private final ITenderTransactionalService tenderTransactionalService;
     private final IAwsS3Service awsS3Service;
     private final IOfferService offerService;
+    private final OfferMapper offerMapper;
 
     @Override
     public Tender save(Tender tender) {
@@ -77,6 +80,11 @@ public class TenderService implements ITenderService, ITenderManager {
     @Override
     public PageDtoOutput<TenderPageForContractorDtoOutput> getDto(Pageable pageable) {
         return tenderMapper.outputPageMapping(get(pageable));
+    }
+
+    @Override
+    public PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForTender(String id, Pageable pageable) {
+        return offerMapper.outputContractorPageMapping(offerService.getForTender(id, pageable));
     }
 
     @Override
