@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.OptimisticLockException;
@@ -22,6 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class TenderValidatorTest {
     @InjectMocks
     private TenderValidator tenderValidator;
+    @Mock
+    private CompanyDetailsValidator companyDetailsValidator;
+    @Mock
+    private ContactPersonValidator contactPersonValidator;
 
     // preconditions
     final String username = "someone";
@@ -130,171 +135,6 @@ class TenderValidatorTest {
 
         //test
         Exception actualException = assertThrows(IllegalStateException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateEmptyOfficialName() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getCompanyDetails().setOfficialName(null);
-
-        final String messageExpected = "Official name is not valid for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateShortOfficialName() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getCompanyDetails().setOfficialName("a");
-
-        final String messageExpected = "Official name should contain from 2 to 50 letters for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateEmptyRegistrationNumber() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getCompanyDetails().setRegistrationNumber(null);
-
-        final String messageExpected = "Registration number is not valid for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateShortRegistrationNumber() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getCompanyDetails().setRegistrationNumber("a");
-
-        final String messageExpected = "Registration number should contain from 2 to 50 letters for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateEmptyCountry() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getCompanyDetails().setCountry(null);
-
-        final String messageExpected = "tender country is not valid for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateEmptyName() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getContactPerson().setName(null);
-
-        final String messageExpected = "Name is not valid for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateShortName() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getContactPerson().setName("a");
-
-        final String messageExpected = "Name should contain from 2 to 50 letters for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateEmptySurname() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getContactPerson().setSurname(null);
-
-        final String messageExpected = "Surname is not valid for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateShortSurname() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getContactPerson().setSurname("a");
-
-        final String messageExpected = "Surname should contain from 2 to 50 letters for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateEmptyPhoneNumber() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getContactPerson().setPhoneNumber(null);
-
-        final String messageExpected = "Phone number is not valid for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
-
-        // assert
-        Assertions.assertEquals(messageExpected, actualException.getMessage());
-    }
-
-    @Test
-    void validateNegativePhoneNumber() {
-        // preconditions
-        final Tender tender = getPreparedTenderInput();
-        tender.getContactPerson().setPhoneNumber(-1L);
-
-        final String messageExpected = "Phone number should be positive for tender:" + tender;
-
-        //test
-        Exception actualException = assertThrows(IllegalArgumentException.class, () -> tenderValidator.validateEntity(tender));
 
         // assert
         Assertions.assertEquals(messageExpected, actualException.getMessage());
