@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface IOfferService extends IService<Offer>, IServiceUpdate<Offer> {
     Page<Offer> getForTender(UUID id, Pageable pageable);
+    Page<Offer> getForContractor(Pageable pageable);
 }

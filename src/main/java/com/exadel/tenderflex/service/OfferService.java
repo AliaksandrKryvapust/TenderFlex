@@ -68,6 +68,12 @@ public class OfferService implements IOfferService, IOfferManager {
     }
 
     @Override
+    public Page<Offer> getForContractor(Pageable pageable) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return offerRepository.findAllForContractor(userDetails.getUsername(), pageable);
+    }
+
+    @Override
     public PageDtoOutput<OfferPageForBidderDtoOutput> getDto(Pageable pageable) {
         return offerMapper.outputBidderPageMapping(get(pageable));
     }
