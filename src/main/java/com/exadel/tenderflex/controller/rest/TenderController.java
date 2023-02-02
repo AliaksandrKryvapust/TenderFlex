@@ -41,7 +41,7 @@ public class TenderController {
         return ResponseEntity.ok(tenderManager.getDto(id));
     }
 
-    @GetMapping("/{id}/offer")
+    @GetMapping(path = "/{id}/offer", params = {"page", "size"})
     public ResponseEntity<PageDtoOutput<OfferPageForContractorDtoOutput>> getPageForTender(@PathVariable UUID id,
                                                                                            @RequestParam("page") int page,
                                                                                            @RequestParam("size") int size) {
@@ -49,11 +49,18 @@ public class TenderController {
         return ResponseEntity.ok(tenderManager.getOfferForTender(id, pageable));
     }
 
+    @GetMapping(path = "/offer", params = {"page", "size"})
+    public ResponseEntity<PageDtoOutput<OfferPageForContractorDtoOutput>> getPageForContractor(@RequestParam("page") int page,
+                                                                                               @RequestParam("size") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
+        return ResponseEntity.ok(tenderManager.getOfferForContractor(pageable));
+    }
+
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TenderDtoOutput> postWithFile(@RequestParam(value = "tender") String tender,
-                                                           @RequestParam(value = "contract", required = false) MultipartFile contract,
-                                                           @RequestParam(value = "award", required = false) MultipartFile award,
-                                                           @RequestParam(value = "reject", required = false) MultipartFile reject) {
+                                                        @RequestParam(value = "contract", required = false) MultipartFile contract,
+                                                        @RequestParam(value = "award", required = false) MultipartFile award,
+                                                        @RequestParam(value = "reject", required = false) MultipartFile reject) {
         Map<EFileType, MultipartFile> files = collectFiles(contract, award, reject);
         return new ResponseEntity<>(this.tenderManager.saveDto(tender, files), HttpStatus.CREATED);
     }
