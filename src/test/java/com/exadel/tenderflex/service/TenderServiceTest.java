@@ -180,22 +180,6 @@ class TenderServiceTest {
     }
 
     @Test
-    void addOfferToTender() {
-        // preconditions
-        final Offer offerOutput = getPreparedOfferOutput();
-        final Tender tenderOutput = getPreparedTenderOutput();
-        Mockito.when(tenderRepository.findById(id)).thenReturn(Optional.of(tenderOutput));
-
-        //test
-        Tender actual = tenderService.addOfferToTender(offerOutput);
-        Mockito.verify(tenderRepository, Mockito.times(1)).save(any(Tender.class));
-
-        // assert
-        assertNotNull(actual);
-        checkTenderOutputFields(actual);
-    }
-
-    @Test
     void saveDto() {
         // preconditions
         final TenderDtoInput dtoInput = getPreparedTenderDtoInput();

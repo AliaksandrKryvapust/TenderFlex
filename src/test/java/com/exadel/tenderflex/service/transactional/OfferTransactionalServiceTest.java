@@ -1,21 +1,20 @@
 package com.exadel.tenderflex.service.transactional;
 
 import com.exadel.tenderflex.repository.api.IOfferRepository;
+import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
-import com.exadel.tenderflex.service.api.ITenderService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,7 +26,7 @@ class OfferTransactionalServiceTest {
     @Mock
     private IOfferRepository offerRepository;
     @Mock
-    private ITenderService tenderService;
+    private ITenderRepository tenderRepository;
 
     // preconditions
     final String username = "someone";
@@ -37,15 +36,20 @@ class OfferTransactionalServiceTest {
     final String email = "contractor@gmail.com";
     final UUID id = UUID.fromString("58c635ab-8bac-4899-bc30-b0bb4524c28b");
     final String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb250cmFjdG9yQGdtYWlsLmNvbSIsImlhdCI6MTY3NDU2Nzk1OCwiZXhwIjoxNjc0NTcxNTU4fQ.nSk39xKnJPOmuci9TLzIzZyya-sTIm9IZIgAINNFRCw";
+    final String cpvCode = "45262420-1 Structural steel erection work for structures";
     final String officialName = "TenderCompany";
     final String registrationNumber = "ULG BE 0325 777 171";
     final String country = "POLAND";
     final String name = "Marek";
     final String surname = "KOWALSKI";
     final Long phoneNumber = 48251173301L;
+    final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    final LocalDate submissionDeadline = LocalDate.parse("04/04/2023", df);
     final String contentType = "application/pdf";
     final String fileName = "testFile";
     final String url = "http//localhost:8082";
+    final String description = "New contract";
+    final Integer minPrice = 10500;
     final Integer maxPrice = 10800;
 
     @Test
@@ -53,15 +57,14 @@ class OfferTransactionalServiceTest {
         // preconditions
         final Offer offerInput = getPreparedOfferInput();
         final Offer offerOutput = getPreparedOfferOutput();
+        final Tender tenderOutput = getPreparedTenderOutput();
         Mockito.when(offerRepository.save(offerInput)).thenReturn(offerOutput);
-        ArgumentCaptor<Offer> actualOffer = ArgumentCaptor.forClass(Offer.class);
+        Mockito.when(tenderRepository.findById(id)).thenReturn(Optional.of(tenderOutput));
 
         //test
         Offer actual = offerTransactionalService.saveTransactional(offerInput);
-        Mockito.verify(tenderService, Mockito.times(1)).addOfferToTender(actualOffer.capture());
 
         // assert
-        assertEquals(offerOutput, actualOffer.getValue());
         assertNotNull(actual);
         checkOfferOutputFields(actual);
     }
@@ -148,9 +151,53 @@ class OfferTransactionalServiceTest {
                 .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
+                .tenderId(id)
                 .build();
     }
 
+    Tender getPreparedTenderOutput() {
+        Set<Offer> offers = new HashSet<>();
+        offers.add(getPreparedOfferOutput());
+        return Tender.builder()
+                .id(id)
+                .user(getPreparedUserOutput())
+                .companyDetails(getPreparedCompanyDetails())
+                .contactPerson(getPreparedContactPerson())
+                .contract(getPreparedContractOutput())
+                .rejectDecision(getPreparedRejectDecisionOutput())
+                .offers(offers)
+                .cpvCode(cpvCode)
+                .tenderType(ETenderType.SUPPLY)
+                .description(description)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .currency(ECurrency.NOK)
+                .tenderStatus(ETenderStatus.IN_PROGRESS)
+                .publication(submissionDeadline)
+                .submissionDeadline(submissionDeadline)
+                .dtCreate(dtCreate)
+                .dtUpdate(dtUpdate)
+                .build();
+    }
+
+    Contract getPreparedContractOutput() {
+        return Contract.builder()
+                .id(id)
+                .contractDeadline(submissionDeadline)
+                .files(Collections.singleton(getPreparedFileOutput()))
+                .dtCreate(dtCreate)
+                .dtUpdate(dtUpdate)
+                .build();
+    }
+
+    RejectDecision getPreparedRejectDecisionOutput() {
+        return RejectDecision.builder()
+                .id(id)
+                .file(getPreparedFileOutput())
+                .dtCreate(dtCreate)
+                .dtUpdate(dtUpdate)
+                .build();
+    }
 
     private void checkOfferOutputFields(Offer actual) {
         assertNotNull(actual.getBidder());
