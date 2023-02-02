@@ -129,7 +129,8 @@ class OfferTransactionalServiceTest {
                 .propositionFile(getPreparedFileOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
-                .offerStatus(EOfferStatus.OFFER_SENT)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .tenderId(id)
                 .build();
     }
@@ -143,7 +144,8 @@ class OfferTransactionalServiceTest {
                 .propositionFile(getPreparedFileOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
-                .offerStatus(EOfferStatus.OFFER_SENT)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
                 .build();
@@ -157,7 +159,7 @@ class OfferTransactionalServiceTest {
         assertEquals(id, actual.getId());
         assertEquals(maxPrice, actual.getBidPrice());
         assertEquals(ECurrency.NOK, actual.getCurrency());
-        assertEquals(EOfferStatus.OFFER_SENT, actual.getOfferStatus());
+        assertEquals(EOfferStatus.OFFER_SENT, actual.getOfferStatusBidder());
         assertEquals(dtCreate, actual.getDtCreate());
         assertEquals(dtUpdate, actual.getDtUpdate());
         assertEquals(officialName, actual.getBidder().getOfficialName());

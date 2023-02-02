@@ -56,7 +56,8 @@ public class OfferMapper {
                     .propositionFile(propositionFile)
                     .bidPrice(dtoInput.getBidPrice())
                     .currency(ECurrency.valueOf(dtoInput.getCurrency()))
-                    .offerStatus(EOfferStatus.OFFER_SENT)
+                    .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                    .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                     .tenderId(UUID.fromString(dtoInput.getTenderId()))
                     .build();
         } else {
@@ -67,7 +68,7 @@ public class OfferMapper {
                     .propositionFile(propositionFile)
                     .bidPrice(dtoInput.getBidPrice())
                     .currency(ECurrency.valueOf(dtoInput.getCurrency()))
-                    .offerStatus(EOfferStatus.OFFER_HAS_NOT_SEND)
+                    .offerStatusBidder(EOfferStatus.OFFER_HAS_NOT_SEND)
                     .build();
         }
     }
@@ -85,7 +86,7 @@ public class OfferMapper {
                 .propositionFile(propositionFile)
                 .bidPrice(offer.getBidPrice())
                 .currency(offer.getCurrency().name())
-                .offerStatus(offer.getOfferStatus().name())
+                .offerStatus(offer.getOfferStatusBidder().name())
                 .dtCreate(offer.getDtCreate())
                 .dtUpdate(offer.getDtUpdate())
                 .build();
@@ -101,7 +102,7 @@ public class OfferMapper {
                 .bidPrice(offer.getBidPrice())
                 .country(offer.getBidder().getCountry().name())
                 .dtCreate(offer.getDtCreate().atZone(ZoneOffset.UTC).toLocalDate())
-                .offerStatus(offer.getOfferStatus().name())
+                .offerStatus(offer.getOfferStatusBidder().name())
                 .build();
     }
 
@@ -142,6 +143,6 @@ public class OfferMapper {
         currentEntity.setPropositionFile(offer.getPropositionFile());
         currentEntity.setBidPrice(offer.getBidPrice());
         currentEntity.setCurrency(offer.getCurrency());
-        currentEntity.setOfferStatus(offer.getOfferStatus());
+        currentEntity.setOfferStatusBidder(offer.getOfferStatusBidder());
     }
 }

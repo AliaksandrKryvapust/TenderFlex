@@ -680,7 +680,8 @@ class TenderServiceTest {
                 .tenderId(id)
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
-                .offerStatus(EOfferStatus.OFFER_SENT)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
                 .build();
