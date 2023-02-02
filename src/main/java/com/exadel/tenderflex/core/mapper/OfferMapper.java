@@ -122,14 +122,31 @@ public class OfferMapper {
     }
 
     public OfferPageForContractorDtoOutput offerForContractorOutputMapping(Offer offer) {
-        UserLoginDtoOutput user = userMapper.registerOutputMapping(offer.getUser());
         return OfferPageForContractorDtoOutput.builder()
-                // TODO
+                .id(offer.getId().toString())
+                .tenderId(offer.getTenderId().toString())
+                .officialName(offer.getBidder().getOfficialName())
+                .fieldFromTenderCpvCode(offer.getTender().getCpvCode().substring(offer.getTender().getCpvCode().indexOf("\n" + 1)))
+                .bidPrice(offer.getBidPrice())
+                .country(offer.getBidder().getCountry().name())
+                .dtCreate(offer.getDtCreate().atZone(ZoneOffset.UTC).toLocalDate())
+                .offerStatus(offer.getOfferStatusBidder().name())
                 .build();
     }
 
-    public Set<OfferPageForContractorDtoOutput> listOutputMapping(Set<Offer> offers) {
-        return offers.stream().map(this::offerForContractorOutputMapping).collect(Collectors.toSet());
+    public PageDtoOutput<OfferPageForContractorDtoOutput> outputContractorPageMapping(Page<Offer> record) {
+        Set<OfferPageForContractorDtoOutput> outputs = record.getContent().stream().map(this::offerForContractorOutputMapping)
+                .collect(Collectors.toSet());
+        return PageDtoOutput.<OfferPageForContractorDtoOutput>builder()
+                .number(record.getNumber() + 1)
+                .size(record.getSize())
+                .totalPages(record.getTotalPages())
+                .totalElements(record.getTotalElements())
+                .first(record.isFirst())
+                .numberOfElements(record.getNumberOfElements())
+                .last(record.isLast())
+                .content(outputs)
+                .build();
     }
 
     public void updateEntityFields(Offer offer, Offer currentEntity) {
