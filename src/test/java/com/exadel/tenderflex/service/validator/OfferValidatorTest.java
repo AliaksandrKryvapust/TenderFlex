@@ -180,6 +180,21 @@ class OfferValidatorTest {
     }
 
     @Test
+    void validateEmptyOfferStatusContractor() {
+        // preconditions
+        final Offer offer = getPreparedOfferInput();
+        offer.setOfferStatusContractor(null);
+
+        final String messageExpected = "offer status contractor is not valid for offer:" + offer;
+
+        //test
+        Exception actualException = assertThrows(IllegalArgumentException.class, () -> offerValidator.validateEntity(offer));
+
+        // assert
+        assertEquals(messageExpected, actualException.getMessage());
+    }
+
+    @Test
     void optimisticLockCheck() {
         // preconditions
         final Offer offer = getPreparedOfferOutput();

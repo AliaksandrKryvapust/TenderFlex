@@ -24,6 +24,7 @@ public class OfferValidator implements IOfferValidator {
         checkBidPrice(offer);
         checkCurrency(offer);
         checkOfferStatus(offer);
+        checkOfferStatusContractor(offer);
     }
 
     @Override
