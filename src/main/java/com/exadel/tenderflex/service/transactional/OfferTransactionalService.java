@@ -21,6 +21,6 @@ public class OfferTransactionalService implements IOfferTransactionalService {
         if (offer.getTenderId() != null) {
             tenderService.addOfferToTender(savedEntity);
         }
-        return offer;
+        return savedEntity;
     }
 }
