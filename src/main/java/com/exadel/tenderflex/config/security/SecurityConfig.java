@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .hasAuthority(ERolePrivilege.CAN_READ_TENDER.name())
                 .antMatchers(HttpMethod.GET,"/api/v1/file/**").hasAuthority(ERolePrivilege.CAN_READ_TENDER.name())
                 .antMatchers(HttpMethod.GET,"/api/v1/tender").hasAuthority(ERolePrivilege.CAN_READ_TENDER.name())
+                .antMatchers(HttpMethod.GET,"/api/v1/tender/**").hasAuthority(ERolePrivilege.CAN_CREATE_AND_PUBLISH_TENDER.name())
                 .antMatchers(HttpMethod.POST,"/api/v1/tender").hasAuthority(ERolePrivilege.CAN_CREATE_AND_PUBLISH_TENDER.name())
                 .antMatchers(HttpMethod.PUT,"/api/v1/tender/**").hasAuthority(ERolePrivilege.CAN_CREATE_AND_PUBLISH_TENDER.name())
                 .antMatchers(HttpMethod.GET,"/api/v1/offer").hasAuthority(ERolePrivilege.CAN_READ_OFFER.name())
