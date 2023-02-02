@@ -1,5 +1,8 @@
 package com.exadel.tenderflex.service;
 
+import com.exadel.tenderflex.core.dto.input.CompanyDetailsDtoInput;
+import com.exadel.tenderflex.core.dto.input.ContactPersonDtoInput;
+import com.exadel.tenderflex.core.dto.input.OfferDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
@@ -30,13 +33,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class OfferServiceTest {
@@ -70,14 +72,9 @@ class OfferServiceTest {
     final String name = "Marek";
     final String surname = "KOWALSKI";
     final Long phoneNumber = 48251173301L;
-    final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    final LocalDate submissionDeadline = LocalDate.parse("04/04/2023", df);
-    final Integer offerAmount = 4;
     final String contentType = "application/pdf";
     final String fileName = "testFile";
     final String url = "http//localhost:8082";
-    final String description = "New contract";
-    final Integer minPrice = 10500;
     final Integer maxPrice = 10800;
     final String json = "{\n" +
             "    \"company_details\": {\n" +
@@ -174,18 +171,112 @@ class OfferServiceTest {
 
     @Test
     void getDto() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
+        final PageDtoOutput<OfferPageForBidderDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(offerRepository.findAllForUser(email, pageable)).thenReturn(page);
+        Mockito.when(offerMapper.outputBidderPageMapping(page)).thenReturn(pageDtoOutput);
+
+        //test
+        PageDtoOutput<OfferPageForBidderDtoOutput> actual = offerService.getDto(pageable);
+
+        // assert
+        assertNotNull(actual);
+        checkPageDtoOutputFields(actual);
+        for (OfferPageForBidderDtoOutput offer : actual.getContent()) {
+            checkOfferPageDtoOutputFields(offer);
+        }
     }
 
     @Test
     void testGetDto() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final OfferDtoOutput offerDtoOutput = getPreparedOfferDtoOutput();
+        Mockito.when(offerRepository.findById(id)).thenReturn(Optional.of(offerOutput));
+        Mockito.when(offerMapper.outputMapping(offerOutput)).thenReturn(offerDtoOutput);
+
+        //test
+        OfferDtoOutput actual = offerService.getDto(id);
+
+        // assert
+        assertNotNull(actual);
+        checkOfferDtoOutputFields(actual);
     }
 
     @Test
     void saveDto() {
+        // preconditions
+        final OfferDtoInput dtoInput = getPreparedOfferDtoInput();
+        final OfferDtoOutput dtoOutput = getPreparedOfferDtoOutput();
+        final Offer offerInput = getPreparedOfferInput();
+        final Offer offerOutput = getPreparedOfferOutput();
+        Mockito.when(offerMapper.extractJson(json)).thenReturn(dtoInput);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(userService.getUser(email)).thenReturn(getPreparedUserOutput());
+        Mockito.when(offerMapper.inputMapping(any(OfferDtoInput.class), any(User.class), any(Map.class), any(Map.class)))
+                .thenReturn(offerInput);
+        Mockito.when(offerTransactionalService.saveTransactional(offerInput)).thenReturn(offerOutput);
+        Mockito.when(offerMapper.outputMapping(offerOutput)).thenReturn(dtoOutput);
+        ArgumentCaptor<Offer> actualOffer = ArgumentCaptor.forClass(Offer.class);
+
+        //test
+        OfferDtoOutput actual = offerService.saveDto(json, new HashMap<>());
+        Mockito.verify(offerValidator, Mockito.times(1)).validateEntity(actualOffer.capture());
+        Mockito.verify(awsS3Service, Mockito.times(1)).generateUrls(any(Map.class));
+
+        // assert
+        assertEquals(offerInput, actualOffer.getValue());
+        assertNotNull(actual);
+        checkOfferDtoOutputFields(actual);
     }
 
     @Test
     void updateDto() {
+        // preconditions
+        final OfferDtoInput dtoInput = getPreparedOfferDtoInput();
+        final OfferDtoOutput dtoOutput = getPreparedOfferDtoOutput();
+        final Offer offerInput = getPreparedOfferInput();
+        final Offer offerOutput = getPreparedOfferOutput();
+        Mockito.when(offerMapper.extractJson(json)).thenReturn(dtoInput);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(userService.getUser(email)).thenReturn(getPreparedUserOutput());
+        Mockito.when(offerMapper.inputMapping(any(OfferDtoInput.class), any(User.class), any(Map.class), any(Map.class)))
+                .thenReturn(offerInput);
+        Mockito.when(offerRepository.findById(id)).thenReturn(Optional.of(offerInput));
+        Mockito.when(offerTransactionalService.saveTransactional(offerInput)).thenReturn(offerOutput);
+        Mockito.when(offerMapper.outputMapping(offerOutput)).thenReturn(dtoOutput);
+        ArgumentCaptor<Offer> actualOffer = ArgumentCaptor.forClass(Offer.class);
+        ArgumentCaptor<Long> actualVersion = ArgumentCaptor.forClass(Long.class);
+
+        //test
+        OfferDtoOutput actual = offerService.updateDto(json, new HashMap<>(), id, dtUpdate.toEpochMilli());
+        Mockito.verify(offerValidator, Mockito.times(1)).validateEntity(actualOffer.capture());
+        Mockito.verify(awsS3Service, Mockito.times(1)).generateUrls(any(Map.class));
+        Mockito.verify(offerValidator, Mockito.times(1)).optimisticLockCheck(actualVersion.capture(),
+                actualOffer.capture());
+        Mockito.verify(offerMapper, Mockito.times(1)).updateEntityFields(actualOffer.capture(),
+                actualOffer.capture());
+
+        // assert
+        assertEquals(offerInput, actualOffer.getValue());
+        assertNotNull(actual);
+        checkOfferDtoOutputFields(actual);
     }
 
     User getPreparedUserOutput() {
@@ -358,6 +449,33 @@ class OfferServiceTest {
                 .dtUpdate(dtUpdate).build();
     }
 
+    CompanyDetailsDtoInput getPreparedCompanyDetailsDtoInput() {
+        return CompanyDetailsDtoInput.builder()
+                .officialName(officialName)
+                .registrationNumber(registrationNumber)
+                .country(country)
+                .build();
+    }
+
+
+    ContactPersonDtoInput getPreparedContactPersonDtoInput() {
+        return ContactPersonDtoInput.builder()
+                .name(name)
+                .surname(surname)
+                .phoneNumber(phoneNumber)
+                .build();
+    }
+
+    OfferDtoInput getPreparedOfferDtoInput() {
+        return OfferDtoInput.builder()
+                .companyDetails(getPreparedCompanyDetailsDtoInput())
+                .contactPerson(getPreparedContactPersonDtoInput())
+                .bidPrice(maxPrice)
+                .currency(ECurrency.NOK.name())
+                .tenderId(id.toString())
+                .build();
+    }
+
     private void checkOfferOutputFields(Offer actual) {
         assertNotNull(actual.getBidder());
         assertNotNull(actual.getContactPerson());
@@ -382,5 +500,53 @@ class OfferServiceTest {
         assertEquals(EFileType.AWARD_DECISION, actual.getPropositionFile().getFileType());
         assertEquals(dtCreate, actual.getPropositionFile().getDtCreate());
         assertEquals(dtUpdate, actual.getPropositionFile().getDtUpdate());
+    }
+
+    private void checkOfferDtoOutputFields(OfferDtoOutput actual) {
+        assertNotNull(actual.getBidder());
+        assertNotNull(actual.getContactPerson());
+        assertNotNull(actual.getPropositionFile());
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(maxPrice, actual.getBidPrice());
+        assertEquals(ECurrency.NOK.name(), actual.getCurrency());
+        assertEquals(EOfferStatus.OFFER_SENT.name(), actual.getOfferStatus());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+        assertEquals(officialName, actual.getBidder().getOfficialName());
+        assertEquals(registrationNumber, actual.getBidder().getRegistrationNumber());
+        assertEquals(ECountry.POLAND.name(), actual.getBidder().getCountry());
+        assertEquals(name, actual.getContactPerson().getName());
+        assertEquals(surname, actual.getContactPerson().getSurname());
+        assertEquals(phoneNumber, actual.getContactPerson().getPhoneNumber());
+        assertEquals(id.toString(), actual.getPropositionFile().getId());
+        assertEquals(fileName, actual.getPropositionFile().getFileName());
+        assertEquals(contentType, actual.getPropositionFile().getContentType());
+        assertEquals(url, actual.getPropositionFile().getUrl());
+        assertEquals(EFileType.PROPOSITION.name(), actual.getPropositionFile().getFileType());
+        assertEquals(dtCreate, actual.getPropositionFile().getDtCreate());
+        assertEquals(dtUpdate, actual.getPropositionFile().getDtUpdate());
+    }
+
+    private void checkOfferPageDtoOutputFields(OfferPageForBidderDtoOutput actual) {
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(cpvCode, actual.getFieldFromTenderCpvCode());
+        assertEquals(EOfferStatus.OFFER_SENT.name(), actual.getOfferStatus());
+        assertEquals(maxPrice, actual.getBidPrice());
+        assertEquals(country, actual.getCountry());
+        assertEquals(dtCreate.atZone(ZoneOffset.UTC).toLocalDate(), actual.getDtCreate());
+        assertEquals(officialName, actual.getOfficialName());
+        assertEquals(email, actual.getUser().getEmail());
+        assertEquals(token, actual.getUser().getToken());
+    }
+
+    private void checkPageDtoOutputFields(PageDtoOutput<OfferPageForBidderDtoOutput> actual) {
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.getFirst());
+        Assertions.assertTrue(actual.getLast());
+        assertEquals(2, actual.getNumber());
+        assertEquals(1, actual.getNumberOfElements());
+        assertEquals(1, actual.getSize());
+        assertEquals(1, actual.getTotalPages());
+        assertEquals(1, actual.getTotalElements());
     }
 }
