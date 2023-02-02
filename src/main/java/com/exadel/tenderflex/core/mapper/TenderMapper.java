@@ -3,7 +3,6 @@ package com.exadel.tenderflex.core.mapper;
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
-import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.*;
@@ -30,7 +29,6 @@ public class TenderMapper {
     private final ContractMapper contractMapper;
     private final RejectDecisionMapper rejectDecisionMapper;
     private final UserMapper userMapper;
-    private final OfferMapper offerMapper;
     private final ObjectMapper objectMapper;
 
     public TenderDtoInput extractJson(String tender) {
@@ -98,7 +96,6 @@ public class TenderMapper {
         UserLoginDtoOutput user = userMapper.registerOutputMapping(tender.getUser());
         if (!tender.getTenderStatus().equals(ETenderStatus.CLOSED)){
             if (tender.getOffers() != null) {
-                Set<OfferPageForContractorDtoOutput> offers = offerMapper.listOutputMapping(tender.getOffers());
                 return TenderPageForContractorDtoOutput.builder()
                         .id(tender.getId().toString())
                         .user(user)
@@ -106,8 +103,7 @@ public class TenderMapper {
                         .officialName(tender.getCompanyDetails().getOfficialName())
                         .tenderStatus(tender.getTenderStatus().name())
                         .submissionDeadline(tender.getSubmissionDeadline())
-                        .offers(offers)
-                        .offersAmount(offers.size())
+                        .offersAmount(tender.getOffers().size())
                         .build();
             } else {
                 return TenderPageForContractorDtoOutput.builder()
