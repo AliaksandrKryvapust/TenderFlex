@@ -1,6 +1,7 @@
 package com.exadel.tenderflex.controller.rest;
 
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
@@ -38,6 +39,14 @@ public class TenderController {
     @GetMapping("/{id}")
     public ResponseEntity<TenderDtoOutput> get(@PathVariable UUID id) {
         return ResponseEntity.ok(tenderManager.getDto(id));
+    }
+
+    @GetMapping("/{id}/offer")
+    public ResponseEntity<PageDtoOutput<OfferPageForContractorDtoOutput>> getPageForTender(@PathVariable String id,
+                                                                                           @RequestParam("page") int page,
+                                                                                           @RequestParam("size") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
+        return ResponseEntity.ok(tenderManager.getOfferForTender(id, pageable));
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
