@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface ITenderManager {
     PageDtoOutput<TenderPageForContractorDtoOutput> getDto(Pageable pageable);
-    PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForTender(String id, Pageable pageable);
+    PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForTender(UUID id, Pageable pageable);
 
     TenderDtoOutput getDto(UUID id);
 

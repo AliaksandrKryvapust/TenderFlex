@@ -14,5 +14,5 @@ public interface IOfferRepository extends JpaRepository<Offer, UUID> {
     Page<Offer> findAllForUser(@Param("email") String email, Pageable pageable);
 
     @Query("select o from Offer o where o.tender.id=:id")
-    Page<Offer> findAllForTender(@Param("id") String id, Pageable pageable);
+    Page<Offer> findAllForTender(@Param("id") UUID id, Pageable pageable);
 }

@@ -126,7 +126,7 @@ public class OfferMapper {
                 .id(offer.getId().toString())
                 .tenderId(offer.getTenderId().toString())
                 .officialName(offer.getBidder().getOfficialName())
-                .fieldFromTenderCpvCode(offer.getTender().getCpvCode().substring(offer.getTender().getCpvCode().indexOf("\n" + 1)))
+                .fieldFromTenderCpvCode(offer.getTender().getCpvCode().substring(offer.getTender().getCpvCode().indexOf("\n")+ 1))
                 .bidPrice(offer.getBidPrice())
                 .country(offer.getBidder().getCountry().name())
                 .dtCreate(offer.getDtCreate().atZone(ZoneOffset.UTC).toLocalDate())

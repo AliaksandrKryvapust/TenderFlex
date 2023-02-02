@@ -63,7 +63,7 @@ public class OfferService implements IOfferService, IOfferManager {
     }
 
     @Override
-    public Page<Offer> getForTender(String id, Pageable pageable) {
+    public Page<Offer> getForTender(UUID id, Pageable pageable) {
         return offerRepository.findAllForTender(id, pageable);
     }
 

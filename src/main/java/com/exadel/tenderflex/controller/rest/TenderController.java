@@ -42,7 +42,7 @@ public class TenderController {
     }
 
     @GetMapping("/{id}/offer")
-    public ResponseEntity<PageDtoOutput<OfferPageForContractorDtoOutput>> getPageForTender(@PathVariable String id,
+    public ResponseEntity<PageDtoOutput<OfferPageForContractorDtoOutput>> getPageForTender(@PathVariable UUID id,
                                                                                            @RequestParam("page") int page,
                                                                                            @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());

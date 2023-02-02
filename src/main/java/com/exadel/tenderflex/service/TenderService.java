@@ -83,7 +83,7 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
-    public PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForTender(String id, Pageable pageable) {
+    public PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForTender(UUID id, Pageable pageable) {
         return offerMapper.outputContractorPageMapping(offerService.getForTender(id, pageable));
     }
 
