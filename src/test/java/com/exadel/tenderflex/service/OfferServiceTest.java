@@ -425,7 +425,6 @@ class OfferServiceTest {
     OfferDtoOutput getPreparedOfferDtoOutput() {
         return OfferDtoOutput.builder()
                 .id(id.toString())
-                .user(getPreparedUserLoginDtoOutput())
                 .bidder(getPreparedCompanyDetailsDtoOutput())
                 .contactPerson(getPreparedContactPersonDtoOutput())
                 .propositionFile(getPreparedFileDtoOutput())
