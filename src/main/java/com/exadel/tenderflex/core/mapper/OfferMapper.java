@@ -84,7 +84,6 @@ public class OfferMapper {
                 .propositionFile(propositionFile)
                 .bidPrice(offer.getBidPrice())
                 .currency(offer.getCurrency().name())
-                .offerStatus(offer.getOfferStatusBidder().name())
                 .dtCreate(offer.getDtCreate())
                 .dtUpdate(offer.getDtUpdate())
                 .build();

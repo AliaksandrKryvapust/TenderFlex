@@ -15,7 +15,6 @@ public class OfferDtoOutput {
     private final @NotNull ContactPersonDtoOutput contactPerson;
     private final @NotNull Integer bidPrice;
     private final @NotNull String currency;
-    private final @NotNull String offerStatus;
     private final @NotNull FileDtoOutput propositionFile;
     private final @NonNull Instant dtCreate;
     private final @NonNull Instant dtUpdate;

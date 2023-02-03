@@ -128,7 +128,6 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bid_price").value(maxPrice))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.offer_status").value(EOfferStatus.OFFER_SENT.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
 
@@ -156,7 +155,6 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bid_price").value(maxPrice))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.offer_status").value(EOfferStatus.OFFER_SENT.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
 
@@ -184,7 +182,6 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bid_price").value(maxPrice))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.offer_status").value(EOfferStatus.OFFER_SENT.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
 
@@ -200,7 +197,6 @@ class OfferControllerTest {
                 .propositionFile(getPreparedFileDtoOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK.name())
-                .offerStatus(EOfferStatus.OFFER_SENT.name())
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
                 .build();
