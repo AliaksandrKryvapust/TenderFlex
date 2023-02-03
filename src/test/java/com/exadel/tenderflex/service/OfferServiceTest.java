@@ -133,6 +133,51 @@ class OfferServiceTest {
     }
 
     @Test
+    void getForTender() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
+        Mockito.when(offerRepository.findAllForTender(id, pageable)).thenReturn(page);
+
+        //test
+        Page<Offer> actual = offerService.getForTender(id, pageable);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.isFirst());
+        for (Offer offer : actual.getContent()) {
+            checkOfferOutputFields(offer);
+        }
+    }
+
+    @Test
+    void getForContractor() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(offerRepository.findAllForContractor(email, pageable)).thenReturn(page);
+
+        //test
+        Page<Offer> actual = offerService.getForContractor(pageable);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.isFirst());
+        for (Offer offer : actual.getContent()) {
+            checkOfferOutputFields(offer);
+        }
+    }
+
+    @Test
     void testGet() {
         // preconditions
         final Offer offerOutput = getPreparedOfferOutput();
