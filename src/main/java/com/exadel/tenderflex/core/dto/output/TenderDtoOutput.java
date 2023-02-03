@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @Data
 public class TenderDtoOutput {
     private final @NotNull String id;
-    private final @NotNull UserLoginDtoOutput user;
     private final @NotNull CompanyDetailsDtoOutput contractor;
     private final @NotNull ContactPersonDtoOutput contactPerson;
     private final @NotNull ContractDtoOutput contract;
@@ -31,7 +30,6 @@ public class TenderDtoOutput {
     private final @NotNull LocalDate publication;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private final @NotNull LocalDate submissionDeadline;
-    private final @NotNull String tenderStatus;
     private final @NonNull Instant dtCreate;
     private final @NonNull Instant dtUpdate;
 }
