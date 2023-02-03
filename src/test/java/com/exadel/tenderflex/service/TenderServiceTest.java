@@ -150,6 +150,28 @@ class TenderServiceTest {
         }
     }
 
+
+    @Test
+    void getAll() {
+        // preconditions
+        final Tender tenderOutput = getPreparedTenderOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Tender> page = new PageImpl<>(Collections.singletonList(tenderOutput), pageable, 1);
+        Mockito.when(tenderRepository.findAll(pageable)).thenReturn(page);
+
+        //test
+        Page<Tender> actual = tenderService.getAll(pageable);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.isFirst());
+        for (Tender tender : actual.getContent()) {
+            checkTenderOutputFields(tender);
+        }
+    }
+
+
     @Test
     void testGet() {
         // preconditions
@@ -244,6 +266,26 @@ class TenderServiceTest {
         }
     }
 
+    @Test
+    void getDtoAll() {
+        // preconditions
+        final Tender tenderOutput = getPreparedTenderOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Tender> page = new PageImpl<>(Collections.singletonList(tenderOutput), pageable, 1);
+        final PageDtoOutput<TenderPageForContractorDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        Mockito.when(tenderRepository.findAll(pageable)).thenReturn(page);
+        Mockito.when(tenderMapper.outputPageMapping(page)).thenReturn(pageDtoOutput);
+
+        //test
+        PageDtoOutput<TenderPageForContractorDtoOutput> actual = tenderService.getDtoAll(pageable);
+
+        // assert
+        assertNotNull(actual);
+        checkPageDtoOutputFields(actual);
+        for (TenderPageForContractorDtoOutput tender : actual.getContent()) {
+            checkTenderPageDtoOutputFields(tender);
+        }
+    }
 
     @Test
     void getOfferForTender() {
