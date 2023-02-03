@@ -4,13 +4,16 @@ import com.exadel.tenderflex.core.dto.input.CompanyDetailsDtoInput;
 import com.exadel.tenderflex.core.dto.input.ContactPersonDtoInput;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
+import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
+import com.exadel.tenderflex.core.mapper.OfferMapper;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
 import com.exadel.tenderflex.service.api.IAwsS3Service;
+import com.exadel.tenderflex.service.api.IOfferService;
 import com.exadel.tenderflex.service.transactional.api.ITenderTransactionalService;
 import com.exadel.tenderflex.service.validator.api.ITenderValidator;
 import org.junit.jupiter.api.Assertions;
@@ -33,6 +36,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -56,6 +60,10 @@ class TenderServiceTest {
     private ITenderTransactionalService tenderTransactionalService;
     @Mock
     private IAwsS3Service awsS3Service;
+    @Mock
+    private IOfferService offerService;
+    @Mock
+    private OfferMapper offerMapper;
 
     // preconditions
     final String username = "someone";
@@ -233,6 +241,54 @@ class TenderServiceTest {
         checkPageDtoOutputFields(actual);
         for (TenderPageForContractorDtoOutput tender : actual.getContent()) {
             checkTenderPageDtoOutputFields(tender);
+        }
+    }
+
+
+    @Test
+    void getOfferForTender() {
+        // preconditions
+        final PageDtoOutput<OfferPageForContractorDtoOutput> pageDtoOutput = getPreparedOfferPageDtoOutput();
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(offerService.getForTender(id, pageable)).thenReturn(page);
+        Mockito.when(offerMapper.outputContractorPageMapping(page)).thenReturn(pageDtoOutput);
+
+        //test
+        PageDtoOutput<OfferPageForContractorDtoOutput> actual = tenderService.getOfferForContractor(pageable);
+
+        // assert
+        assertNotNull(actual);
+        checkOfferPageDtoOutputFields(actual);
+        for (OfferPageForContractorDtoOutput output : actual.getContent()) {
+            checkOfferPageDtoOutputFields(output);
+        }
+    }
+
+    @Test
+    void getOfferForContractor() {
+        // preconditions
+        final PageDtoOutput<OfferPageForContractorDtoOutput> pageDtoOutput = getPreparedOfferPageDtoOutput();
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
+        Mockito.when(offerService.getForContractor(pageable)).thenReturn(page);
+        Mockito.when(offerMapper.outputContractorPageMapping(page)).thenReturn(pageDtoOutput);
+
+        //test
+        PageDtoOutput<OfferPageForContractorDtoOutput> actual = tenderService.getOfferForContractor(pageable);
+
+        // assert
+        assertNotNull(actual);
+        checkOfferPageDtoOutputFields(actual);
+        for (OfferPageForContractorDtoOutput output : actual.getContent()) {
+            checkOfferPageDtoOutputFields(output);
         }
     }
 
@@ -654,6 +710,20 @@ class TenderServiceTest {
         assertEquals(dtUpdate, actual.getRejectDecision().getRejectDecision().getDtUpdate());
     }
 
+    OfferPageForContractorDtoOutput getPreparedOfferDtoOutput() {
+        return OfferPageForContractorDtoOutput.builder()
+                .id(String.valueOf(id))
+                .tenderId(String.valueOf(id))
+                .officialName(officialName)
+                .fieldFromTenderCpvCode(cpvCode)
+                .bidPrice(maxPrice)
+                .country(country)
+                .dtCreate(dtCreate.atZone(ZoneOffset.UTC).toLocalDate())
+                .offerStatus(EOfferStatus.OFFER_RECEIVED.name())
+                .build();
+    }
+
+
     Offer getPreparedOfferOutput() {
         return Offer.builder()
                 .id(id)
@@ -661,7 +731,6 @@ class TenderServiceTest {
                 .bidder(getPreparedCompanyDetails())
                 .contactPerson(getPreparedContactPerson())
                 .propositionFile(getPreparedFileOutput())
-                .tenderId(id)
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
                 .offerStatusBidder(EOfferStatus.OFFER_SENT)
@@ -671,7 +740,20 @@ class TenderServiceTest {
                 .build();
     }
 
-    private void checkTenderPageDtoOutputFields(TenderPageForContractorDtoOutput actual){
+    PageDtoOutput<OfferPageForContractorDtoOutput> getPreparedOfferPageDtoOutput() {
+        return PageDtoOutput.<OfferPageForContractorDtoOutput>builder()
+                .number(2)
+                .size(1)
+                .totalPages(1)
+                .totalElements(1L)
+                .first(true)
+                .numberOfElements(1)
+                .last(true)
+                .content(Collections.singleton(getPreparedOfferDtoOutput()))
+                .build();
+    }
+
+    private void checkTenderPageDtoOutputFields(TenderPageForContractorDtoOutput actual) {
         assertEquals(id.toString(), actual.getId());
         assertEquals(cpvCode, actual.getCpvCode());
         assertEquals(ETenderStatus.IN_PROGRESS.name(), actual.getTenderStatus());
@@ -691,5 +773,28 @@ class TenderServiceTest {
         assertEquals(1, actual.getSize());
         assertEquals(1, actual.getTotalPages());
         assertEquals(1, actual.getTotalElements());
+    }
+
+    private void checkOfferPageDtoOutputFields(PageDtoOutput<OfferPageForContractorDtoOutput> actual) {
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.getFirst());
+        Assertions.assertTrue(actual.getLast());
+        assertEquals(2, actual.getNumber());
+        assertEquals(1, actual.getNumberOfElements());
+        assertEquals(1, actual.getSize());
+        assertEquals(1, actual.getTotalPages());
+        assertEquals(1, actual.getTotalElements());
+    }
+
+    private void checkOfferPageDtoOutputFields(OfferPageForContractorDtoOutput actual) {
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(id.toString(), actual.getTenderId());
+        assertEquals(cpvCode, actual.getFieldFromTenderCpvCode());
+        assertEquals(EOfferStatus.OFFER_RECEIVED.name(), actual.getOfferStatus());
+        assertEquals(maxPrice, actual.getBidPrice());
+        assertEquals(country, actual.getCountry());
+        assertEquals(dtCreate.atZone(ZoneOffset.UTC).toLocalDate(), actual.getDtCreate());
+        assertEquals(officialName, actual.getOfficialName());
+
     }
 }
