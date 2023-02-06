@@ -252,16 +252,11 @@ class TenderServiceTest {
         final Offer offerOutput = getPreparedOfferOutput();
         final Pageable pageable = Pageable.ofSize(1).first();
         final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
-        Authentication authentication = Mockito.mock(Authentication.class);
-        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
         Mockito.when(offerService.getForTender(id, pageable)).thenReturn(page);
         Mockito.when(offerMapper.outputContractorPageMapping(page)).thenReturn(pageDtoOutput);
 
         //test
-        PageDtoOutput<OfferPageForContractorDtoOutput> actual = tenderService.getOfferForContractor(pageable);
+        PageDtoOutput<OfferPageForContractorDtoOutput> actual = tenderService.getOfferForTender(id, pageable);
 
         // assert
         assertNotNull(actual);

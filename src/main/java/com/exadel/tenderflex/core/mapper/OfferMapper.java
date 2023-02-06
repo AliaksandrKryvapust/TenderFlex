@@ -74,19 +74,16 @@ public class OfferMapper {
     }
 
     public OfferDtoOutput outputMapping(Offer offer) {
-        UserLoginDtoOutput user = userMapper.registerOutputMapping(offer.getUser());
         CompanyDetailsDtoOutput companyDetails = companyDetailsMapper.outputMapping(offer.getBidder());
         ContactPersonDtoOutput contactPerson = contactPersonMapper.outputMapping(offer.getContactPerson());
         FileDtoOutput propositionFile = fileMapper.outputMapping(offer.getPropositionFile());
         return OfferDtoOutput.builder()
                 .id(offer.getId().toString())
-                .user(user)
                 .bidder(companyDetails)
                 .contactPerson(contactPerson)
                 .propositionFile(propositionFile)
                 .bidPrice(offer.getBidPrice())
                 .currency(offer.getCurrency().name())
-                .offerStatus(offer.getOfferStatusBidder().name())
                 .dtCreate(offer.getDtCreate())
                 .dtUpdate(offer.getDtUpdate())
                 .build();

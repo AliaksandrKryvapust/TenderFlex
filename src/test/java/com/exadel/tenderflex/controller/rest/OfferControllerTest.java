@@ -120,8 +120,6 @@ class OfferControllerTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/offer/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.email").value(email))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.token").value(token))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.official_name").value(officialName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.registration_number").value(registrationNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.country").value(country))
@@ -130,7 +128,6 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bid_price").value(maxPrice))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.offer_status").value(EOfferStatus.OFFER_SENT.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
 
@@ -150,8 +147,6 @@ class OfferControllerTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.email").value(email))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.token").value(token))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.official_name").value(officialName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.registration_number").value(registrationNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.country").value(country))
@@ -160,7 +155,6 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bid_price").value(maxPrice))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.offer_status").value(EOfferStatus.OFFER_SENT.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
 
@@ -180,8 +174,6 @@ class OfferControllerTest {
                         .param("offer", json).contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.email").value(email))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.user.token").value(token))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.official_name").value(officialName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.registration_number").value(registrationNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.country").value(country))
@@ -190,7 +182,6 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.bid_price").value(maxPrice))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.offer_status").value(EOfferStatus.OFFER_SENT.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
 
@@ -201,13 +192,11 @@ class OfferControllerTest {
     OfferDtoOutput getPreparedOfferDtoOutput() {
         return OfferDtoOutput.builder()
                 .id(id)
-                .user(getPreparedUserLoginDtoOutput())
                 .bidder(getPreparedCompanyDetailsDtoOutput())
                 .contactPerson(getPreparedContactPersonDtoOutput())
                 .propositionFile(getPreparedFileDtoOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK.name())
-                .offerStatus(EOfferStatus.OFFER_SENT.name())
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
                 .build();

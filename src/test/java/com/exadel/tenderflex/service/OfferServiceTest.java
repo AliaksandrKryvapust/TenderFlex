@@ -425,13 +425,11 @@ class OfferServiceTest {
     OfferDtoOutput getPreparedOfferDtoOutput() {
         return OfferDtoOutput.builder()
                 .id(id.toString())
-                .user(getPreparedUserLoginDtoOutput())
                 .bidder(getPreparedCompanyDetailsDtoOutput())
                 .contactPerson(getPreparedContactPersonDtoOutput())
                 .propositionFile(getPreparedFileDtoOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK.name())
-                .offerStatus(EOfferStatus.OFFER_SENT.name())
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
                 .build();
@@ -557,7 +555,6 @@ class OfferServiceTest {
         assertEquals(id.toString(), actual.getId());
         assertEquals(maxPrice, actual.getBidPrice());
         assertEquals(ECurrency.NOK.name(), actual.getCurrency());
-        assertEquals(EOfferStatus.OFFER_SENT.name(), actual.getOfferStatus());
         assertEquals(dtCreate, actual.getDtCreate());
         assertEquals(dtUpdate, actual.getDtUpdate());
         assertEquals(officialName, actual.getBidder().getOfficialName());
