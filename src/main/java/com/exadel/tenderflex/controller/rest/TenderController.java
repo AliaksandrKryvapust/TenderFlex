@@ -36,6 +36,13 @@ public class TenderController {
         return ResponseEntity.ok(tenderManager.getDto(pageable));
     }
 
+    @GetMapping(path = "/all",params = {"page", "size"})
+    public ResponseEntity<PageDtoOutput<TenderPageForContractorDtoOutput>> getPageAll(@RequestParam("page") int page,
+                                                                                   @RequestParam("size") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").ascending());
+        return ResponseEntity.ok(tenderManager.getDtoAll(pageable));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TenderDtoOutput> get(@PathVariable UUID id) {
         return ResponseEntity.ok(tenderManager.getDto(id));

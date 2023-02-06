@@ -54,6 +54,11 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
+    public Page<Tender> getAll(Pageable pageable) {
+        return tenderRepository.findAll(pageable);
+    }
+
+    @Override
     public Tender get(UUID id) {
         return tenderRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
@@ -96,6 +101,11 @@ public class TenderService implements ITenderService, ITenderManager {
     public TenderDtoOutput getDto(UUID id) {
         Tender tender = get(id);
         return tenderMapper.outputMapping(tender);
+    }
+
+    @Override
+    public PageDtoOutput<TenderPageForContractorDtoOutput> getDtoAll(Pageable pageable) {
+        return tenderMapper.outputPageMapping(getAll(pageable));
     }
 
     @Override

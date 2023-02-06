@@ -121,6 +121,30 @@ class TenderControllerTest {
     }
 
     @Test
+    void getPageAll() throws Exception {
+        // preconditions
+        final PageDtoOutput<TenderPageForContractorDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        final Pageable pageable = PageRequest.of(0, 1, Sort.by("dtCreate").ascending());
+        Mockito.when(tenderManager.getDtoAll(pageable)).thenReturn(pageDtoOutput);
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/tender/all").param("page", "0")
+                        .param("size", "1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].offers_amount").value(offerAmount))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].submission_deadline").value(deadline))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].tender_status").value(ETenderStatus.IN_PROGRESS.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].official_name").value(officialName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].cpv_code").value(cpvCode))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.email").value(email))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.token").value(token))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id").value(id));
+
+        //test
+        Mockito.verify(tenderManager).getDtoAll(pageable);
+    }
+
+    @Test
     void getPageForTender() throws Exception {
         // preconditions
         final PageDtoOutput<OfferPageForContractorDtoOutput> pageDtoOutput = getPreparedOfferPageDtoOutput();
@@ -393,5 +417,4 @@ class TenderControllerTest {
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate).build();
     }
-
 }

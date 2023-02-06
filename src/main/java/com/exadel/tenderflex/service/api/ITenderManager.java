@@ -18,6 +18,7 @@ public interface ITenderManager {
     PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForContractor(Pageable pageable);
 
     TenderDtoOutput getDto(UUID id);
+    PageDtoOutput<TenderPageForContractorDtoOutput> getDtoAll(Pageable pageable);
 
     TenderDtoOutput saveDto(String tender, Map<EFileType, MultipartFile> fileMap);
 
