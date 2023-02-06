@@ -1,8 +1,10 @@
 package com.exadel.tenderflex.controller.rest;
 
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
 import com.exadel.tenderflex.service.api.ITenderManager;
@@ -18,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,8 +40,8 @@ public class TenderController {
     }
 
     @GetMapping(path = "/all",params = {"page", "size"})
-    public ResponseEntity<PageDtoOutput<TenderPageForContractorDtoOutput>> getPageAll(@RequestParam("page") int page,
-                                                                                   @RequestParam("size") int size) {
+    public ResponseEntity<PageDtoOutput<TenderPageForBidderDtoOutput>> getPageAll(@RequestParam("page") int page,
+                                                                                  @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").ascending());
         return ResponseEntity.ok(tenderManager.getDtoAll(pageable));
     }
@@ -69,17 +72,22 @@ public class TenderController {
                                                         @RequestParam(value = "award", required = false) MultipartFile award,
                                                         @RequestParam(value = "reject", required = false) MultipartFile reject) {
         Map<EFileType, MultipartFile> files = collectFiles(contract, award, reject);
-        return new ResponseEntity<>(this.tenderManager.saveDto(tender, files), HttpStatus.CREATED);
+        return new ResponseEntity<>(tenderManager.saveDto(tender, files), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}/version/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TenderDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
-                                                  @RequestParam(value = "tender") String tender,
-                                                  @RequestParam(value = "contract", required = false) MultipartFile contract,
-                                                  @RequestParam(value = "award", required = false) MultipartFile award,
-                                                  @RequestParam(value = "reject", required = false) MultipartFile reject) {
+                                               @RequestParam(value = "tender") String tender,
+                                               @RequestParam(value = "contract", required = false) MultipartFile contract,
+                                               @RequestParam(value = "award", required = false) MultipartFile award,
+                                               @RequestParam(value = "reject", required = false) MultipartFile reject) {
         Map<EFileType, MultipartFile> files = collectFiles(contract, award, reject);
-        return ResponseEntity.ok(this.tenderManager.updateDto(tender, files, id, Long.valueOf(version)));
+        return ResponseEntity.ok(tenderManager.updateDto(tender, files, id, Long.valueOf(version)));
+    }
+
+    @PostMapping(path = "/action")
+    public ResponseEntity<TenderDtoOutput> postAction(@RequestBody @Valid ActionDto actionDto) {
+        return new ResponseEntity<>(tenderManager.awardAction(actionDto), HttpStatus.CREATED);
     }
 
     @NonNull

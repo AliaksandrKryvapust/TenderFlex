@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.controller.rest;
 
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.output.OfferDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -49,10 +51,15 @@ public class OfferController {
 
     @PutMapping(path = "/{id}/version/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<OfferDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
-                                                 @RequestParam(value = "offer") String offer,
-                                                 @RequestParam(value = "proposal", required = false) MultipartFile proposal) {
+                                              @RequestParam(value = "offer") String offer,
+                                              @RequestParam(value = "proposal", required = false) MultipartFile proposal) {
         Map<EFileType, MultipartFile> files = collectFiles(proposal);
         return ResponseEntity.ok(this.offerManager.updateDto(offer, files, id, Long.valueOf(version)));
+    }
+
+    @PostMapping(path = "/action")
+    public ResponseEntity<OfferDtoOutput> postAction(@RequestBody @Valid ActionDto actionDto) {
+        return new ResponseEntity<>(offerManager.awardAction(actionDto), HttpStatus.CREATED);
     }
 
     @NonNull

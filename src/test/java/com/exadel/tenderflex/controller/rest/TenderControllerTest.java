@@ -1,13 +1,16 @@
 package com.exadel.tenderflex.controller.rest;
 
 import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.*;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.ITenderManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,8 @@ class TenderControllerTest {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     private ITenderManager tenderManager;
     @MockBean
@@ -123,7 +128,7 @@ class TenderControllerTest {
     @Test
     void getPageAll() throws Exception {
         // preconditions
-        final PageDtoOutput<TenderPageForContractorDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        final PageDtoOutput<TenderPageForBidderDtoOutput> pageDtoOutput = getPreparedBidderPageDtoOutput();
         final Pageable pageable = PageRequest.of(0, 1, Sort.by("dtCreate").ascending());
         Mockito.when(tenderManager.getDtoAll(pageable)).thenReturn(pageDtoOutput);
 
@@ -131,13 +136,11 @@ class TenderControllerTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/tender/all").param("page", "0")
                         .param("size", "1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].offers_amount").value(offerAmount))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].offer_status").value(EOfferStatus.OFFER_HAS_NOT_SEND.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].submission_deadline").value(deadline))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].tender_status").value(ETenderStatus.IN_PROGRESS.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].official_name").value(officialName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].cpv_code").value(cpvCode))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.email").value(email))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.token").value(token))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id").value(id));
 
         //test
@@ -260,6 +263,42 @@ class TenderControllerTest {
 
         //test
         Mockito.verify(tenderManager).saveDto(any(String.class), any(Map.class));
+    }
+
+    @Test
+    @WithMockUser(username = "contractor@gmail.com", password = "55ffg89", roles = {"CONTRACTOR"})
+    void postAction() throws Exception {
+        // preconditions
+        final TenderDtoOutput dtoOutput = getPreparedTenderDtoOutput();
+        final ActionDto actionDto = getPreparedActionDto();
+        Mockito.when(tenderManager.awardAction(any(ActionDto.class))).thenReturn(dtoOutput);
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/tender/action")
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(actionDto)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contractor.official_name").value(officialName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contractor.registration_number").value(registrationNumber))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contractor.country").value(country))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.name").value(name))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.surname").value(surname))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.language").value(ELanguage.ENGLISH.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.procedure").value(EProcedure.OPEN_PROCEDURE.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cpv_code").value(cpvCode))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.tender_type").value(ETenderType.SUPPLY.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(description))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.min_price").value(minPrice))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.max_price").value(maxPrice))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.publication").value(deadline))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.submission_deadline").value(deadline))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
+
+        //test
+        Mockito.verify(tenderManager).awardAction(any(ActionDto.class));
     }
 
     @Test
@@ -416,5 +455,37 @@ class TenderControllerTest {
                 .url(url)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate).build();
+    }
+
+    ActionDto getPreparedActionDto() {
+        return ActionDto.builder()
+                .tender(UUID.fromString(id))
+                .offer(UUID.fromString(id))
+                .award(true)
+                .build();
+    }
+
+    PageDtoOutput<TenderPageForBidderDtoOutput> getPreparedBidderPageDtoOutput() {
+        return PageDtoOutput.<TenderPageForBidderDtoOutput>builder()
+                .number(2)
+                .size(1)
+                .totalPages(1)
+                .totalElements(1L)
+                .first(true)
+                .numberOfElements(1)
+                .last(true)
+                .content(Collections.singleton(getPreparedTenderPageBidderDtoOutput()))
+                .build();
+    }
+
+    TenderPageForBidderDtoOutput getPreparedTenderPageBidderDtoOutput() {
+        return TenderPageForBidderDtoOutput.builder()
+                .id(id.toString())
+                .cpvCode(cpvCode)
+                .officialName(officialName)
+                .tenderStatus(ETenderStatus.IN_PROGRESS.name())
+                .submissionDeadline(submissionDeadline)
+                .offerStatus(EOfferStatus.OFFER_HAS_NOT_SEND.name())
+                .build();
     }
 }

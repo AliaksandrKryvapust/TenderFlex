@@ -1,6 +1,7 @@
 package com.exadel.tenderflex.service;
 
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.input.OfferDtoInput;
 import com.exadel.tenderflex.core.dto.output.OfferDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForBidderDtoOutput;
@@ -10,6 +11,7 @@ import com.exadel.tenderflex.repository.api.IOfferRepository;
 import com.exadel.tenderflex.repository.entity.Offer;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
+import com.exadel.tenderflex.repository.entity.enums.EOfferStatus;
 import com.exadel.tenderflex.service.api.IAwsS3Service;
 import com.exadel.tenderflex.service.api.IOfferManager;
 import com.exadel.tenderflex.service.api.IOfferService;
@@ -24,8 +26,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -74,6 +78,11 @@ public class OfferService implements IOfferService, IOfferManager {
     }
 
     @Override
+    public Set<Offer> findExpiredContractDeadline(LocalDate currentDate, EOfferStatus offerStatus) {
+        return offerRepository.findAllByContract_ContractDeadlineBeforeAndOfferStatusBidder(currentDate, offerStatus);
+    }
+
+    @Override
     public PageDtoOutput<OfferPageForBidderDtoOutput> getDto(Pageable pageable) {
         return offerMapper.outputBidderPageMapping(get(pageable));
     }
@@ -102,6 +111,12 @@ public class OfferService implements IOfferService, IOfferManager {
         Offer entityToSave = offerMapper.inputMapping(dtoInput, currentUser, fileMap, urls);
         offerValidator.validateEntity(entityToSave);
         Offer offer = update(entityToSave, id, version);
+        return offerMapper.outputMapping(offer);
+    }
+
+    @Override
+    public OfferDtoOutput awardAction(ActionDto actionDto) {
+        Offer offer = offerTransactionalService.awardTransactionalAction(actionDto);
         return offerMapper.outputMapping(offer);
     }
 

@@ -1,6 +1,8 @@
 package com.exadel.tenderflex.service.validator;
 
+import com.exadel.tenderflex.repository.entity.Offer;
 import com.exadel.tenderflex.repository.entity.Tender;
+import com.exadel.tenderflex.repository.entity.enums.EOfferStatus;
 import com.exadel.tenderflex.service.validator.api.ICompanyDetailsValidator;
 import com.exadel.tenderflex.service.validator.api.IContactPersonValidator;
 import com.exadel.tenderflex.service.validator.api.ITenderValidator;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.OptimisticLockException;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +42,19 @@ public class TenderValidator implements ITenderValidator {
         Long currentVersion = currentEntity.getDtUpdate().toEpochMilli();
         if (!currentVersion.equals(version)) {
             throw new OptimisticLockException("tender table update failed, version does not match update denied");
+        }
+    }
+
+    @Override
+    public void validateAwardCondition(Offer selectedOffer, Tender currentEntity) {
+        Set<Offer> activeOffers = currentEntity.getOffers().stream()
+                .filter((i)->i.getOfferStatusContractor().equals(EOfferStatus.OFFER_SELECTED))
+                .collect(Collectors.toSet());
+        if (!selectedOffer.getOfferStatusContractor().equals(EOfferStatus.OFFER_RECEIVED) ||
+                !selectedOffer.getOfferStatusBidder().equals(EOfferStatus.OFFER_SENT)) {
+            throw new IllegalArgumentException("The decision have been already made for offer" + selectedOffer);
+        } else if (activeOffers.size()!=0) {
+            throw new IllegalArgumentException("The offer have already been selected" + activeOffers.stream().findFirst());
         }
     }
 

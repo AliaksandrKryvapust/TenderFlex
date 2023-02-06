@@ -1,14 +1,14 @@
 package com.exadel.tenderflex.controller.rest;
 
 import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.repository.entity.enums.ECurrency;
-import com.exadel.tenderflex.repository.entity.enums.EFileType;
-import com.exadel.tenderflex.repository.entity.enums.EOfferStatus;
+import com.exadel.tenderflex.repository.entity.enums.*;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.IOfferManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,8 @@ class OfferControllerTest {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     private IOfferManager offerManager;
     @MockBean
@@ -103,7 +105,7 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].bid_price").value(maxPrice))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].country").value(country))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].dt_create").value(dt_create))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].offer_status").value(EOfferStatus.OFFER_SENT.name()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].active").value(true));
 
         //test
         Mockito.verify(offerManager).getDto(pageable);
@@ -189,6 +191,34 @@ class OfferControllerTest {
         Mockito.verify(offerManager).updateDto(any(String.class), any(Map.class), any(UUID.class), any(Long.class));
     }
 
+    @Test
+    @WithMockUser(username = "bidder@gmail.com", password = "dff45t", roles = {"BIDDER"})
+    void postAction() throws Exception {
+        // preconditions
+        final OfferDtoOutput dtoOutput = getPreparedOfferDtoOutput();
+        final ActionDto actionDto = getPreparedActionDto();
+        Mockito.when(offerManager.awardAction(any(ActionDto.class))).thenReturn(dtoOutput);
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/offer/action")
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(actionDto)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.official_name").value(officialName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.registration_number").value(registrationNumber))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.bidder.country").value(country))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.name").value(name))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.surname").value(surname))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contact_person.phone_number").value(phoneNumber))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.bid_price").value(maxPrice))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.currency").value(ECurrency.NOK.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dt_create").value(dtCreate.toEpochMilli()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.dt_update").value(dtUpdate.toEpochMilli()));
+
+        //test
+        Mockito.verify(offerManager).awardAction(any(ActionDto.class));
+    }
+
     OfferDtoOutput getPreparedOfferDtoOutput() {
         return OfferDtoOutput.builder()
                 .id(id)
@@ -224,7 +254,7 @@ class OfferControllerTest {
                 .bidPrice(maxPrice)
                 .country(country)
                 .dtCreate(dtCreate.atZone(ZoneOffset.UTC).toLocalDate())
-                .offerStatus(EOfferStatus.OFFER_SENT.name())
+                .active(true)
                 .build();
     }
 
@@ -259,5 +289,13 @@ class OfferControllerTest {
                 .url(url)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate).build();
+    }
+
+    ActionDto getPreparedActionDto(){
+        return ActionDto.builder()
+                .tender(UUID.fromString(id))
+                .offer(UUID.fromString(id))
+                .award(true)
+                .build();
     }
 }

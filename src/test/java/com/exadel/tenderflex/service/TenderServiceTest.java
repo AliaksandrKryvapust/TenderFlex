@@ -1,11 +1,13 @@
 package com.exadel.tenderflex.service;
 
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.input.CompanyDetailsDtoInput;
 import com.exadel.tenderflex.core.dto.input.ContactPersonDtoInput;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.mapper.OfferMapper;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
@@ -115,10 +117,25 @@ class TenderServiceTest {
         // preconditions
         final Tender tenderInput = getPreparedTenderInput();
         final Tender tenderOutput = getPreparedTenderOutput();
-        Mockito.when(tenderTransactionalService.saveTransactional(tenderInput)).thenReturn(tenderOutput);
+        Mockito.when(tenderRepository.save(tenderInput)).thenReturn(tenderOutput);
 
         //test
         Tender actual = tenderService.save(tenderInput);
+
+        // assert
+        assertNotNull(actual);
+        checkTenderOutputFields(actual);
+    }
+
+    @Test
+    void saveInTransaction() {
+        // preconditions
+        final Tender tenderInput = getPreparedTenderInput();
+        final Tender tenderOutput = getPreparedTenderOutput();
+        Mockito.when(tenderTransactionalService.saveTransactional(tenderInput)).thenReturn(tenderOutput);
+
+        //test
+        Tender actual = tenderService.saveInTransaction(tenderInput);
 
         // assert
         assertNotNull(actual);
@@ -272,18 +289,18 @@ class TenderServiceTest {
         final Tender tenderOutput = getPreparedTenderOutput();
         final Pageable pageable = Pageable.ofSize(1).first();
         final Page<Tender> page = new PageImpl<>(Collections.singletonList(tenderOutput), pageable, 1);
-        final PageDtoOutput<TenderPageForContractorDtoOutput> pageDtoOutput = getPreparedPageDtoOutput();
+        final PageDtoOutput<TenderPageForBidderDtoOutput> pageDtoOutput = getPreparedBidderPageDtoOutput();
         Mockito.when(tenderRepository.findAll(pageable)).thenReturn(page);
-        Mockito.when(tenderMapper.outputPageMapping(page)).thenReturn(pageDtoOutput);
+        Mockito.when(tenderMapper.outputPageForBidderMapping(page)).thenReturn(pageDtoOutput);
 
         //test
-        PageDtoOutput<TenderPageForContractorDtoOutput> actual = tenderService.getDtoAll(pageable);
+        PageDtoOutput<TenderPageForBidderDtoOutput> actual = tenderService.getDtoAll(pageable);
 
         // assert
         assertNotNull(actual);
-        checkPageDtoOutputFields(actual);
-        for (TenderPageForContractorDtoOutput tender : actual.getContent()) {
-            checkTenderPageDtoOutputFields(tender);
+        checkPageDtoBidderOutputFields(actual);
+        for (TenderPageForBidderDtoOutput tender : actual.getContent()) {
+            checkTenderPageDtoBidderOutputFields(tender);
         }
     }
 
@@ -380,6 +397,44 @@ class TenderServiceTest {
         assertEquals(tenderInput, actualTender.getValue());
         assertNotNull(actual);
         checkTenderDtoOutputFields(actual);
+    }
+
+
+    @Test
+    void awardAction() {
+        // preconditions
+        final ActionDto actionDto = getPreparedActionDto();
+        final Tender tender = getPreparedTenderOutput();
+        final TenderDtoOutput tenderDtoOutput = getPreparedTenderDtoOutput();
+        Mockito.when(tenderTransactionalService.awardTransactionalAction(actionDto)).thenReturn(tender);
+        Mockito.when(tenderMapper.outputMapping(tender)).thenReturn(tenderDtoOutput);
+
+        //test
+        TenderDtoOutput actual = tenderService.awardAction(actionDto);
+
+        // assert
+        assertNotNull(actual);
+        checkTenderDtoOutputFields(actual);
+    }
+
+    @Test
+    void findExpiredSubmissionDeadline() {
+        // preconditions
+        final Tender tenderOutput = getPreparedTenderOutput();
+        final LocalDate localDate = LocalDate.now();
+        final ETenderStatus status = ETenderStatus.IN_PROGRESS;
+        final Set<Tender> offers = new HashSet<>();
+        offers.add(tenderOutput);
+        Mockito.when(tenderRepository.findAllBySubmissionDeadlineBeforeAndTenderStatus(localDate, status))
+                .thenReturn(offers);
+
+        //test
+        Set<Tender> actual = tenderService.findExpiredSubmissionDeadline(localDate, status);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        actual.forEach(this::checkTenderOutputFields);
     }
 
     Tender getPreparedTenderInput() {
@@ -560,6 +615,30 @@ class TenderServiceTest {
                 .tenderStatus(ETenderStatus.IN_PROGRESS.name())
                 .submissionDeadline(submissionDeadline)
                 .offersAmount(offerAmount)
+                .build();
+    }
+
+    PageDtoOutput<TenderPageForBidderDtoOutput> getPreparedBidderPageDtoOutput() {
+        return PageDtoOutput.<TenderPageForBidderDtoOutput>builder()
+                .number(2)
+                .size(1)
+                .totalPages(1)
+                .totalElements(1L)
+                .first(true)
+                .numberOfElements(1)
+                .last(true)
+                .content(Collections.singleton(getPreparedTenderPageBidderDtoOutput()))
+                .build();
+    }
+
+    TenderPageForBidderDtoOutput getPreparedTenderPageBidderDtoOutput() {
+        return TenderPageForBidderDtoOutput.builder()
+                .id(id.toString())
+                .cpvCode(cpvCode)
+                .officialName(officialName)
+                .tenderStatus(ETenderStatus.IN_PROGRESS.name())
+                .submissionDeadline(submissionDeadline)
+                .offerStatus(EOfferStatus.OFFER_HAS_NOT_SEND.name())
                 .build();
     }
 
@@ -787,6 +866,14 @@ class TenderServiceTest {
                 .build();
     }
 
+    ActionDto getPreparedActionDto(){
+        return ActionDto.builder()
+                .tender(id)
+                .offer(id)
+                .award(true)
+                .build();
+    }
+
     private void checkTenderPageDtoOutputFields(TenderPageForContractorDtoOutput actual) {
         assertEquals(id.toString(), actual.getId());
         assertEquals(cpvCode, actual.getCpvCode());
@@ -798,7 +885,27 @@ class TenderServiceTest {
         assertEquals(token, actual.getUser().getToken());
     }
 
+    private void checkTenderPageDtoBidderOutputFields(TenderPageForBidderDtoOutput actual) {
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(cpvCode, actual.getCpvCode());
+        assertEquals(ETenderStatus.IN_PROGRESS.name(), actual.getTenderStatus());
+        assertEquals(submissionDeadline, actual.getSubmissionDeadline());
+        assertEquals(EOfferStatus.OFFER_HAS_NOT_SEND.name(), actual.getOfferStatus());
+        assertEquals(officialName, actual.getOfficialName());
+    }
+
     private void checkPageDtoOutputFields(PageDtoOutput<TenderPageForContractorDtoOutput> actual) {
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.getFirst());
+        Assertions.assertTrue(actual.getLast());
+        assertEquals(2, actual.getNumber());
+        assertEquals(1, actual.getNumberOfElements());
+        assertEquals(1, actual.getSize());
+        assertEquals(1, actual.getTotalPages());
+        assertEquals(1, actual.getTotalElements());
+    }
+
+    private void checkPageDtoBidderOutputFields(PageDtoOutput<TenderPageForBidderDtoOutput> actual) {
         assertEquals(1, actual.getTotalPages());
         Assertions.assertTrue(actual.getFirst());
         Assertions.assertTrue(actual.getLast());
@@ -829,6 +936,5 @@ class TenderServiceTest {
         assertEquals(country, actual.getCountry());
         assertEquals(dtCreate.atZone(ZoneOffset.UTC).toLocalDate(), actual.getDtCreate());
         assertEquals(officialName, actual.getOfficialName());
-
     }
 }

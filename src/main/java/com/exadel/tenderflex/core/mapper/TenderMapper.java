@@ -4,6 +4,7 @@ import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
@@ -13,10 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -128,6 +132,47 @@ public class TenderMapper {
     public PageDtoOutput<TenderPageForContractorDtoOutput> outputPageMapping(Page<Tender> record){
         Set<TenderPageForContractorDtoOutput> outputs = record.getContent().stream().map(this::tenderPageOutputMapping).collect(Collectors.toSet());
         return PageDtoOutput.<TenderPageForContractorDtoOutput>builder()
+                .number(record.getNumber() + 1)
+                .size(record.getSize())
+                .totalPages(record.getTotalPages())
+                .totalElements(record.getTotalElements())
+                .first(record.isFirst())
+                .numberOfElements(record.getNumberOfElements())
+                .last(record.isLast())
+                .content(outputs)
+                .build();
+    }
+
+    public TenderPageForBidderDtoOutput tenderPageBidderOutputMapping(Tender tender){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<Offer> offer = tender.getOffers()
+                .stream().filter((i)-> i.getUser().getEmail().equals(userDetails.getUsername()))
+                .findFirst();
+        if (offer.isPresent()){
+            return TenderPageForBidderDtoOutput.builder()
+                    .id(tender.getId().toString())
+                    .cpvCode(tender.getCpvCode())
+                    .officialName(tender.getCompanyDetails().getOfficialName())
+                    .tenderStatus(tender.getTenderStatus().name())
+                    .submissionDeadline(tender.getSubmissionDeadline())
+                    .offerStatus(offer.get().getOfferStatusBidder().name())
+                    .build();
+        } else {
+            return TenderPageForBidderDtoOutput.builder()
+                    .id(tender.getId().toString())
+                    .cpvCode(tender.getCpvCode())
+                    .officialName(tender.getCompanyDetails().getOfficialName())
+                    .tenderStatus(tender.getTenderStatus().name())
+                    .submissionDeadline(tender.getSubmissionDeadline())
+                    .offerStatus(EOfferStatus.OFFER_HAS_NOT_SEND.name())
+                    .build();
+        }
+    }
+
+    public PageDtoOutput<TenderPageForBidderDtoOutput> outputPageForBidderMapping(Page<Tender> record){
+        Set<TenderPageForBidderDtoOutput> outputs = record.getContent().stream().map(this::tenderPageBidderOutputMapping)
+                .collect(Collectors.toSet());
+        return PageDtoOutput.<TenderPageForBidderDtoOutput>builder()
                 .number(record.getNumber() + 1)
                 .size(record.getSize())
                 .totalPages(record.getTotalPages())

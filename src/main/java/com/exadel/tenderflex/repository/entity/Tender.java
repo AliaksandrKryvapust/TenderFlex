@@ -13,11 +13,17 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.exadel.tenderflex.core.Constants.TENDER_ENTITY_GRAPH;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@NamedEntityGraph(
+        name = TENDER_ENTITY_GRAPH,
+        attributeNodes = @NamedAttributeNode(value = "offers")
+)
 @Table(name = "tenders", schema = "app")
 public class Tender {
     @Id
