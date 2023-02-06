@@ -64,14 +64,12 @@ public class TenderMapper {
     }
 
     public TenderDtoOutput outputMapping(Tender tender) {
-        UserLoginDtoOutput user = userMapper.registerOutputMapping(tender.getUser());
         CompanyDetailsDtoOutput companyDetails = companyDetailsMapper.outputMapping(tender.getCompanyDetails());
         ContactPersonDtoOutput contactPerson = contactPersonMapper.outputMapping(tender.getContactPerson());
         ContractDtoOutput contract = contractMapper.outputMapping(tender.getContract());
         RejectDecisionDtoOutput rejectDecision = rejectDecisionMapper.outputMapping(tender.getRejectDecision());
         return TenderDtoOutput.builder()
                 .id(tender.getId().toString())
-                .user(user)
                 .contractor(companyDetails)
                 .contactPerson(contactPerson)
                 .contract(contract)
@@ -86,7 +84,6 @@ public class TenderMapper {
                 .currency(tender.getCurrency().name())
                 .publication(tender.getPublication())
                 .submissionDeadline(tender.getSubmissionDeadline())
-                .tenderStatus(tender.getTenderStatus().name())
                 .dtCreate(tender.getDtCreate())
                 .dtUpdate(tender.getDtUpdate())
                 .build();

@@ -477,7 +477,6 @@ class TenderServiceTest {
     TenderDtoOutput getPreparedTenderDtoOutput() {
         return TenderDtoOutput.builder()
                 .id(id.toString())
-                .user(getPreparedUserLoginDtoOutput())
                 .contractor(getPreparedCompanyDetailsDtoOutput())
                 .contactPerson(getPreparedContactPersonDtoOutput())
                 .contract(getPreparedContractDtoOutput())
@@ -490,7 +489,6 @@ class TenderServiceTest {
                 .minPrice(minPrice)
                 .maxPrice(maxPrice)
                 .currency(ECurrency.NOK.name())
-                .tenderStatus(ETenderStatus.IN_PROGRESS.name())
                 .publication(submissionDeadline)
                 .submissionDeadline(submissionDeadline)
                 .dtCreate(dtCreate)
@@ -669,7 +667,6 @@ class TenderServiceTest {
         assertEquals(minPrice, actual.getMinPrice());
         assertEquals(maxPrice, actual.getMaxPrice());
         assertEquals(ECurrency.NOK.name(), actual.getCurrency());
-        assertEquals(ETenderStatus.IN_PROGRESS.name(), actual.getTenderStatus());
         assertEquals(submissionDeadline, actual.getPublication());
         assertEquals(submissionDeadline, actual.getSubmissionDeadline());
         assertEquals(dtCreate, actual.getDtCreate());
