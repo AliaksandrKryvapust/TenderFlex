@@ -168,9 +168,24 @@ class OfferValidatorTest {
     void validateEmptyOfferStatus() {
         // preconditions
         final Offer offer = getPreparedOfferInput();
-        offer.setOfferStatus(null);
+        offer.setOfferStatusBidder(null);
 
-        final String messageExpected = "offer status is not valid for offer:" + offer;
+        final String messageExpected = "offer status bidder is not valid for offer:" + offer;
+
+        //test
+        Exception actualException = assertThrows(IllegalArgumentException.class, () -> offerValidator.validateEntity(offer));
+
+        // assert
+        assertEquals(messageExpected, actualException.getMessage());
+    }
+
+    @Test
+    void validateEmptyOfferStatusContractor() {
+        // preconditions
+        final Offer offer = getPreparedOfferInput();
+        offer.setOfferStatusContractor(null);
+
+        final String messageExpected = "offer status contractor is not valid for offer:" + offer;
 
         //test
         Exception actualException = assertThrows(IllegalArgumentException.class, () -> offerValidator.validateEntity(offer));
@@ -258,7 +273,8 @@ class OfferValidatorTest {
                 .propositionFile(getPreparedFileOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
-                .offerStatus(EOfferStatus.OFFER_SENT)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .tenderId(id)
                 .build();
     }
@@ -272,7 +288,8 @@ class OfferValidatorTest {
                 .propositionFile(getPreparedFileOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
-                .offerStatus(EOfferStatus.OFFER_SENT)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
                 .build();

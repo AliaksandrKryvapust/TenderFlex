@@ -9,7 +9,6 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Builder
 @Data
@@ -21,6 +20,5 @@ public class TenderPageForContractorDtoOutput {
     private final @NotNull String tenderStatus;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private final @NotNull LocalDate submissionDeadline;
-    private final @Nullable Set<OfferPageForContractorDtoOutput> offers;
     private final @Nullable Integer offersAmount;
 }

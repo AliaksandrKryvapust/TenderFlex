@@ -56,7 +56,8 @@ public class OfferMapper {
                     .propositionFile(propositionFile)
                     .bidPrice(dtoInput.getBidPrice())
                     .currency(ECurrency.valueOf(dtoInput.getCurrency()))
-                    .offerStatus(EOfferStatus.OFFER_SENT)
+                    .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                    .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                     .tenderId(UUID.fromString(dtoInput.getTenderId()))
                     .build();
         } else {
@@ -67,7 +68,7 @@ public class OfferMapper {
                     .propositionFile(propositionFile)
                     .bidPrice(dtoInput.getBidPrice())
                     .currency(ECurrency.valueOf(dtoInput.getCurrency()))
-                    .offerStatus(EOfferStatus.OFFER_HAS_NOT_SEND)
+                    .offerStatusBidder(EOfferStatus.OFFER_HAS_NOT_SEND)
                     .build();
         }
     }
@@ -85,7 +86,7 @@ public class OfferMapper {
                 .propositionFile(propositionFile)
                 .bidPrice(offer.getBidPrice())
                 .currency(offer.getCurrency().name())
-                .offerStatus(offer.getOfferStatus().name())
+                .offerStatus(offer.getOfferStatusBidder().name())
                 .dtCreate(offer.getDtCreate())
                 .dtUpdate(offer.getDtUpdate())
                 .build();
@@ -101,7 +102,7 @@ public class OfferMapper {
                 .bidPrice(offer.getBidPrice())
                 .country(offer.getBidder().getCountry().name())
                 .dtCreate(offer.getDtCreate().atZone(ZoneOffset.UTC).toLocalDate())
-                .offerStatus(offer.getOfferStatus().name())
+                .offerStatus(offer.getOfferStatusBidder().name())
                 .build();
     }
 
@@ -121,14 +122,31 @@ public class OfferMapper {
     }
 
     public OfferPageForContractorDtoOutput offerForContractorOutputMapping(Offer offer) {
-        UserLoginDtoOutput user = userMapper.registerOutputMapping(offer.getUser());
         return OfferPageForContractorDtoOutput.builder()
-                // TODO
+                .id(offer.getId().toString())
+                .tenderId(offer.getTenderId().toString())
+                .officialName(offer.getBidder().getOfficialName())
+                .fieldFromTenderCpvCode(offer.getTender().getCpvCode().substring(offer.getTender().getCpvCode().indexOf("\n")+ 1))
+                .bidPrice(offer.getBidPrice())
+                .country(offer.getBidder().getCountry().name())
+                .dtCreate(offer.getDtCreate().atZone(ZoneOffset.UTC).toLocalDate())
+                .offerStatus(offer.getOfferStatusBidder().name())
                 .build();
     }
 
-    public Set<OfferPageForContractorDtoOutput> listOutputMapping(Set<Offer> offers) {
-        return offers.stream().map(this::offerForContractorOutputMapping).collect(Collectors.toSet());
+    public PageDtoOutput<OfferPageForContractorDtoOutput> outputContractorPageMapping(Page<Offer> record) {
+        Set<OfferPageForContractorDtoOutput> outputs = record.getContent().stream().map(this::offerForContractorOutputMapping)
+                .collect(Collectors.toSet());
+        return PageDtoOutput.<OfferPageForContractorDtoOutput>builder()
+                .number(record.getNumber() + 1)
+                .size(record.getSize())
+                .totalPages(record.getTotalPages())
+                .totalElements(record.getTotalElements())
+                .first(record.isFirst())
+                .numberOfElements(record.getNumberOfElements())
+                .last(record.isLast())
+                .content(outputs)
+                .build();
     }
 
     public void updateEntityFields(Offer offer, Offer currentEntity) {
@@ -142,6 +160,6 @@ public class OfferMapper {
         currentEntity.setPropositionFile(offer.getPropositionFile());
         currentEntity.setBidPrice(offer.getBidPrice());
         currentEntity.setCurrency(offer.getCurrency());
-        currentEntity.setOfferStatus(offer.getOfferStatus());
+        currentEntity.setOfferStatusBidder(offer.getOfferStatusBidder());
     }
 }
