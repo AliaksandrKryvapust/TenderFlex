@@ -4,9 +4,10 @@ import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.core.dto.output.pages.TenderPageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
+import com.exadel.tenderflex.repository.entity.Offer;
 import com.exadel.tenderflex.repository.entity.Tender;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
@@ -23,9 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +61,14 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
+    public Tender addOfferToTender(Offer offer) {
+        Tender currentEntity = get(offer.getTenderId());
+        updateOffersSet(offer, currentEntity);
+        tenderRepository.save(currentEntity);
+        return currentEntity;
+    }
+
+    @Override
     public TenderDtoOutput saveDto(String tenderJson, Map<EFileType, MultipartFile> files) {
         TenderDtoInput dtoInput = tenderMapper.extractJson(tenderJson);
         Map<EFileType, AwsS3FileDto> urls = awsS3Service.generateUrls(files);
@@ -73,7 +80,7 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
-    public PageDtoOutput<TenderPageDtoOutput> getDto(Pageable pageable) {
+    public PageDtoOutput<TenderPageForContractorDtoOutput> getDto(Pageable pageable) {
         return tenderMapper.outputPageMapping(get(pageable));
     }
 
@@ -97,5 +104,11 @@ public class TenderService implements ITenderService, ITenderManager {
     private User getUserFromSecurityContext() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userService.getUser(userDetails.getUsername());
+    }
+
+    private void updateOffersSet(Offer offer, Tender currentEntity) {
+        Set<Offer> offers = currentEntity.getOffers();
+        offers.add(offer);
+        currentEntity.setOffers(offers);
     }
 }

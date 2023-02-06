@@ -25,24 +25,24 @@ public class UserAdminController {
     }
 
     @GetMapping(params = {"page", "size"})
-    protected ResponseEntity<PageDtoOutput<UserDtoOutput>> getPage(@RequestParam("page") int page,
+    public ResponseEntity<PageDtoOutput<UserDtoOutput>> getPage(@RequestParam("page") int page,
                                                     @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(userManager.getDto(pageable));
     }
 
     @GetMapping("/{id}")
-    protected ResponseEntity<UserDtoOutput> get(@PathVariable UUID id) {
+    public ResponseEntity<UserDtoOutput> get(@PathVariable UUID id) {
         return ResponseEntity.ok(userManager.getDto(id));
     }
 
     @PostMapping
-    protected ResponseEntity<UserDtoOutput> post(@RequestBody @Valid UserDtoInput dtoInput) {
+    public ResponseEntity<UserDtoOutput> post(@RequestBody @Valid UserDtoInput dtoInput) {
         return new ResponseEntity<>(this.userManager.saveDto(dtoInput), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/dt_update/{version}")
-    protected ResponseEntity<UserDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
+    public ResponseEntity<UserDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                 @Valid @RequestBody UserDtoInput dtoInput) {
         return ResponseEntity.ok(this.userManager.updateDto(dtoInput, id, Long.valueOf(version)));
     }

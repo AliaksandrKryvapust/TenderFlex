@@ -19,7 +19,7 @@ public class FileController {
     private final IFileManager fileManager;
 
     @PutMapping("/{id}/version/{version}")
-    protected ResponseEntity<FileDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
+    public ResponseEntity<FileDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                 @Valid @RequestBody FileDtoInput dtoInput) {
         return ResponseEntity.ok(this.fileManager.updateDto(dtoInput, id, Long.valueOf(version)));
     }

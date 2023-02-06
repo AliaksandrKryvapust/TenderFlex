@@ -21,15 +21,28 @@ public class Offer {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    @OneToOne(mappedBy = "offer")
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Setter
-    private Contract contract;
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "tender_id", insertable = false, updatable = false)
+    private Tender tender;
     @Setter
     @Embedded
     private CompanyDetails bidder;
     @Setter
     @Embedded
     private ContactPerson contactPerson;
+    @OneToOne(mappedBy = "offer")
+    @Setter
+    private Contract contract;
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
+    @Setter
+    private File propositionFile;
+    @Column(name = "tender_id", insertable = false, updatable = false)
+    private UUID tenderId;
     @Setter
     private Integer bidPrice;
     @Setter
@@ -38,10 +51,6 @@ public class Offer {
     @Setter
     @Enumerated(EnumType.STRING)
     private EOfferStatus offerStatus;
-    @OneToOne
-    @JoinColumn(name = "file_id", referencedColumnName = "id", nullable = false)
-    @Setter
-    private File propositionFile;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version
@@ -67,26 +76,27 @@ public class Offer {
 
         Offer offer = (Offer) o;
 
-        if (!getId().equals(offer.getId())) return false;
+        if (getId() != null ? !getId().equals(offer.getId()) : offer.getId() != null) return false;
         if (!getBidder().equals(offer.getBidder())) return false;
         if (!getContactPerson().equals(offer.getContactPerson())) return false;
         if (!getBidPrice().equals(offer.getBidPrice())) return false;
         if (getCurrency() != offer.getCurrency()) return false;
         if (getOfferStatus() != offer.getOfferStatus()) return false;
-        if (!getDtCreate().equals(offer.getDtCreate())) return false;
-        return getDtUpdate().equals(offer.getDtUpdate());
+        if (getDtCreate() != null ? !getDtCreate().equals(offer.getDtCreate()) : offer.getDtCreate() != null)
+            return false;
+        return getDtUpdate() != null ? getDtUpdate().equals(offer.getDtUpdate()) : offer.getDtUpdate() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getId().hashCode();
+        int result = getId() != null ? getId().hashCode() : 0;
         result = 31 * result + getBidder().hashCode();
         result = 31 * result + getContactPerson().hashCode();
         result = 31 * result + getBidPrice().hashCode();
         result = 31 * result + getCurrency().hashCode();
         result = 31 * result + getOfferStatus().hashCode();
-        result = 31 * result + getDtCreate().hashCode();
-        result = 31 * result + getDtUpdate().hashCode();
+        result = 31 * result + (getDtCreate() != null ? getDtCreate().hashCode() : 0);
+        result = 31 * result + (getDtUpdate() != null ? getDtUpdate().hashCode() : 0);
         return result;
     }
 }

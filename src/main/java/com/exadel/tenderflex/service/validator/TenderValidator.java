@@ -1,7 +1,10 @@
 package com.exadel.tenderflex.service.validator;
 
 import com.exadel.tenderflex.repository.entity.Tender;
+import com.exadel.tenderflex.service.validator.api.ICompanyDetailsValidator;
+import com.exadel.tenderflex.service.validator.api.IContactPersonValidator;
 import com.exadel.tenderflex.service.validator.api.ITenderValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.OptimisticLockException;
@@ -9,26 +12,25 @@ import java.time.Clock;
 import java.time.LocalDate;
 
 @Component
+@RequiredArgsConstructor
 public class TenderValidator implements ITenderValidator {
+    private final ICompanyDetailsValidator companyDetailsValidator;
+    private final IContactPersonValidator contactPersonValidator;
+
     @Override
     public void validateEntity(Tender tender) {
-    checkAuxiliaryFields(tender);
-    checkMandatoryFields(tender);
-    checkOfficialName(tender);
-    checkRegistrationNumber(tender);
-    checkCountry(tender);
-    checkTown(tender);
-    checkName(tender);
-    checkSurname(tender);
-    checkPhoneNumber(tender);
-    checkCpvCode(tender);
-    checkTenderType(tender);
-    checkDescription(tender);
-    checkMinPrice(tender);
-    checkMaxPrice(tender);
-    checkCurrency(tender);
-    checkPublicationDate(tender);
-    checkDeadlineDate(tender);
+        checkAuxiliaryFields(tender);
+        checkMandatoryFields(tender);
+        companyDetailsValidator.validateEntity(tender.getCompanyDetails());
+        contactPersonValidator.validateEntity(tender.getContactPerson());
+        checkCpvCode(tender);
+        checkTenderType(tender);
+        checkDescription(tender);
+        checkMinPrice(tender);
+        checkMaxPrice(tender);
+        checkCurrency(tender);
+        checkPublicationDate(tender);
+        checkDeadlineDate(tender);
     }
 
     @Override
@@ -66,75 +68,6 @@ public class TenderValidator implements ITenderValidator {
         }
         if (tender.getRejectDecision() == null) {
             throw new IllegalStateException("Reject decision should not be empty for tender: " + tender);
-        }
-    }
-
-    private void checkOfficialName(Tender tender) {
-        if (tender.getCompanyDetails().getOfficialName() == null || tender.getCompanyDetails().getOfficialName().isBlank()) {
-            throw new IllegalArgumentException("Official name is not valid for tender:" + tender);
-        } else {
-            char[] chars = tender.getCompanyDetails().getOfficialName().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("Official name should contain from 2 to 50 letters for tender:" + tender);
-            }
-        }
-    }
-
-    private void checkRegistrationNumber(Tender tender) {
-        if (tender.getCompanyDetails().getRegistrationNumber() == null || tender.getCompanyDetails().getRegistrationNumber().isBlank()) {
-            throw new IllegalArgumentException("Registration number is not valid for tender:" + tender);
-        } else {
-            char[] chars = tender.getCompanyDetails().getRegistrationNumber().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("Registration number should contain from 2 to 50 letters for tender:" + tender);
-            }
-        }
-    }
-
-    private void checkCountry(Tender tender) {
-        if (tender.getCompanyDetails().getCountry() == null) {
-            throw new IllegalArgumentException("tender country is not valid for tender:" + tender);
-        }
-    }
-
-    private void checkTown(Tender tender) {
-        if (tender.getCompanyDetails().getTown() != null) {
-            char[] chars = tender.getCompanyDetails().getTown().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("Town should contain from 2 to 50 letters for tender:" + tender);
-            }
-        }
-    }
-
-    private void checkName(Tender tender) {
-        if (tender.getContactPerson().getName() == null || tender.getContactPerson().getName().isBlank()) {
-            throw new IllegalArgumentException("Name is not valid for tender:" + tender);
-        } else {
-            char[] chars = tender.getContactPerson().getName().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("Name should contain from 2 to 50 letters for tender:" + tender);
-            }
-        }
-    }
-
-    private void checkSurname(Tender tender) {
-        if (tender.getContactPerson().getSurname() == null || tender.getContactPerson().getSurname().isBlank()) {
-            throw new IllegalArgumentException("Surname is not valid for tender:" + tender);
-        } else {
-            char[] chars = tender.getContactPerson().getSurname().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("Surname should contain from 2 to 50 letters for tender:" + tender);
-            }
-        }
-    }
-
-    private void checkPhoneNumber(Tender tender) {
-        if (tender.getContactPerson().getPhoneNumber() == null) {
-            throw new IllegalArgumentException("Phone number is not valid for tender:" + tender);
-        } else {
-            if (tender.getContactPerson().getPhoneNumber()<=0) {
-                throw new IllegalArgumentException("Phone number should be positive for tender:" + tender);
-            }
         }
     }
 

@@ -47,9 +47,13 @@ public class AwsS3Service implements IAwsS3Service {
     @Override
     public Map<EFileType, AwsS3FileDto> generateUrls(Map<EFileType, MultipartFile> fileMap) {
         Map<EFileType, AwsS3FileDto> urls = new HashMap<>();
-        addUrl(fileMap, EFileType.CONTRACT, urls);
-        addUrl(fileMap, EFileType.AWARD_DECISION, urls);
-        addUrl(fileMap, EFileType.REJECT_DECISION, urls);
+        if (fileMap.get(EFileType.PROPOSITION)!=null){
+            addUrl(fileMap, EFileType.PROPOSITION, urls);
+        } else {
+            addUrl(fileMap, EFileType.CONTRACT, urls);
+            addUrl(fileMap, EFileType.AWARD_DECISION, urls);
+            addUrl(fileMap, EFileType.REJECT_DECISION, urls);
+        }
         return urls;
     }
 

@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS app.offers
 (
     id                  uuid                        NOT NULL,
     user_id             uuid                        NOT NULL REFERENCES app.users (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    tender_id           uuid                        NOT NULL REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    tender_id           uuid                        REFERENCES app.tenders (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
     reject_decision_id  uuid,
     offer_status        character varying           NOT NULL,
     official_name       character varying(50)       NOT NULL,

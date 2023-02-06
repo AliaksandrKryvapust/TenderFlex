@@ -24,8 +24,6 @@ public class Tender {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private UUID userId;
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Setter
@@ -37,7 +35,7 @@ public class Tender {
     @Setter
     private RejectDecision rejectDecision;
     @OneToMany
-    @JoinColumn(name = "tender_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "tender_id", referencedColumnName = "id")
     @Setter
     private Set<Offer> offers;
     @Setter

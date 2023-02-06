@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 @RestController
 @Validated
 @RequiredArgsConstructor
@@ -28,26 +26,26 @@ public class UserLoginController {
     private final JwtUserDetailsService userDetailsService;
 
     @GetMapping
-    protected ResponseEntity<UserDtoOutput> getCurrentUser() {
+    public ResponseEntity<UserDtoOutput> getCurrentUser() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         return ResponseEntity.ok(this.userManager.getUserDto(username));
     }
 
     @GetMapping("/logout")
-    protected ResponseEntity<Object> logout(HttpServletRequest request) {
+    public ResponseEntity<Object> logout(HttpServletRequest request) {
         userDetailsService.logout(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    protected ResponseEntity<UserLoginDtoOutput> login(@RequestBody @Valid UserDtoLogin dtoLogin) {
+    public ResponseEntity<UserLoginDtoOutput> login(@RequestBody @Valid UserDtoLogin dtoLogin) {
         UserLoginDtoOutput userLoginDtoOutput = userDetailsService.login(dtoLogin);
         return ResponseEntity.ok(userLoginDtoOutput);
     }
 
     @PostMapping("/registration")
-    protected ResponseEntity<UserLoginDtoOutput> registration(@RequestBody @Valid UserDtoRegistration dtoInput) {
+    public ResponseEntity<UserLoginDtoOutput> registration(@RequestBody @Valid UserDtoRegistration dtoInput) {
         UserLoginDtoOutput userLoginDtoOutput = this.userManager.saveUser(dtoInput);
         return new ResponseEntity<>(userLoginDtoOutput, HttpStatus.CREATED);
     }

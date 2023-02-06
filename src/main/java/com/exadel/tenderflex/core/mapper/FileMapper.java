@@ -3,10 +3,8 @@ package com.exadel.tenderflex.core.mapper;
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
 import com.exadel.tenderflex.core.dto.input.FileDtoInput;
 import com.exadel.tenderflex.core.dto.output.FileDtoOutput;
-import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.repository.entity.File;
-import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -63,6 +61,17 @@ public class FileMapper {
                 .fileName(fileReject.getOriginalFilename())
                 .url(urls.get(EFileType.REJECT_DECISION).getUrl())
                 .fileKey(urls.get(EFileType.REJECT_DECISION).getFileKey())
+                .build();
+    }
+
+    public File inputPropositionMapping(Map<EFileType, MultipartFile> dtoInput, Map<EFileType, AwsS3FileDto> urls) {
+        MultipartFile fileReject = dtoInput.get(EFileType.PROPOSITION);
+        return File.builder()
+                .contentType(fileReject.getContentType())
+                .fileType(EFileType.PROPOSITION)
+                .fileName(fileReject.getOriginalFilename())
+                .url(urls.get(EFileType.PROPOSITION).getUrl())
+                .fileKey(urls.get(EFileType.PROPOSITION).getFileKey())
                 .build();
     }
 
