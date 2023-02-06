@@ -133,6 +133,51 @@ class OfferServiceTest {
     }
 
     @Test
+    void getForTender() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
+        Mockito.when(offerRepository.findAllForTender(id, pageable)).thenReturn(page);
+
+        //test
+        Page<Offer> actual = offerService.getForTender(id, pageable);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.isFirst());
+        for (Offer offer : actual.getContent()) {
+            checkOfferOutputFields(offer);
+        }
+    }
+
+    @Test
+    void getForContractor() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<Offer> page = new PageImpl<>(Collections.singletonList(offerOutput), pageable, 1);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(getPreparedUserDetails());
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(offerRepository.findAllForContractor(email, pageable)).thenReturn(page);
+
+        //test
+        Page<Offer> actual = offerService.getForContractor(pageable);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.isFirst());
+        for (Offer offer : actual.getContent()) {
+            checkOfferOutputFields(offer);
+        }
+    }
+
+    @Test
     void testGet() {
         // preconditions
         final Offer offerOutput = getPreparedOfferOutput();
@@ -342,7 +387,8 @@ class OfferServiceTest {
                 .propositionFile(getPreparedFileOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
-                .offerStatus(EOfferStatus.OFFER_SENT)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .build();
     }
 
@@ -355,7 +401,8 @@ class OfferServiceTest {
                 .propositionFile(getPreparedFileOutput())
                 .bidPrice(maxPrice)
                 .currency(ECurrency.NOK)
-                .offerStatus(EOfferStatus.OFFER_SENT)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate)
                 .build();
@@ -483,7 +530,8 @@ class OfferServiceTest {
         assertEquals(id, actual.getId());
         assertEquals(maxPrice, actual.getBidPrice());
         assertEquals(ECurrency.NOK, actual.getCurrency());
-        assertEquals(EOfferStatus.OFFER_SENT, actual.getOfferStatus());
+        assertEquals(EOfferStatus.OFFER_SENT, actual.getOfferStatusBidder());
+        assertEquals(EOfferStatus.OFFER_RECEIVED, actual.getOfferStatusContractor());
         assertEquals(dtCreate, actual.getDtCreate());
         assertEquals(dtUpdate, actual.getDtUpdate());
         assertEquals(officialName, actual.getBidder().getOfficialName());

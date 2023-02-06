@@ -2,6 +2,7 @@ package com.exadel.tenderflex.controller.rest;
 
 import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
 import com.exadel.tenderflex.core.dto.output.*;
+import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.*;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
@@ -64,6 +66,7 @@ class TenderControllerTest {
     final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     final LocalDate submissionDeadline = LocalDate.parse("04/04/2023", df);
     final String deadline = "04/04/2023";
+    final String actualDtCreate = "12/01/2023";
     final Integer offerAmount = 4;
     final String contentType = "application/pdf";
     final String fileName = "testFile";
@@ -115,6 +118,54 @@ class TenderControllerTest {
 
         //test
         Mockito.verify(tenderManager).getDto(pageable);
+    }
+
+    @Test
+    void getPageForTender() throws Exception {
+        // preconditions
+        final PageDtoOutput<OfferPageForContractorDtoOutput> pageDtoOutput = getPreparedOfferPageDtoOutput();
+        final Pageable pageable = PageRequest.of(0, 1, Sort.by("dtCreate").descending());
+        Mockito.when(tenderManager.getOfferForTender(UUID.fromString(id), pageable)).thenReturn(pageDtoOutput);
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/tender/" + id + "/offer").param("page", "0")
+                        .param("size", "1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].offer_status").value(EOfferStatus.OFFER_RECEIVED.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].dt_create").value(actualDtCreate))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].country").value(country))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].bid_price").value(maxPrice))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].field_from_tender_cpv_code").value(cpvCode))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].official_name").value(officialName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].tender_id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id").value(id));
+
+        //test
+        Mockito.verify(tenderManager).getOfferForTender(UUID.fromString(id), pageable);
+    }
+
+    @Test
+    void getPageForContractor() throws Exception {
+        // preconditions
+        final PageDtoOutput<OfferPageForContractorDtoOutput> pageDtoOutput = getPreparedOfferPageDtoOutput();
+        final Pageable pageable = PageRequest.of(0, 1, Sort.by("dtCreate").descending());
+        Mockito.when(tenderManager.getOfferForContractor(pageable)).thenReturn(pageDtoOutput);
+
+        // assert
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/tender/offer").param("page", "0")
+                        .param("size", "1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].offer_status").value(EOfferStatus.OFFER_RECEIVED.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].dt_create").value(actualDtCreate))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].country").value(country))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].bid_price").value(maxPrice))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].field_from_tender_cpv_code").value(cpvCode))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].official_name").value(officialName))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].tender_id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id").value(id));
+
+        //test
+        Mockito.verify(tenderManager).getOfferForContractor(pageable);
     }
 
     @Test
@@ -267,6 +318,32 @@ class TenderControllerTest {
                 .build();
     }
 
+    OfferPageForContractorDtoOutput getPreparedOfferDtoOutput() {
+        return OfferPageForContractorDtoOutput.builder()
+                .id(id)
+                .tenderId(id)
+                .officialName(officialName)
+                .fieldFromTenderCpvCode(cpvCode)
+                .bidPrice(maxPrice)
+                .country(country)
+                .dtCreate(dtCreate.atZone(ZoneOffset.UTC).toLocalDate())
+                .offerStatus(EOfferStatus.OFFER_RECEIVED.name())
+                .build();
+    }
+
+    PageDtoOutput<OfferPageForContractorDtoOutput> getPreparedOfferPageDtoOutput() {
+        return PageDtoOutput.<OfferPageForContractorDtoOutput>builder()
+                .number(2)
+                .size(1)
+                .totalPages(1)
+                .totalElements(1L)
+                .first(true)
+                .numberOfElements(1)
+                .last(true)
+                .content(Collections.singleton(getPreparedOfferDtoOutput()))
+                .build();
+    }
+
     TenderPageForContractorDtoOutput getPreparedTenderPageDtoOutput() {
         return TenderPageForContractorDtoOutput.builder()
                 .id(id)
@@ -327,4 +404,5 @@ class TenderControllerTest {
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate).build();
     }
+
 }

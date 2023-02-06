@@ -50,7 +50,10 @@ public class Offer {
     private ECurrency currency;
     @Setter
     @Enumerated(EnumType.STRING)
-    private EOfferStatus offerStatus;
+    private EOfferStatus offerStatusBidder;
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private EOfferStatus offerStatusContractor;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version
@@ -60,10 +63,13 @@ public class Offer {
     public String toString() {
         return "Offer{" +
                 "id=" + id +
+                ", bidder=" + bidder +
                 ", contactPerson=" + contactPerson +
+                ", tenderId=" + tenderId +
                 ", bidPrice=" + bidPrice +
                 ", currency=" + currency +
-                ", offerStatus=" + offerStatus +
+                ", offerStatusBidder=" + offerStatusBidder +
+                ", offerStatusContractor=" + offerStatusContractor +
                 ", dtCreate=" + dtCreate +
                 ", dtUpdate=" + dtUpdate +
                 '}';
@@ -79,9 +85,12 @@ public class Offer {
         if (getId() != null ? !getId().equals(offer.getId()) : offer.getId() != null) return false;
         if (!getBidder().equals(offer.getBidder())) return false;
         if (!getContactPerson().equals(offer.getContactPerson())) return false;
+        if (getTenderId() != null ? !getTenderId().equals(offer.getTenderId()) : offer.getTenderId() != null)
+            return false;
         if (!getBidPrice().equals(offer.getBidPrice())) return false;
         if (getCurrency() != offer.getCurrency()) return false;
-        if (getOfferStatus() != offer.getOfferStatus()) return false;
+        if (getOfferStatusBidder() != offer.getOfferStatusBidder()) return false;
+        if (getOfferStatusContractor() != offer.getOfferStatusContractor()) return false;
         if (getDtCreate() != null ? !getDtCreate().equals(offer.getDtCreate()) : offer.getDtCreate() != null)
             return false;
         return getDtUpdate() != null ? getDtUpdate().equals(offer.getDtUpdate()) : offer.getDtUpdate() == null;
@@ -92,9 +101,11 @@ public class Offer {
         int result = getId() != null ? getId().hashCode() : 0;
         result = 31 * result + getBidder().hashCode();
         result = 31 * result + getContactPerson().hashCode();
+        result = 31 * result + (getTenderId() != null ? getTenderId().hashCode() : 0);
         result = 31 * result + getBidPrice().hashCode();
         result = 31 * result + getCurrency().hashCode();
-        result = 31 * result + getOfferStatus().hashCode();
+        result = 31 * result + getOfferStatusBidder().hashCode();
+        result = 31 * result + getOfferStatusContractor().hashCode();
         result = 31 * result + (getDtCreate() != null ? getDtCreate().hashCode() : 0);
         result = 31 * result + (getDtUpdate() != null ? getDtUpdate().hashCode() : 0);
         return result;

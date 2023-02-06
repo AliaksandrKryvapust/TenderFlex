@@ -24,6 +24,7 @@ public class OfferValidator implements IOfferValidator {
         checkBidPrice(offer);
         checkCurrency(offer);
         checkOfferStatus(offer);
+        checkOfferStatusContractor(offer);
     }
 
     @Override
@@ -78,8 +79,14 @@ public class OfferValidator implements IOfferValidator {
     }
 
     private void checkOfferStatus(Offer offer) {
-        if (offer.getOfferStatus() == null) {
-            throw new IllegalArgumentException("offer status is not valid for offer:" + offer);
+        if (offer.getOfferStatusBidder() == null) {
+            throw new IllegalArgumentException("offer status bidder is not valid for offer:" + offer);
+        }
+    }
+
+    private void checkOfferStatusContractor(Offer offer) {
+        if (offer.getOfferStatusContractor() == null) {
+            throw new IllegalArgumentException("offer status contractor is not valid for offer:" + offer);
         }
     }
 }

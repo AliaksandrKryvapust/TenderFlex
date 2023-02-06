@@ -1,6 +1,7 @@
 package com.exadel.tenderflex.service.api;
 
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
@@ -12,6 +13,9 @@ import java.util.UUID;
 
 public interface ITenderManager {
     PageDtoOutput<TenderPageForContractorDtoOutput> getDto(Pageable pageable);
+    PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForTender(UUID id, Pageable pageable);
+
+    PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForContractor(Pageable pageable);
 
     TenderDtoOutput getDto(UUID id);
 
