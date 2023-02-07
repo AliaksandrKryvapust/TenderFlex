@@ -29,7 +29,8 @@ public class UserLoginController {
     public ResponseEntity<UserDtoOutput> getCurrentUser() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-        return ResponseEntity.ok(this.userManager.getUserDto(username));
+        UserDtoOutput dtoOutput = userManager.getUserDto(username);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @GetMapping("/logout")
@@ -46,7 +47,7 @@ public class UserLoginController {
 
     @PostMapping("/registration")
     public ResponseEntity<UserLoginDtoOutput> registration(@RequestBody @Valid UserDtoRegistration dtoInput) {
-        UserLoginDtoOutput userLoginDtoOutput = this.userManager.saveUser(dtoInput);
+        UserLoginDtoOutput userLoginDtoOutput = userManager.saveUser(dtoInput);
         return new ResponseEntity<>(userLoginDtoOutput, HttpStatus.CREATED);
     }
 }

@@ -36,19 +36,22 @@ public class TenderController {
     public ResponseEntity<PageDtoOutput<TenderPageForContractorDtoOutput>> getPage(@RequestParam("page") int page,
                                                                                       @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
-        return ResponseEntity.ok(tenderManager.getDto(pageable));
+        PageDtoOutput<TenderPageForContractorDtoOutput> dtoOutput = tenderManager.getDto(pageable);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @GetMapping(path = "/all",params = {"page", "size"})
     public ResponseEntity<PageDtoOutput<TenderPageForBidderDtoOutput>> getPageAll(@RequestParam("page") int page,
                                                                                   @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").ascending());
-        return ResponseEntity.ok(tenderManager.getDtoAll(pageable));
+        PageDtoOutput<TenderPageForBidderDtoOutput> dtoOutput = tenderManager.getDtoAll(pageable);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TenderDtoOutput> get(@PathVariable UUID id) {
-        return ResponseEntity.ok(tenderManager.getDto(id));
+        TenderDtoOutput dtoOutput = tenderManager.getDto(id);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @GetMapping(path = "/{id}/offer", params = {"page", "size"})
@@ -56,14 +59,16 @@ public class TenderController {
                                                                                            @RequestParam("page") int page,
                                                                                            @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
-        return ResponseEntity.ok(tenderManager.getOfferForTender(id, pageable));
+        PageDtoOutput<OfferPageForContractorDtoOutput> dtoOutput = tenderManager.getOfferForTender(id, pageable);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @GetMapping(path = "/offer", params = {"page", "size"})
     public ResponseEntity<PageDtoOutput<OfferPageForContractorDtoOutput>> getPageForContractor(@RequestParam("page") int page,
                                                                                                @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
-        return ResponseEntity.ok(tenderManager.getOfferForContractor(pageable));
+        PageDtoOutput<OfferPageForContractorDtoOutput> dtoOutput = tenderManager.getOfferForContractor(pageable);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -72,7 +77,8 @@ public class TenderController {
                                                         @RequestParam(value = "award", required = false) MultipartFile award,
                                                         @RequestParam(value = "reject", required = false) MultipartFile reject) {
         Map<EFileType, MultipartFile> files = collectFiles(contract, award, reject);
-        return new ResponseEntity<>(tenderManager.saveDto(tender, files), HttpStatus.CREATED);
+        TenderDtoOutput dtoOutput = tenderManager.saveDto(tender, files);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}/version/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -82,12 +88,14 @@ public class TenderController {
                                                @RequestParam(value = "award", required = false) MultipartFile award,
                                                @RequestParam(value = "reject", required = false) MultipartFile reject) {
         Map<EFileType, MultipartFile> files = collectFiles(contract, award, reject);
-        return ResponseEntity.ok(tenderManager.updateDto(tender, files, id, Long.valueOf(version)));
+        TenderDtoOutput dtoOutput = tenderManager.updateDto(tender, files, id, Long.valueOf(version));
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @PostMapping(path = "/action")
     public ResponseEntity<TenderDtoOutput> postAction(@RequestBody @Valid ActionDto actionDto) {
-        return new ResponseEntity<>(tenderManager.awardAction(actionDto), HttpStatus.CREATED);
+        TenderDtoOutput dtoOutput = tenderManager.awardAction(actionDto);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @NonNull

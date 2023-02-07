@@ -28,22 +28,26 @@ public class UserAdminController {
     public ResponseEntity<PageDtoOutput<UserDtoOutput>> getPage(@RequestParam("page") int page,
                                                     @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(userManager.getDto(pageable));
+        PageDtoOutput<UserDtoOutput> dtoOutput = userManager.getDto(pageable);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDtoOutput> get(@PathVariable UUID id) {
-        return ResponseEntity.ok(userManager.getDto(id));
+        UserDtoOutput dtoOutput = userManager.getDto(id);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @PostMapping
     public ResponseEntity<UserDtoOutput> post(@RequestBody @Valid UserDtoInput dtoInput) {
-        return new ResponseEntity<>(this.userManager.saveDto(dtoInput), HttpStatus.CREATED);
+        UserDtoOutput dtoOutput = userManager.saveDto(dtoInput);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/dt_update/{version}")
     public ResponseEntity<UserDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                 @Valid @RequestBody UserDtoInput dtoInput) {
-        return ResponseEntity.ok(this.userManager.updateDto(dtoInput, id, Long.valueOf(version)));
+        UserDtoOutput dtoOutput = userManager.updateDto(dtoInput, id, Long.valueOf(version));
+        return ResponseEntity.ok(dtoOutput);
     }
 }
