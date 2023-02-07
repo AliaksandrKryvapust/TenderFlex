@@ -55,33 +55,30 @@ public class UserValidator implements IUserValidator {
     private void checkEmail(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new IllegalArgumentException("email is not valid for user:" + user);
-        } else {
-            char[] chars = user.getEmail().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("email should contain from 2 to 50 letters for user:" + user);
-            }
+        }
+        char[] chars = user.getEmail().toCharArray();
+        if (chars.length < 2 || chars.length > 50) {
+            throw new IllegalArgumentException("email should contain from 2 to 50 letters for user:" + user);
         }
     }
 
     private void checkPassword(User user) {
         if (user.getPassword() == null || user.getPassword().isBlank()) {
             throw new IllegalArgumentException("password is not valid for user:" + user);
-        } else {
-            char[] chars = user.getPassword().toCharArray();
-            if (chars.length < 2 || chars.length > 200) {
-                throw new IllegalArgumentException("password should contain from 2 to 200 letters for user:" + user);
-            }
+        }
+        char[] chars = user.getPassword().toCharArray();
+        if (chars.length < 2 || chars.length > 200) {
+            throw new IllegalArgumentException("password should contain from 2 to 200 letters for user:" + user);
         }
     }
 
     private void checkUsername(User user) {
         if (user.getUsername() == null || user.getUsername().isBlank()) {
             throw new IllegalArgumentException("username is not valid for user:" + user);
-        } else {
-            char[] chars = user.getUsername().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("username should contain from 2 to 50 letters for user:" + user);
-            }
+        }
+        char[] chars = user.getUsername().toCharArray();
+        if (chars.length < 2 || chars.length > 50) {
+            throw new IllegalArgumentException("username should contain from 2 to 50 letters for user:" + user);
         }
     }
 }
