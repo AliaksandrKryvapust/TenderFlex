@@ -47,13 +47,14 @@ public class TenderValidator implements ITenderValidator {
 
     @Override
     public void validateAwardCondition(Offer selectedOffer, Tender currentEntity) {
-        Set<Offer> activeOffers = currentEntity.getOffers().stream()
-                .filter((i)->i.getOfferStatusContractor().equals(EOfferStatus.OFFER_SELECTED))
-                .collect(Collectors.toSet());
         if (!selectedOffer.getOfferStatusContractor().equals(EOfferStatus.OFFER_RECEIVED) ||
                 !selectedOffer.getOfferStatusBidder().equals(EOfferStatus.OFFER_SENT)) {
             throw new IllegalArgumentException("The decision have been already made for offer" + selectedOffer);
-        } else if (activeOffers.size()!=0) {
+        }
+        Set<Offer> activeOffers = currentEntity.getOffers().stream()
+                .filter((i) -> i.getOfferStatusContractor().equals(EOfferStatus.OFFER_SELECTED))
+                .collect(Collectors.toSet());
+        if (activeOffers.size() != 0) {
             throw new IllegalArgumentException("The offer have already been selected" + activeOffers.stream().findFirst());
         }
     }
