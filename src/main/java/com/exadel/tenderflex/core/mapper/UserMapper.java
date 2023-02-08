@@ -56,14 +56,19 @@ public class UserMapper {
     }
 
     public UserLoginDtoOutput registerOutputMapping(User user) {
+        String role = user.getRoles().stream().findFirst().orElseThrow(NoSuchElementException::new).getRoleType().name();
         return UserLoginDtoOutput.builder()
                 .email(user.getEmail())
+                .role(role.substring(role.indexOf("_")+1))
                 .build();
     }
 
     public UserLoginDtoOutput loginOutputMapping(UserDetails userDetails, String token) {
+        String role = userDetails.getAuthorities().stream().filter((i)-> i.getAuthority().contains("ROLE_"))
+                .findFirst().orElseThrow(NoSuchElementException::new).getAuthority();
         return UserLoginDtoOutput.builder()
                 .email(userDetails.getUsername())
+                .role(role.substring(role.indexOf("_")+1))
                 .token(token)
                 .build();
     }
