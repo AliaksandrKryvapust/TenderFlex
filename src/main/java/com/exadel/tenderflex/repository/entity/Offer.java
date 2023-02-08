@@ -25,6 +25,7 @@ public class Offer {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Setter
     private User user;
+    @Setter
     @ManyToOne
     @JoinColumn(name = "tender_id", insertable = false, updatable = false)
     private Tender tender;
@@ -54,6 +55,8 @@ public class Offer {
     @Setter
     @Enumerated(EnumType.STRING)
     private EOfferStatus offerStatusContractor;
+    @Setter
+    private Boolean active;
     @org.hibernate.annotations.Generated(GenerationTime.INSERT)
     private Instant dtCreate;
     @Version

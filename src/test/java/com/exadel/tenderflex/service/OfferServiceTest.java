@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.service;
 
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.input.CompanyDetailsDtoInput;
 import com.exadel.tenderflex.core.dto.input.ContactPersonDtoInput;
 import com.exadel.tenderflex.core.dto.input.OfferDtoInput;
@@ -33,6 +34,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.*;
 
@@ -324,6 +326,43 @@ class OfferServiceTest {
         checkOfferDtoOutputFields(actual);
     }
 
+    @Test
+    void awardAction() {
+        // preconditions
+        final ActionDto actionDto = getPreparedActionDto();
+        final Offer offerOutput = getPreparedOfferOutput();
+        final OfferDtoOutput offerDtoOutput = getPreparedOfferDtoOutput();
+        Mockito.when(offerTransactionalService.awardTransactionalAction(actionDto)).thenReturn(offerOutput);
+        Mockito.when(offerMapper.outputMapping(offerOutput)).thenReturn(offerDtoOutput);
+
+        //test
+        OfferDtoOutput actual = offerService.awardAction(actionDto);
+
+        // assert
+        assertNotNull(actual);
+        checkOfferDtoOutputFields(actual);
+    }
+
+    @Test
+    void findExpiredContractDeadline() {
+        // preconditions
+        final Offer offerOutput = getPreparedOfferOutput();
+        final LocalDate localDate = LocalDate.now();
+        final EOfferStatus status = EOfferStatus.OFFER_SELECTED_BY_CONTRACTOR;
+        final Set<Offer> offers = new HashSet<>();
+        offers.add(offerOutput);
+        Mockito.when(offerRepository.findAllByContract_ContractDeadlineBeforeAndOfferStatusBidder(localDate, status))
+                .thenReturn(offers);
+
+        //test
+        Set<Offer> actual = offerService.findExpiredContractDeadline(localDate, status);
+
+        // assert
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        actual.forEach(this::checkOfferOutputFields);
+    }
+
     User getPreparedUserOutput() {
         final Privilege privilege = Privilege.builder()
                 .id(id)
@@ -457,7 +496,7 @@ class OfferServiceTest {
                 .bidPrice(maxPrice)
                 .country(country)
                 .dtCreate(dtCreate.atZone(ZoneOffset.UTC).toLocalDate())
-                .offerStatus(EOfferStatus.OFFER_SENT.name())
+                .active(true)
                 .build();
     }
 
@@ -521,6 +560,14 @@ class OfferServiceTest {
                 .build();
     }
 
+    ActionDto getPreparedActionDto(){
+        return ActionDto.builder()
+                .tender(id)
+                .offer(id)
+                .award(true)
+                .build();
+    }
+
     private void checkOfferOutputFields(Offer actual) {
         assertNotNull(actual.getBidder());
         assertNotNull(actual.getContactPerson());
@@ -575,7 +622,7 @@ class OfferServiceTest {
     private void checkOfferPageDtoOutputFields(OfferPageForBidderDtoOutput actual) {
         assertEquals(id.toString(), actual.getId());
         assertEquals(cpvCode, actual.getFieldFromTenderCpvCode());
-        assertEquals(EOfferStatus.OFFER_SENT.name(), actual.getOfferStatus());
+        assertEquals(true, actual.getActive());
         assertEquals(maxPrice, actual.getBidPrice());
         assertEquals(country, actual.getCountry());
         assertEquals(dtCreate.atZone(ZoneOffset.UTC).toLocalDate(), actual.getDtCreate());

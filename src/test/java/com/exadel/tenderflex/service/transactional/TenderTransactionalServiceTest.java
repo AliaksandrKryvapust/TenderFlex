@@ -1,12 +1,17 @@
 package com.exadel.tenderflex.service.transactional;
 
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.repository.api.IContractRepository;
+import com.exadel.tenderflex.repository.api.IOfferRepository;
 import com.exadel.tenderflex.repository.api.IRejectDecisionRepository;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
+import com.exadel.tenderflex.service.validator.api.IContractValidator;
+import com.exadel.tenderflex.service.validator.api.ITenderValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,9 +22,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class TenderTransactionalServiceTest {
@@ -28,9 +35,16 @@ class TenderTransactionalServiceTest {
     @Mock
     private ITenderRepository tenderRepository;
     @Mock
+    private IOfferRepository offerRepository;
+    @Mock
     private IContractRepository contractRepository;
     @Mock
     private IRejectDecisionRepository rejectDecisionRepository;
+    @Mock
+    private ITenderValidator tenderValidator;
+    @Mock
+    private IContractValidator contractValidator;
+
     // preconditions
     final String username = "someone";
     final String password = "kdrL556D";
@@ -74,6 +88,28 @@ class TenderTransactionalServiceTest {
         checkUserOutputFields(actual);
     }
 
+    @Test
+    void awardTransactionalAction() {
+        // preconditions
+        final ActionDto actionDto = getPreparedActionDto();
+        final Tender tenderOutput = getPreparedTenderOutput();
+        Mockito.when(tenderRepository.findById(id)).thenReturn(Optional.of(tenderOutput));
+        ArgumentCaptor<Offer> actualOffer = ArgumentCaptor.forClass(Offer.class);
+        ArgumentCaptor<Tender> actualTender = ArgumentCaptor.forClass(Tender.class);
+
+        //test
+        Tender actual = tenderTransactionalService.awardTransactionalAction(actionDto);
+        Mockito.verify(tenderValidator, Mockito.times(1)).validateAwardCondition(actualOffer.capture(),
+                actualTender.capture());
+        Mockito.verify(offerRepository, Mockito.times(1)).save(any(Offer.class));
+        Mockito.verify(contractValidator, Mockito.times(1)).validateEntity(any(Contract.class));
+        Mockito.verify(contractRepository, Mockito.times(1)).save(any(Contract.class));
+
+        // assert
+        assertNotNull(actual);
+        checkUserOutputFields(actual);
+    }
+
     Tender getPreparedTenderInput() {
         return Tender.builder()
                 .user(getPreparedUserOutput())
@@ -100,6 +136,7 @@ class TenderTransactionalServiceTest {
                 .contactPerson(getPreparedContactPerson())
                 .contract(getPreparedContractOutput())
                 .rejectDecision(getPreparedRejectDecisionOutput())
+                .offers(Collections.singleton(getPreparedOfferOutput()))
                 .cpvCode(cpvCode)
                 .tenderType(ETenderType.SUPPLY)
                 .description(description)
@@ -189,6 +226,31 @@ class TenderTransactionalServiceTest {
                 .file(getPreparedFileOutput())
                 .dtCreate(dtCreate)
                 .dtUpdate(dtUpdate).build();
+    }
+
+    ActionDto getPreparedActionDto(){
+        return ActionDto.builder()
+                .tender(id)
+                .offer(id)
+                .award(true)
+                .build();
+    }
+
+    Offer getPreparedOfferOutput() {
+        return Offer.builder()
+                .id(id)
+                .user(getPreparedUserOutput())
+                .bidder(getPreparedCompanyDetails())
+                .contactPerson(getPreparedContactPerson())
+                .propositionFile(getPreparedFileOutput())
+                .bidPrice(maxPrice)
+                .currency(ECurrency.NOK)
+                .offerStatusBidder(EOfferStatus.OFFER_SENT)
+                .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
+                .dtCreate(dtCreate)
+                .dtUpdate(dtUpdate)
+                .tenderId(id)
+                .build();
     }
 
     private void checkUserOutputFields(Tender actual) {

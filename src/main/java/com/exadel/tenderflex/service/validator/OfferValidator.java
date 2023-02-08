@@ -1,6 +1,7 @@
 package com.exadel.tenderflex.service.validator;
 
 import com.exadel.tenderflex.repository.entity.Offer;
+import com.exadel.tenderflex.repository.entity.enums.EOfferStatus;
 import com.exadel.tenderflex.service.validator.api.ICompanyDetailsValidator;
 import com.exadel.tenderflex.service.validator.api.IContactPersonValidator;
 import com.exadel.tenderflex.service.validator.api.IOfferValidator;
@@ -32,6 +33,14 @@ public class OfferValidator implements IOfferValidator {
         Long currentVersion = currentEntity.getDtUpdate().toEpochMilli();
         if (!currentVersion.equals(version)) {
             throw new OptimisticLockException("offer table update failed, version does not match update denied");
+        }
+    }
+
+    @Override
+    public void validateAwardDecision(Offer currentEntity) {
+        if (!currentEntity.getOfferStatusContractor().equals(EOfferStatus.OFFER_SELECTED) ||
+                !currentEntity.getOfferStatusBidder().equals(EOfferStatus.OFFER_SELECTED_BY_CONTRACTOR)) {
+            throw new IllegalStateException("Illegal offer state conditions, award bidder action forbidden" + currentEntity);
         }
     }
 

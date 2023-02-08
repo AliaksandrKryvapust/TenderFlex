@@ -1,11 +1,15 @@
 package com.exadel.tenderflex.service.transactional;
 
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.repository.api.IOfferRepository;
+import com.exadel.tenderflex.repository.api.IRejectDecisionRepository;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.*;
 import com.exadel.tenderflex.repository.entity.enums.*;
+import com.exadel.tenderflex.service.validator.api.IOfferValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -18,6 +22,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class OfferTransactionalServiceTest {
@@ -27,6 +32,10 @@ class OfferTransactionalServiceTest {
     private IOfferRepository offerRepository;
     @Mock
     private ITenderRepository tenderRepository;
+    @Mock
+    private IRejectDecisionRepository rejectDecisionRepository;
+    @Mock
+    private IOfferValidator offerValidator;
 
     // preconditions
     final String username = "someone";
@@ -67,6 +76,55 @@ class OfferTransactionalServiceTest {
         // assert
         assertNotNull(actual);
         checkOfferOutputFields(actual);
+    }
+
+    @Test
+    void awardPositiveAction() {
+        // preconditions
+        final ActionDto actionDto = getPreparedActionDto();
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Tender tenderOutput = getPreparedTenderOutput();
+        offerOutput.setTender(tenderOutput);
+        tenderOutput.getOffers().stream().findFirst().orElseThrow().setOfferStatusContractor(EOfferStatus.OFFER_SELECTED);
+        Mockito.when(offerRepository.findById(id)).thenReturn(Optional.of(offerOutput));
+        ArgumentCaptor<Offer> actualOffer = ArgumentCaptor.forClass(Offer.class);
+
+        //test
+        Offer actual = offerTransactionalService.awardTransactionalAction(actionDto);
+        Mockito.verify(offerValidator, Mockito.times(1)).validateAwardDecision(actualOffer.capture());
+        Mockito.verify(offerRepository, Mockito.times(1)).save(any(Offer.class));
+        Mockito.verify(tenderRepository, Mockito.times(1)).save(any(Tender.class));
+        Mockito.verify(rejectDecisionRepository, Mockito.times(1)).save(any(RejectDecision.class));
+
+        // assert
+        assertNotNull(actual);
+        checkOfferOutputFieldsAward(actual);
+    }
+
+    @Test
+    void awardNegativeAction() {
+        // preconditions
+        final ActionDto actionDto = ActionDto.builder()
+                .tender(id)
+                .offer(id)
+                .award(false)
+                .build();
+        final Offer offerOutput = getPreparedOfferOutput();
+        final Tender tenderOutput = getPreparedTenderOutput();
+        offerOutput.setTender(tenderOutput);
+        tenderOutput.getOffers().stream().findFirst().orElseThrow().setOfferStatusContractor(EOfferStatus.OFFER_SELECTED);
+        Mockito.when(offerRepository.findById(id)).thenReturn(Optional.of(offerOutput));
+        ArgumentCaptor<Offer> actualOffer = ArgumentCaptor.forClass(Offer.class);
+
+        //test
+        Offer actual = offerTransactionalService.awardTransactionalAction(actionDto);
+        Mockito.verify(offerValidator, Mockito.times(1)).validateAwardDecision(actualOffer.capture());
+        Mockito.verify(offerRepository, Mockito.times(1)).save(any(Offer.class));
+        Mockito.verify(tenderRepository, Mockito.times(1)).save(any(Tender.class));
+
+        // assert
+        assertNotNull(actual);
+        checkOfferOutputFieldsNegativeAward(actual);
     }
 
     User getPreparedUserOutput() {
@@ -199,6 +257,14 @@ class OfferTransactionalServiceTest {
                 .build();
     }
 
+    ActionDto getPreparedActionDto(){
+        return ActionDto.builder()
+                .tender(id)
+                .offer(id)
+                .award(true)
+                .build();
+    }
+
     private void checkOfferOutputFields(Offer actual) {
         assertNotNull(actual.getBidder());
         assertNotNull(actual.getContactPerson());
@@ -207,6 +273,58 @@ class OfferTransactionalServiceTest {
         assertEquals(maxPrice, actual.getBidPrice());
         assertEquals(ECurrency.NOK, actual.getCurrency());
         assertEquals(EOfferStatus.OFFER_SENT, actual.getOfferStatusBidder());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+        assertEquals(officialName, actual.getBidder().getOfficialName());
+        assertEquals(registrationNumber, actual.getBidder().getRegistrationNumber());
+        assertEquals(ECountry.POLAND, actual.getBidder().getCountry());
+        assertEquals(name, actual.getContactPerson().getName());
+        assertEquals(surname, actual.getContactPerson().getSurname());
+        assertEquals(phoneNumber, actual.getContactPerson().getPhoneNumber());
+        assertEquals(id, actual.getPropositionFile().getId());
+        assertEquals(fileName, actual.getPropositionFile().getFileName());
+        assertEquals(token, actual.getPropositionFile().getFileKey());
+        assertEquals(contentType, actual.getPropositionFile().getContentType());
+        assertEquals(url, actual.getPropositionFile().getUrl());
+        assertEquals(EFileType.AWARD_DECISION, actual.getPropositionFile().getFileType());
+        assertEquals(dtCreate, actual.getPropositionFile().getDtCreate());
+        assertEquals(dtUpdate, actual.getPropositionFile().getDtUpdate());
+    }
+
+    private void checkOfferOutputFieldsAward(Offer actual) {
+        assertNotNull(actual.getBidder());
+        assertNotNull(actual.getContactPerson());
+        assertNotNull(actual.getPropositionFile());
+        assertEquals(id, actual.getId());
+        assertEquals(maxPrice, actual.getBidPrice());
+        assertEquals(ECurrency.NOK, actual.getCurrency());
+        assertEquals(EOfferStatus.CONTRACT_APPROVED_BY_BIDDER, actual.getOfferStatusBidder());
+        assertEquals(dtCreate, actual.getDtCreate());
+        assertEquals(dtUpdate, actual.getDtUpdate());
+        assertEquals(officialName, actual.getBidder().getOfficialName());
+        assertEquals(registrationNumber, actual.getBidder().getRegistrationNumber());
+        assertEquals(ECountry.POLAND, actual.getBidder().getCountry());
+        assertEquals(name, actual.getContactPerson().getName());
+        assertEquals(surname, actual.getContactPerson().getSurname());
+        assertEquals(phoneNumber, actual.getContactPerson().getPhoneNumber());
+        assertEquals(id, actual.getPropositionFile().getId());
+        assertEquals(fileName, actual.getPropositionFile().getFileName());
+        assertEquals(token, actual.getPropositionFile().getFileKey());
+        assertEquals(contentType, actual.getPropositionFile().getContentType());
+        assertEquals(url, actual.getPropositionFile().getUrl());
+        assertEquals(EFileType.AWARD_DECISION, actual.getPropositionFile().getFileType());
+        assertEquals(dtCreate, actual.getPropositionFile().getDtCreate());
+        assertEquals(dtUpdate, actual.getPropositionFile().getDtUpdate());
+    }
+
+    private void checkOfferOutputFieldsNegativeAward(Offer actual) {
+        assertNotNull(actual.getBidder());
+        assertNotNull(actual.getContactPerson());
+        assertNotNull(actual.getPropositionFile());
+        assertEquals(id, actual.getId());
+        assertEquals(maxPrice, actual.getBidPrice());
+        assertEquals(ECurrency.NOK, actual.getCurrency());
+        assertEquals(EOfferStatus.CONTRACT_DECLINED_BY_BIDDER, actual.getOfferStatusBidder());
         assertEquals(dtCreate, actual.getDtCreate());
         assertEquals(dtUpdate, actual.getDtUpdate());
         assertEquals(officialName, actual.getBidder().getOfficialName());

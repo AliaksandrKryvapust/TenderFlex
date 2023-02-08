@@ -59,6 +59,7 @@ public class OfferMapper {
                     .offerStatusBidder(EOfferStatus.OFFER_SENT)
                     .offerStatusContractor(EOfferStatus.OFFER_RECEIVED)
                     .tenderId(UUID.fromString(dtoInput.getTenderId()))
+                    .active(true)
                     .build();
         } else {
             return Offer.builder()
@@ -99,7 +100,7 @@ public class OfferMapper {
                 .bidPrice(offer.getBidPrice())
                 .country(offer.getBidder().getCountry().name())
                 .dtCreate(offer.getDtCreate().atZone(ZoneOffset.UTC).toLocalDate())
-                .offerStatus(offer.getOfferStatusBidder().name())
+                .active(offer.getActive())
                 .build();
     }
 
@@ -127,7 +128,7 @@ public class OfferMapper {
                 .bidPrice(offer.getBidPrice())
                 .country(offer.getBidder().getCountry().name())
                 .dtCreate(offer.getDtCreate().atZone(ZoneOffset.UTC).toLocalDate())
-                .offerStatus(offer.getOfferStatusBidder().name())
+                .offerStatus(offer.getOfferStatusContractor().name())
                 .build();
     }
 

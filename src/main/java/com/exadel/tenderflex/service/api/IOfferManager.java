@@ -1,6 +1,8 @@
 package com.exadel.tenderflex.service.api;
 
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.output.OfferDtoOutput;
+import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
@@ -18,4 +20,5 @@ public interface IOfferManager {
     OfferDtoOutput saveDto(String tender, Map<EFileType, MultipartFile> fileMap);
 
     OfferDtoOutput updateDto(String offer, Map<EFileType, MultipartFile> fileMap, UUID id, Long version);
+    OfferDtoOutput awardAction(ActionDto actionDto);
 }

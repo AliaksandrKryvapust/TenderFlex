@@ -1,10 +1,12 @@
 package com.exadel.tenderflex.service;
 
 import com.exadel.tenderflex.core.dto.aws.AwsS3FileDto;
+import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.input.TenderDtoInput;
 import com.exadel.tenderflex.core.dto.output.TenderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.TenderPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOutput;
 import com.exadel.tenderflex.core.mapper.OfferMapper;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
@@ -12,6 +14,7 @@ import com.exadel.tenderflex.repository.api.ITenderRepository;
 import com.exadel.tenderflex.repository.entity.Tender;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
+import com.exadel.tenderflex.repository.entity.enums.ETenderStatus;
 import com.exadel.tenderflex.service.api.IAwsS3Service;
 import com.exadel.tenderflex.service.api.IOfferService;
 import com.exadel.tenderflex.service.api.ITenderManager;
@@ -26,8 +29,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -44,6 +49,11 @@ public class TenderService implements ITenderService, ITenderManager {
 
     @Override
     public Tender save(Tender tender) {
+        return tenderRepository.save(tender);
+    }
+
+    @Override
+    public Tender saveInTransaction(Tender tender) {
         return tenderTransactionalService.saveTransactional(tender);
     }
 
@@ -59,6 +69,11 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
+    public Set<Tender> findExpiredSubmissionDeadline(LocalDate currentDate, ETenderStatus tenderStatus) {
+        return tenderRepository.findAllBySubmissionDeadlineBeforeAndTenderStatus(currentDate, tenderStatus);
+    }
+
+    @Override
     public Tender get(UUID id) {
         return tenderRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
@@ -68,7 +83,7 @@ public class TenderService implements ITenderService, ITenderManager {
         Tender currentEntity = get(id);
         tenderValidator.optimisticLockCheck(version, currentEntity);
         tenderMapper.updateEntityFields(tender, currentEntity);
-        return save(currentEntity);
+        return saveInTransaction(currentEntity);
     }
 
     @Override
@@ -78,7 +93,7 @@ public class TenderService implements ITenderService, ITenderManager {
         User currentUser = getUserFromSecurityContext();
         Tender entityToSave = tenderMapper.inputMapping(dtoInput, currentUser, files, urls);
         tenderValidator.validateEntity(entityToSave);
-        Tender tender = save(entityToSave);
+        Tender tender = saveInTransaction(entityToSave);
         return tenderMapper.outputMapping(tender);
     }
 
@@ -104,8 +119,8 @@ public class TenderService implements ITenderService, ITenderManager {
     }
 
     @Override
-    public PageDtoOutput<TenderPageForContractorDtoOutput> getDtoAll(Pageable pageable) {
-        return tenderMapper.outputPageMapping(getAll(pageable));
+    public PageDtoOutput<TenderPageForBidderDtoOutput> getDtoAll(Pageable pageable) {
+        return tenderMapper.outputPageForBidderMapping(getAll(pageable));
     }
 
     @Override
@@ -117,6 +132,11 @@ public class TenderService implements ITenderService, ITenderManager {
         tenderValidator.validateEntity(entityToSave);
         Tender tender = update(entityToSave, id, version);
         return tenderMapper.outputMapping(tender);
+    }
+
+    @Override
+    public TenderDtoOutput awardAction(ActionDto actionDto) {
+        return tenderMapper.outputMapping(tenderTransactionalService.awardTransactionalAction(actionDto));
     }
 
     private User getUserFromSecurityContext() {
