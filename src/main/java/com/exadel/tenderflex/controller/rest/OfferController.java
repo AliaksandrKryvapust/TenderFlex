@@ -34,19 +34,22 @@ public class OfferController {
     public ResponseEntity<PageDtoOutput<OfferPageForBidderDtoOutput>> getPage(@RequestParam("page") int page,
                                                                                  @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dtCreate").descending());
-        return ResponseEntity.ok(offerManager.getDto(pageable));
+        PageDtoOutput<OfferPageForBidderDtoOutput> dtoOutput = offerManager.getDto(pageable);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<OfferDtoOutput> get(@PathVariable UUID id) {
-        return ResponseEntity.ok(offerManager.getDto(id));
+        OfferDtoOutput dtoOutput = offerManager.getDto(id);
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<OfferDtoOutput> postWithFile(@RequestParam(value = "offer") String offer,
                                                           @RequestParam(value = "proposal", required = false) MultipartFile proposal) {
         Map<EFileType, MultipartFile> files = collectFiles(proposal);
-        return new ResponseEntity<>(this.offerManager.saveDto(offer, files), HttpStatus.CREATED);
+        OfferDtoOutput dtoOutput = offerManager.saveDto(offer, files);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}/version/{version}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -54,12 +57,14 @@ public class OfferController {
                                               @RequestParam(value = "offer") String offer,
                                               @RequestParam(value = "proposal", required = false) MultipartFile proposal) {
         Map<EFileType, MultipartFile> files = collectFiles(proposal);
-        return ResponseEntity.ok(this.offerManager.updateDto(offer, files, id, Long.valueOf(version)));
+        OfferDtoOutput dtoOutput = offerManager.updateDto(offer, files, id, Long.valueOf(version));
+        return ResponseEntity.ok(dtoOutput);
     }
 
     @PostMapping(path = "/action")
     public ResponseEntity<OfferDtoOutput> postAction(@RequestBody @Valid ActionDto actionDto) {
-        return new ResponseEntity<>(offerManager.awardAction(actionDto), HttpStatus.CREATED);
+        OfferDtoOutput dtoOutput = offerManager.awardAction(actionDto);
+        return new ResponseEntity<>(dtoOutput, HttpStatus.CREATED);
     }
 
     @NonNull

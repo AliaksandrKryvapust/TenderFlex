@@ -21,6 +21,7 @@ public class FileController {
     @PutMapping("/{id}/version/{version}")
     public ResponseEntity<FileDtoOutput> put(@PathVariable UUID id, @PathVariable(name = "version") String version,
                                                 @Valid @RequestBody FileDtoInput dtoInput) {
-        return ResponseEntity.ok(this.fileManager.updateDto(dtoInput, id, Long.valueOf(version)));
+        FileDtoOutput fileDtoOutput = fileManager.updateDto(dtoInput, id, Long.valueOf(version));
+        return ResponseEntity.ok(fileDtoOutput);
     }
 }

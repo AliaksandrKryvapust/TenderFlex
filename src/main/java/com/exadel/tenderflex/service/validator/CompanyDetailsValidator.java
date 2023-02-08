@@ -18,22 +18,20 @@ public class CompanyDetailsValidator implements ICompanyDetailsValidator {
     private void checkOfficialName(CompanyDetails companyDetails) {
         if (companyDetails.getOfficialName() == null || companyDetails.getOfficialName().isBlank()) {
             throw new IllegalArgumentException("Official name is not valid for company details:" + companyDetails);
-        } else {
-            char[] chars = companyDetails.getOfficialName().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("Official name should contain from 2 to 50 letters for company details:" + companyDetails);
-            }
+        }
+        char[] chars = companyDetails.getOfficialName().toCharArray();
+        if (chars.length < 2 || chars.length > 50) {
+            throw new IllegalArgumentException("Official name should contain from 2 to 50 letters for company details:" + companyDetails);
         }
     }
 
     private void checkRegistrationNumber(CompanyDetails companyDetails) {
         if (companyDetails.getRegistrationNumber() == null || companyDetails.getRegistrationNumber().isBlank()) {
             throw new IllegalArgumentException("Registration number is not valid for company details:" + companyDetails);
-        } else {
-            char[] chars = companyDetails.getRegistrationNumber().toCharArray();
-            if (chars.length < 2 || chars.length > 50) {
-                throw new IllegalArgumentException("Registration number should contain from 2 to 50 letters for company details:" + companyDetails);
-            }
+        }
+        char[] chars = companyDetails.getRegistrationNumber().toCharArray();
+        if (chars.length < 2 || chars.length > 50) {
+            throw new IllegalArgumentException("Registration number should contain from 2 to 50 letters for company details:" + companyDetails);
         }
     }
 

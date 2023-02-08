@@ -84,12 +84,14 @@ public class OfferService implements IOfferService, IOfferManager {
 
     @Override
     public PageDtoOutput<OfferPageForBidderDtoOutput> getDto(Pageable pageable) {
-        return offerMapper.outputBidderPageMapping(get(pageable));
+        Page<Offer> page = get(pageable);
+        return offerMapper.outputBidderPageMapping(page);
     }
 
     @Override
     public OfferDtoOutput getDto(UUID id) {
-        return offerMapper.outputMapping(get(id));
+        Offer offer = get(id);
+        return offerMapper.outputMapping(offer);
     }
 
     @Override

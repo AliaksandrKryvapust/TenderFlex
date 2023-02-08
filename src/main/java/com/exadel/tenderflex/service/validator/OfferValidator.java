@@ -74,10 +74,9 @@ public class OfferValidator implements IOfferValidator {
     private void checkBidPrice(Offer offer) {
         if (offer.getBidPrice() == null) {
             throw new IllegalArgumentException("Bid price is not valid for offer:" + offer);
-        } else {
-            if (offer.getBidPrice() <= 0) {
-                throw new IllegalArgumentException("Bid should be positive for offer:" + offer);
-            }
+        }
+        if (offer.getBidPrice() <= 0) {
+            throw new IllegalArgumentException("Bid should be positive for offer:" + offer);
         }
     }
 

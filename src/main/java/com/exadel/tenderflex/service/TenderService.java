@@ -11,6 +11,7 @@ import com.exadel.tenderflex.core.dto.output.pages.TenderPageForContractorDtoOut
 import com.exadel.tenderflex.core.mapper.OfferMapper;
 import com.exadel.tenderflex.core.mapper.TenderMapper;
 import com.exadel.tenderflex.repository.api.ITenderRepository;
+import com.exadel.tenderflex.repository.entity.Offer;
 import com.exadel.tenderflex.repository.entity.Tender;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EFileType;
@@ -99,17 +100,20 @@ public class TenderService implements ITenderService, ITenderManager {
 
     @Override
     public PageDtoOutput<TenderPageForContractorDtoOutput> getDto(Pageable pageable) {
-        return tenderMapper.outputPageMapping(get(pageable));
+        Page<Tender> page = get(pageable);
+        return tenderMapper.outputPageMapping(page);
     }
 
     @Override
     public PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForTender(UUID id, Pageable pageable) {
-        return offerMapper.outputContractorPageMapping(offerService.getForTender(id, pageable));
+        Page<Offer> page = offerService.getForTender(id, pageable);
+        return offerMapper.outputContractorPageMapping(page);
     }
 
     @Override
     public PageDtoOutput<OfferPageForContractorDtoOutput> getOfferForContractor(Pageable pageable) {
-        return offerMapper.outputContractorPageMapping(offerService.getForContractor(pageable));
+        Page<Offer> page = offerService.getForContractor(pageable);
+        return offerMapper.outputContractorPageMapping(page);
     }
 
     @Override
@@ -120,7 +124,8 @@ public class TenderService implements ITenderService, ITenderManager {
 
     @Override
     public PageDtoOutput<TenderPageForBidderDtoOutput> getDtoAll(Pageable pageable) {
-        return tenderMapper.outputPageForBidderMapping(getAll(pageable));
+        Page<Tender> page = getAll(pageable);
+        return tenderMapper.outputPageForBidderMapping(page);
     }
 
     @Override
@@ -136,7 +141,8 @@ public class TenderService implements ITenderService, ITenderManager {
 
     @Override
     public TenderDtoOutput awardAction(ActionDto actionDto) {
-        return tenderMapper.outputMapping(tenderTransactionalService.awardTransactionalAction(actionDto));
+        Tender tender = tenderTransactionalService.awardTransactionalAction(actionDto);
+        return tenderMapper.outputMapping(tender);
     }
 
     private User getUserFromSecurityContext() {

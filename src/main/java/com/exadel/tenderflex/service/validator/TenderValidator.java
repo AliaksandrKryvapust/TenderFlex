@@ -47,13 +47,14 @@ public class TenderValidator implements ITenderValidator {
 
     @Override
     public void validateAwardCondition(Offer selectedOffer, Tender currentEntity) {
-        Set<Offer> activeOffers = currentEntity.getOffers().stream()
-                .filter((i)->i.getOfferStatusContractor().equals(EOfferStatus.OFFER_SELECTED))
-                .collect(Collectors.toSet());
         if (!selectedOffer.getOfferStatusContractor().equals(EOfferStatus.OFFER_RECEIVED) ||
                 !selectedOffer.getOfferStatusBidder().equals(EOfferStatus.OFFER_SENT)) {
             throw new IllegalArgumentException("The decision have been already made for offer" + selectedOffer);
-        } else if (activeOffers.size()!=0) {
+        }
+        Set<Offer> activeOffers = currentEntity.getOffers().stream()
+                .filter((i) -> i.getOfferStatusContractor().equals(EOfferStatus.OFFER_SELECTED))
+                .collect(Collectors.toSet());
+        if (activeOffers.size() != 0) {
             throw new IllegalArgumentException("The offer have already been selected" + activeOffers.stream().findFirst());
         }
     }
@@ -112,20 +113,18 @@ public class TenderValidator implements ITenderValidator {
     private void checkMinPrice(Tender tender) {
         if (tender.getMinPrice() == null) {
             throw new IllegalArgumentException("Min price is not valid for tender:" + tender);
-        } else {
-            if (tender.getMinPrice()<=0) {
-                throw new IllegalArgumentException("Min price should be positive for tender:" + tender);
-            }
+        }
+        if (tender.getMinPrice() <= 0) {
+            throw new IllegalArgumentException("Min price should be positive for tender:" + tender);
         }
     }
 
     private void checkMaxPrice(Tender tender) {
         if (tender.getMaxPrice() == null) {
             throw new IllegalArgumentException("Max price is not valid for tender:" + tender);
-        } else {
-            if (tender.getMaxPrice()<=tender.getMinPrice()) {
-                throw new IllegalArgumentException("Max price should be greater than min price for tender:" + tender);
-            }
+        }
+        if (tender.getMaxPrice() <= tender.getMinPrice()) {
+            throw new IllegalArgumentException("Max price should be greater than min price for tender:" + tender);
         }
     }
 
@@ -138,21 +137,19 @@ public class TenderValidator implements ITenderValidator {
     private void checkPublicationDate(Tender tender) {
         if (tender.getPublication() == null) {
             throw new IllegalArgumentException("Publication Date is not valid for tender:" + tender);
-        } else {
-            LocalDate currentDate = LocalDate.now(Clock.systemUTC());
-            if (tender.getPublication().isAfter(currentDate)) {
-                throw new IllegalArgumentException("Publication Date should refer to moment in the past for tender:" + tender);
-            }
+        }
+        LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+        if (tender.getPublication().isAfter(currentDate)) {
+            throw new IllegalArgumentException("Publication Date should refer to moment in the past for tender:" + tender);
         }
     }
 
     private void checkDeadlineDate(Tender tender) {
         if (tender.getSubmissionDeadline() == null) {
             throw new IllegalArgumentException("Deadline Date is not valid for tender:" + tender);
-        } else {
-            if (tender.getSubmissionDeadline().isBefore(tender.getPublication().plusDays(1))) {
-                throw new IllegalArgumentException("Deadline Date should be at least 1 day after publication for tender:" + tender);
-            }
+        }
+        if (tender.getSubmissionDeadline().isBefore(tender.getPublication().plusDays(1))) {
+            throw new IllegalArgumentException("Deadline Date should be at least 1 day after publication for tender:" + tender);
         }
     }
 }
