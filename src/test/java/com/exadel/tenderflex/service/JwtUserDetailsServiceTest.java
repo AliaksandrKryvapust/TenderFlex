@@ -6,7 +6,9 @@ import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.cache.CacheStorage;
-import com.exadel.tenderflex.repository.entity.*;
+import com.exadel.tenderflex.repository.entity.Privilege;
+import com.exadel.tenderflex.repository.entity.Role;
+import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.ERolePrivilege;
 import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
@@ -24,6 +26,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -78,6 +81,7 @@ class JwtUserDetailsServiceTest {
         final UserDetails userDetails = getPreparedUserDetails();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         when(jwtTokenUtil.generateToken(userDetails)).thenReturn(token);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userOutput));
         when(userMapper.loginOutputMapping(userDetails, token)).thenReturn(dtoOutput);
         ArgumentCaptor<UserDtoLogin> actualUserDtoLogin = ArgumentCaptor.forClass(UserDtoLogin.class);
         ArgumentCaptor<UserDetails> actualUserDetails = ArgumentCaptor.forClass(UserDetails.class);
@@ -86,6 +90,7 @@ class JwtUserDetailsServiceTest {
         UserLoginDtoOutput actual = jwtUserDetailsService.login(dtoInput);
         Mockito.verify(userDetailsValidator, Mockito.times(1)).validateLogin(actualUserDtoLogin.capture(),
                 actualUserDetails.capture());
+        Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
 
         // assert
         assertNotNull(actual);
@@ -156,6 +161,7 @@ class JwtUserDetailsServiceTest {
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
+                .role(EUserRole.CONTRACTOR.name())
                 .token(token)
                 .build();
     }

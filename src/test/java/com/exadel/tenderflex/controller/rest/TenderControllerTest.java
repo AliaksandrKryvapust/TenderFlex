@@ -410,7 +410,9 @@ class TenderControllerTest {
     UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
         return UserLoginDtoOutput.builder()
                 .email(email)
-                .token(token).build();
+                .token(token)
+                .role(EUserRole.CONTRACTOR.name())
+                .build();
     }
 
     CompanyDetailsDtoOutput getPreparedCompanyDetailsDtoOutput() {
