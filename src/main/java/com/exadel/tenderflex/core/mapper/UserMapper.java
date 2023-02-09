@@ -5,6 +5,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.UserPageForAdminDtoOutput;
 import com.exadel.tenderflex.repository.entity.Role;
 import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EUserRole;
@@ -98,6 +99,31 @@ public class UserMapper {
                 .content(outputs)
                 .build();
     }
+
+    public UserPageForAdminDtoOutput outputUserForAdminMapping(User user) {
+        return UserPageForAdminDtoOutput.builder()
+                .id(String.valueOf(user.getId()))
+                .dtLogin(user.getDtLogin())
+                .email(user.getEmail())
+                .role(user.getRoles().stream().findFirst().orElseThrow(NoSuchElementException::new).getRoleType())
+                .build();
+    }
+
+    public PageDtoOutput<UserPageForAdminDtoOutput> outputPageForAdminMapping(Page<User> record) {
+        Set<UserPageForAdminDtoOutput> outputs = record.getContent().stream()
+                .map(this::outputUserForAdminMapping).collect(Collectors.toSet());
+        return PageDtoOutput.<UserPageForAdminDtoOutput>builder()
+                .number(record.getNumber() + 1)
+                .size(record.getSize())
+                .totalPages(record.getTotalPages())
+                .totalElements(record.getTotalElements())
+                .first(record.isFirst())
+                .numberOfElements(record.getNumberOfElements())
+                .last(record.isLast())
+                .content(outputs)
+                .build();
+    }
+
     public void updateEntityFields(User user, User currentEntity) {
         currentEntity.setUsername(user.getUsername());
         currentEntity.setPassword(user.getPassword());
