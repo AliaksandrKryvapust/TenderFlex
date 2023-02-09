@@ -5,6 +5,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.UserPageForAdminDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.entity.*;
@@ -26,6 +27,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -50,6 +53,8 @@ class UserServiceTest {
     // preconditions
     final Instant dtCreate = Instant.ofEpochMilli(1673532204657L);
     final Instant dtUpdate = Instant.ofEpochMilli(1673532532870L);
+    final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    final LocalDate dtLogin = LocalDate.parse("04/04/2023", df);
     final String email = "admin@tenderflex.com";
     final String username = "someone";
     final UUID id = UUID.fromString("1d63d7df-f1b3-4e92-95a3-6c7efad96901");
@@ -269,6 +274,28 @@ class UserServiceTest {
         checkUserDtoOutputFields(actual);
     }
 
+
+    @Test
+    void getDtoForAdmin() {
+        // preconditions
+        final User userOutput = getPreparedUserOutput();
+        final Pageable pageable = Pageable.ofSize(1).first();
+        final Page<User> page = new PageImpl<>(Collections.singletonList(userOutput), pageable, 1);
+        final PageDtoOutput<UserPageForAdminDtoOutput> pageDtoOutput = getPreparedPageForAdminDtoOutput();
+        Mockito.when(userRepository.findAll(pageable)).thenReturn(page);
+        Mockito.when(userMapper.outputPageForAdminMapping(page)).thenReturn(pageDtoOutput);
+
+        //test
+        PageDtoOutput<UserPageForAdminDtoOutput> actual = userService.getDtoForAdmin(pageable);
+
+        // assert
+        assertNotNull(actual);
+        checkPageForAdminDtoOutputFields(actual);
+        for (UserPageForAdminDtoOutput user : actual.getContent()) {
+            checkUserForAdminDtoOutputFields(user);
+        }
+    }
+
     User getPreparedUserOutput() {
         final Privilege privilege = Privilege.builder()
                 .id(id)
@@ -362,6 +389,28 @@ class UserServiceTest {
                 .build();
     }
 
+    UserPageForAdminDtoOutput getPreparedUserForAdminDtoOutput() {
+        return UserPageForAdminDtoOutput.builder()
+                .id(id.toString())
+                .email(email)
+                .role(EUserRole.CONTRACTOR)
+                .dtLogin(dtLogin)
+                .build();
+    }
+
+    PageDtoOutput<UserPageForAdminDtoOutput> getPreparedPageForAdminDtoOutput() {
+        return PageDtoOutput.<UserPageForAdminDtoOutput>builder()
+                .number(2)
+                .size(1)
+                .totalPages(1)
+                .totalElements(1L)
+                .first(true)
+                .numberOfElements(1)
+                .last(true)
+                .content(Collections.singleton(getPreparedUserForAdminDtoOutput()))
+                .build();
+    }
+
     private void checkUserOutputFields(User actual) {
         assertNotNull(actual.getRoles());
         assertEquals(id, actual.getId());
@@ -397,6 +446,24 @@ class UserServiceTest {
     }
 
     private void checkPageDtoOutputFields(PageDtoOutput<UserDtoOutput> actual) {
+        assertEquals(1, actual.getTotalPages());
+        Assertions.assertTrue(actual.getFirst());
+        Assertions.assertTrue(actual.getLast());
+        assertEquals(2, actual.getNumber());
+        assertEquals(1, actual.getNumberOfElements());
+        assertEquals(1, actual.getSize());
+        assertEquals(1, actual.getTotalPages());
+        assertEquals(1, actual.getTotalElements());
+    }
+
+    private void checkUserForAdminDtoOutputFields(UserPageForAdminDtoOutput actual) {
+        assertEquals(id.toString(), actual.getId());
+        assertEquals(email, actual.getEmail());
+        assertEquals(EUserRole.CONTRACTOR, actual.getRole());
+        assertEquals(dtLogin, actual.getDtLogin());
+    }
+
+    private void checkPageForAdminDtoOutputFields(PageDtoOutput<UserPageForAdminDtoOutput> actual) {
         assertEquals(1, actual.getTotalPages());
         Assertions.assertTrue(actual.getFirst());
         Assertions.assertTrue(actual.getLast());
