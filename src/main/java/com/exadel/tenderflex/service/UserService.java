@@ -5,6 +5,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
+import com.exadel.tenderflex.core.dto.output.pages.UserPageForAdminDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.entity.User;
@@ -67,7 +68,8 @@ public class UserService implements IUserService, IUserManager {
 
     @Override
     public PageDtoOutput<UserDtoOutput> getDto(Pageable pageable) {
-        return userMapper.outputPageMapping(get(pageable));
+        Page<User> page = get(pageable);
+        return userMapper.outputPageMapping(page);
     }
 
     @Override
@@ -97,5 +99,11 @@ public class UserService implements IUserService, IUserManager {
     public UserDtoOutput getUserDto(String email) {
         User user = getUser(email);
         return this.userMapper.outputMapping(user);
+    }
+
+    @Override
+    public PageDtoOutput<UserPageForAdminDtoOutput> getDtoForAdmin(Pageable pageable) {
+        Page<User> page = get(pageable);
+        return userMapper.outputPageForAdminMapping(page);
     }
 }

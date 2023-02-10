@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
@@ -50,6 +51,8 @@ public class User {
     private Instant dtCreate;
     @Version
     private Instant dtUpdate;
+    @Setter
+    private LocalDate dtLogin;
 
     @Override
     public String toString() {

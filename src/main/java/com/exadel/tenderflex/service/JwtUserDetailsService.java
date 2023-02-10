@@ -6,9 +6,9 @@ import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
 import com.exadel.tenderflex.repository.api.IUserRepository;
 import com.exadel.tenderflex.repository.cache.CacheStorage;
-import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.repository.entity.Privilege;
 import com.exadel.tenderflex.repository.entity.User;
+import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -53,6 +55,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         UserDetails userDetails = loadUserByUsername(userDtoLogin.getEmail());
         userDetailsValidator.validateLogin(userDtoLogin, userDetails);
         String token = jwtTokenUtil.generateToken(userDetails);
+        setLoginDate(userDetails);
         return userMapper.loginOutputMapping(userDetails, token);
     }
 
@@ -64,5 +67,12 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     public boolean tokenIsInBlackList(String token) {
         return tokenBlackList.get(token) != null;
+    }
+
+    private void setLoginDate(UserDetails userDetails) {
+        User currentUser = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoSuchElementException::new);
+        LocalDate date = LocalDate.now(ZoneOffset.UTC);
+        currentUser.setDtLogin(date);
+        userRepository.save(currentUser);
     }
 }

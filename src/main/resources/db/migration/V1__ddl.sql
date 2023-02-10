@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS app.privileges
 (
     id        uuid,
     privilege character varying           NOT NULL,
-    dt_create timestamp without time zone NOT NULL DEFAULT 'now()',
-    dt_update timestamp without time zone NOT NULL DEFAULT 'now()',
+    dt_create timestamp without time zone NOT NULL DEFAULT now(),
+    dt_update timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
 
@@ -21,9 +21,9 @@ ALTER TABLE IF EXISTS app.privileges
 CREATE TABLE app.roles
 (
     id        uuid,
-    role_type character varying NOT NULL,
-    dt_create timestamp without time zone NOT NULL DEFAULT 'now()',
-    dt_update timestamp without time zone NOT NULL DEFAULT 'now()',
+    role_type character varying           NOT NULL,
+    dt_create timestamp without time zone NOT NULL DEFAULT now(),
+    dt_update timestamp without time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
 
@@ -47,8 +47,9 @@ CREATE TABLE IF NOT EXISTS app.users
     password  character varying(200)      NOT NULL,
     email     character varying(50)       NOT NULL,
     status    character varying(50)       NOT NULL,
-    dt_create timestamp without time zone NOT NULL DEFAULT 'now()',
-    dt_update timestamp without time zone NOT NULL DEFAULT 'now()',
+    dt_create timestamp without time zone NOT NULL DEFAULT now(),
+    dt_update timestamp without time zone NOT NULL DEFAULT now(),
+    dt_login  date,
     PRIMARY KEY (id)
 );
 

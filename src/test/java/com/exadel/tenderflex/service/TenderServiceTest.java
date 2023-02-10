@@ -646,6 +646,7 @@ class TenderServiceTest {
         return UserLoginDtoOutput.builder()
                 .email(email)
                 .token(token)
+                .role(EUserRole.CONTRACTOR.name())
                 .build();
     }
 

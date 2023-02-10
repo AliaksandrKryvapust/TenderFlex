@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.core.dto.output;
 
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -8,5 +9,6 @@ import lombok.NonNull;
 @Data
 public class UserLoginDtoOutput {
     private final @NonNull String email;
+    private final @NonNull String role;
     private final String token;
 }
