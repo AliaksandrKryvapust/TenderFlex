@@ -7,6 +7,8 @@ import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.IUserManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,12 +44,20 @@ public class UserLoginController {
     @PostMapping("/login")
     public ResponseEntity<UserLoginDtoOutput> login(@RequestBody @Valid UserDtoLogin dtoLogin) {
         UserLoginDtoOutput userLoginDtoOutput = userDetailsService.login(dtoLogin);
-        return ResponseEntity.ok(userLoginDtoOutput);
+        HttpHeaders jwtCookie = createJwtCookie(userLoginDtoOutput.getToken());
+        return ResponseEntity.ok().headers(jwtCookie).body(userLoginDtoOutput);
     }
 
     @PostMapping("/registration")
     public ResponseEntity<UserLoginDtoOutput> registration(@RequestBody @Valid UserDtoRegistration dtoInput) {
         UserLoginDtoOutput userLoginDtoOutput = userManager.saveUser(dtoInput);
         return new ResponseEntity<>(userLoginDtoOutput, HttpStatus.CREATED);
+    }
+
+    private HttpHeaders createJwtCookie(String token) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        HttpCookie responseCookie = userDetailsService.createJwtCookie(token);
+        responseHeaders.add(HttpHeaders.SET_COOKIE, responseCookie.toString());
+        return responseHeaders;
     }
 }
