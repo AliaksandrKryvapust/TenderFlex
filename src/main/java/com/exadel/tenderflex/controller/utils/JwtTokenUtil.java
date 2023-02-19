@@ -8,6 +8,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,12 +57,13 @@ public class JwtTokenUtil {
     }
 
     public boolean validate(String token, UserDetails userDetails) {
-        final String username = getUsername(token);
-        return username.equals(userDetails.getUsername()) && !this.isTokenExpired(token);
+        String convertedToken = URLDecoder.decode(token, StandardCharsets.UTF_8);
+        final String username = getUsername(convertedToken);
+        return username.equals(userDetails.getUsername()) && !this.isTokenExpired(convertedToken);
     }
 
     public ResponseCookie createJwtCookie(String token) {
-        return ResponseCookie.from(AUTHORIZATION, "Bearer " + token)
+        return ResponseCookie.from(AUTHORIZATION, URLEncoder.encode("Bearer " + token, StandardCharsets.UTF_8))
                 .maxAge(JWT_TOKEN_VALID_TIME)
                 .httpOnly(true)
                 .build();

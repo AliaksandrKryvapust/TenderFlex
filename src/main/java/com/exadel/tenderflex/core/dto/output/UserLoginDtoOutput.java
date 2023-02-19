@@ -1,6 +1,5 @@
 package com.exadel.tenderflex.core.dto.output;
 
-import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
