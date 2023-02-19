@@ -1,6 +1,6 @@
 package com.exadel.tenderflex.core.dto.output.pages;
 
-import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserRegistrationDtoOutput;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data
 public class OfferPageForBidderDtoOutput {
     private final @NotNull String id;
-    private final @NotNull UserLoginDtoOutput user;
+    private final @NotNull UserRegistrationDtoOutput user;
     private final @NonNull String officialName;
     private final @NotNull String fieldFromTenderCpvCode;
     private final @NotNull Integer bidPrice;

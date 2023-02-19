@@ -4,6 +4,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserRegistrationDtoOutput;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.IUserManager;
 import lombok.RequiredArgsConstructor;
@@ -49,9 +50,9 @@ public class UserLoginController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<UserLoginDtoOutput> registration(@RequestBody @Valid UserDtoRegistration dtoInput) {
-        UserLoginDtoOutput userLoginDtoOutput = userManager.saveUser(dtoInput);
-        return new ResponseEntity<>(userLoginDtoOutput, HttpStatus.CREATED);
+    public ResponseEntity<UserRegistrationDtoOutput> registration(@RequestBody @Valid UserDtoRegistration dtoInput) {
+        UserRegistrationDtoOutput userRegistrationDtoOutput = userManager.saveUser(dtoInput);
+        return new ResponseEntity<>(userRegistrationDtoOutput, HttpStatus.CREATED);
     }
 
     private HttpHeaders createJwtCookie(String token) {

@@ -4,6 +4,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoInput;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserRegistrationDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.UserPageForAdminDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
@@ -87,7 +88,7 @@ public class UserService implements IUserService, IUserManager {
     }
 
     @Override
-    public UserLoginDtoOutput saveUser(UserDtoRegistration userDtoRegistration) {
+    public UserRegistrationDtoOutput saveUser(UserDtoRegistration userDtoRegistration) {
         User entityToSave = userMapper.userInputMapping(userDtoRegistration);
         userValidator.validateEntity(entityToSave);
         roleService.assignRoles(entityToSave);
