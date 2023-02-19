@@ -1,5 +1,6 @@
 package com.exadel.tenderflex.core.mapper;
 
+import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
 import com.exadel.tenderflex.core.dto.input.UserDtoInput;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
@@ -71,6 +72,7 @@ public class UserMapper {
         return UserLoginDtoOutput.builder()
                 .email(userDetails.getUsername())
                 .role(role.substring(role.indexOf("_")+1))
+                .duration(JwtTokenUtil.JWT_TOKEN_VALID_TIME)
                 .token(token)
                 .build();
     }

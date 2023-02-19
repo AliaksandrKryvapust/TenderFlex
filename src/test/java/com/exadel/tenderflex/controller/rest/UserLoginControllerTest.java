@@ -409,6 +409,7 @@ class UserLoginControllerTest {
                 .email(email)
                 .token(token)
                 .role(EUserRole.CONTRACTOR.name())
+                .duration(JwtTokenUtil.JWT_TOKEN_VALID_TIME)
                 .build();
     }
 

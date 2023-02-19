@@ -163,6 +163,7 @@ class JwtUserDetailsServiceTest {
                 .email(email)
                 .role(EUserRole.CONTRACTOR.name())
                 .token(token)
+                .duration(JwtTokenUtil.JWT_TOKEN_VALID_TIME)
                 .build();
     }
 
