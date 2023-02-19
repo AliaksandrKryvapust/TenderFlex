@@ -5,7 +5,9 @@ import com.exadel.tenderflex.core.dto.input.ActionDto;
 import com.exadel.tenderflex.core.dto.output.*;
 import com.exadel.tenderflex.core.dto.output.pages.OfferPageForBidderDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
-import com.exadel.tenderflex.repository.entity.enums.*;
+import com.exadel.tenderflex.repository.entity.enums.ECurrency;
+import com.exadel.tenderflex.repository.entity.enums.EFileType;
+import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
 import com.exadel.tenderflex.service.api.IOfferManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,7 +101,7 @@ class OfferControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id").value(id))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.email").value(email))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.token").value(token))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.role").value(EUserRole.CONTRACTOR.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].field_from_tender_cpv_code").value(cpvCode))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].official_name").value(officialName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].bid_price").value(maxPrice))
@@ -258,10 +260,9 @@ class OfferControllerTest {
                 .build();
     }
 
-    UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
-        return UserLoginDtoOutput.builder()
+    UserRegistrationDtoOutput getPreparedUserLoginDtoOutput() {
+        return UserRegistrationDtoOutput.builder()
                 .email(email)
-                .token(token)
                 .role(EUserRole.CONTRACTOR.name())
                 .build();
     }

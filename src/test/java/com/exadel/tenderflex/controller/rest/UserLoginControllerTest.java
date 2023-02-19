@@ -6,6 +6,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoLogin;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserRegistrationDtoOutput;
 import com.exadel.tenderflex.repository.entity.enums.EUserRole;
 import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.service.JwtUserDetailsService;
@@ -18,6 +19,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -86,6 +88,7 @@ class UserLoginControllerTest {
         final UserDtoLogin userDtoLogin = getPreparedUserDtoLogin();
         final UserLoginDtoOutput userLoginDtoOutput = getPreparedUserLoginDtoOutput();
         Mockito.when(userDetailsService.login(userDtoLogin)).thenReturn(userLoginDtoOutput);
+        Mockito.when(userDetailsService.createJwtCookie(token)).thenReturn(new HttpCookie(AUTHORIZATION, "Bearer " + token));
 
         // assert
         this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/login").contentType(MediaType.APPLICATION_JSON)
@@ -102,8 +105,8 @@ class UserLoginControllerTest {
     void registration() throws Exception {
         // preconditions
         final UserDtoRegistration userDtoRegistration = getPreparedUserDtoRegistration();
-        final UserLoginDtoOutput userLoginDtoOutput = getPreparedUserLoginDtoOutput();
-        Mockito.when(userManager.saveUser(userDtoRegistration)).thenReturn(userLoginDtoOutput);
+        final UserRegistrationDtoOutput userRegistrationDtoOutput = getPreparedUserRegistrationDtoOutput();
+        Mockito.when(userManager.saveUser(userDtoRegistration)).thenReturn(userRegistrationDtoOutput);
 
         // assert
         this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/registration").contentType(MediaType.APPLICATION_JSON)
@@ -405,6 +408,13 @@ class UserLoginControllerTest {
         return UserLoginDtoOutput.builder()
                 .email(email)
                 .token(token)
+                .role(EUserRole.CONTRACTOR.name())
+                .build();
+    }
+
+    UserRegistrationDtoOutput getPreparedUserRegistrationDtoOutput() {
+        return UserRegistrationDtoOutput.builder()
+                .email(email)
                 .role(EUserRole.CONTRACTOR.name())
                 .build();
     }
