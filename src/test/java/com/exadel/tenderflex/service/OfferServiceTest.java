@@ -500,10 +500,9 @@ class OfferServiceTest {
                 .build();
     }
 
-    UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
-        return UserLoginDtoOutput.builder()
+    UserRegistrationDtoOutput getPreparedUserLoginDtoOutput() {
+        return UserRegistrationDtoOutput.builder()
                 .email(email)
-                .token(token)
                 .role(EUserRole.CONTRACTOR.name())
                 .build();
     }
@@ -630,7 +629,7 @@ class OfferServiceTest {
         assertEquals(dtCreate.atZone(ZoneOffset.UTC).toLocalDate(), actual.getDtCreate());
         assertEquals(officialName, actual.getOfficialName());
         assertEquals(email, actual.getUser().getEmail());
-        assertEquals(token, actual.getUser().getToken());
+        assertEquals(EUserRole.CONTRACTOR.name(), actual.getUser().getRole());
     }
 
     private void checkPageDtoOutputFields(PageDtoOutput<OfferPageForBidderDtoOutput> actual) {

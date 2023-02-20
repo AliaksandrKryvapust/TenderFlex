@@ -91,7 +91,7 @@ public class OfferMapper {
     }
 
     public OfferPageForBidderDtoOutput offerPageForBidderOutputMapping(Offer offer) {
-        UserLoginDtoOutput user = userMapper.registerOutputMapping(offer.getUser());
+        UserRegistrationDtoOutput user = userMapper.registerOutputMapping(offer.getUser());
         return OfferPageForBidderDtoOutput.builder()
                 .id(offer.getId().toString())
                 .user(user)

@@ -118,7 +118,7 @@ class TenderControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].official_name").value(officialName))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].cpv_code").value(cpvCode))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.email").value(email))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.token").value(token))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].user.role").value(EUserRole.CONTRACTOR.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id").value(id));
 
         //test
@@ -407,10 +407,9 @@ class TenderControllerTest {
                 .offersAmount(offerAmount).build();
     }
 
-    UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
-        return UserLoginDtoOutput.builder()
+    UserRegistrationDtoOutput getPreparedUserLoginDtoOutput() {
+        return UserRegistrationDtoOutput.builder()
                 .email(email)
-                .token(token)
                 .role(EUserRole.CONTRACTOR.name())
                 .build();
     }

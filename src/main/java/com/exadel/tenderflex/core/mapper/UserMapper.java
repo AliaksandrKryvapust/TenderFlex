@@ -1,9 +1,11 @@
 package com.exadel.tenderflex.core.mapper;
 
+import com.exadel.tenderflex.controller.utils.JwtTokenUtil;
 import com.exadel.tenderflex.core.dto.input.UserDtoInput;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserRegistrationDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.UserPageForAdminDtoOutput;
 import com.exadel.tenderflex.repository.entity.Role;
@@ -56,11 +58,11 @@ public class UserMapper {
                 .build();
     }
 
-    public UserLoginDtoOutput registerOutputMapping(User user) {
+    public UserRegistrationDtoOutput registerOutputMapping(User user) {
         String role = user.getRoles().stream().findFirst().orElseThrow(NoSuchElementException::new).getRoleType().name();
-        return UserLoginDtoOutput.builder()
+        return UserRegistrationDtoOutput.builder()
                 .email(user.getEmail())
-                .role(role.substring(role.indexOf("_")+1))
+                .role(role.substring(role.indexOf("_") + 1))
                 .build();
     }
 
@@ -70,6 +72,7 @@ public class UserMapper {
         return UserLoginDtoOutput.builder()
                 .email(userDetails.getUsername())
                 .role(role.substring(role.indexOf("_")+1))
+                .duration(JwtTokenUtil.JWT_TOKEN_VALID_TIME)
                 .token(token)
                 .build();
     }

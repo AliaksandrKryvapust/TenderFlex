@@ -6,9 +6,7 @@ import lombok.NonNull;
 
 @Builder
 @Data
-public class UserLoginDtoOutput {
+public class UserRegistrationDtoOutput {
     private final @NonNull String email;
     private final @NonNull String role;
-    private final @NonNull Long duration;
-    private final String token;
 }

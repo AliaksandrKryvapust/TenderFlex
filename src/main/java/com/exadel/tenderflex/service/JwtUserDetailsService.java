@@ -11,6 +11,7 @@ import com.exadel.tenderflex.repository.entity.User;
 import com.exadel.tenderflex.repository.entity.enums.EUserStatus;
 import com.exadel.tenderflex.service.validator.api.IUserDetailsValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -67,6 +68,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     public boolean tokenIsInBlackList(String token) {
         return tokenBlackList.get(token) != null;
+    }
+
+    public HttpCookie createJwtCookie(String token) {
+        return jwtTokenUtil.createJwtCookie(token);
     }
 
     private void setLoginDate(UserDetails userDetails) {

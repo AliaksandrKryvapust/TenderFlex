@@ -4,6 +4,7 @@ import com.exadel.tenderflex.core.dto.input.UserDtoInput;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
+import com.exadel.tenderflex.core.dto.output.UserRegistrationDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.UserPageForAdminDtoOutput;
 import com.exadel.tenderflex.core.mapper.UserMapper;
@@ -240,14 +241,14 @@ class UserServiceTest {
         // preconditions
         final User userInput = getPreparedUserOutput();
         final UserDtoRegistration dtoInput = getPreparedUserDtoRegistration();
-        final UserLoginDtoOutput dtoOutput = getPreparedUserLoginDtoOutput();
+        final UserRegistrationDtoOutput dtoOutput = getPreparedUserRegistrationDtoOutput();
         Mockito.when(userMapper.userInputMapping(dtoInput)).thenReturn(userInput);
         Mockito.when(userRepository.save(userInput)).thenReturn(userInput);
         Mockito.when(userMapper.registerOutputMapping(userInput)).thenReturn(dtoOutput);
         ArgumentCaptor<User> actualUser = ArgumentCaptor.forClass(User.class);
 
         //test
-        UserLoginDtoOutput actual = userService.saveUser(dtoInput);
+        UserRegistrationDtoOutput actual = userService.saveUser(dtoInput);
         Mockito.verify(userValidator, Mockito.times(1)).validateEntity(actualUser.capture());
         Mockito.verify(roleService, Mockito.times(1)).assignRoles(actualUser.capture());
 
@@ -255,7 +256,7 @@ class UserServiceTest {
         assertEquals(userInput, actualUser.getValue());
         assertNotNull(actual);
         assertEquals(email, actual.getEmail());
-        assertEquals(token, actual.getToken());
+        assertEquals(EUserRole.CONTRACTOR.name(), actual.getRole());
     }
 
     @Test
@@ -346,10 +347,9 @@ class UserServiceTest {
                 .build();
     }
 
-    UserLoginDtoOutput getPreparedUserLoginDtoOutput() {
-        return UserLoginDtoOutput.builder()
+    UserRegistrationDtoOutput getPreparedUserRegistrationDtoOutput() {
+        return UserRegistrationDtoOutput.builder()
                 .email(email)
-                .token(token)
                 .role(EUserRole.CONTRACTOR.name())
                 .build();
     }

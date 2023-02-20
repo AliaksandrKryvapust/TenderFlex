@@ -94,7 +94,7 @@ public class TenderMapper {
     }
 
     public TenderPageForContractorDtoOutput tenderPageOutputMapping(Tender tender){
-        UserLoginDtoOutput user = userMapper.registerOutputMapping(tender.getUser());
+        UserRegistrationDtoOutput user = userMapper.registerOutputMapping(tender.getUser());
         if (!tender.getTenderStatus().equals(ETenderStatus.CLOSED)){
             if (tender.getOffers() != null) {
                 return TenderPageForContractorDtoOutput.builder()
