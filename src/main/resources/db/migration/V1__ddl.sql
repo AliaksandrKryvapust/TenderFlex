@@ -43,12 +43,12 @@ ALTER TABLE IF EXISTS app.role_privilege
 CREATE TABLE IF NOT EXISTS app.users
 (
     id        uuid,
-    username  character varying(20)       NOT NULL,
-    password  character varying(200)      NOT NULL,
-    email     character varying(50)       NOT NULL,
-    status    character varying(50)       NOT NULL,
-    dt_create timestamp without time zone NOT NULL DEFAULT now(),
-    dt_update timestamp without time zone NOT NULL DEFAULT now(),
+    username  character varying(20)        NOT NULL,
+    password  character varying(200)       NOT NULL,
+    email     character varying(50) UNIQUE NOT NULL,
+    status    character varying(50)        NOT NULL,
+    dt_create timestamp without time zone  NOT NULL DEFAULT now(),
+    dt_update timestamp without time zone  NOT NULL DEFAULT now(),
     dt_login  date,
     PRIMARY KEY (id)
 );

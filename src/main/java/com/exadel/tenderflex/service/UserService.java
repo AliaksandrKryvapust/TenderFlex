@@ -3,7 +3,6 @@ package com.exadel.tenderflex.service;
 import com.exadel.tenderflex.core.dto.input.UserDtoInput;
 import com.exadel.tenderflex.core.dto.input.UserDtoRegistration;
 import com.exadel.tenderflex.core.dto.output.UserDtoOutput;
-import com.exadel.tenderflex.core.dto.output.UserLoginDtoOutput;
 import com.exadel.tenderflex.core.dto.output.UserRegistrationDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.PageDtoOutput;
 import com.exadel.tenderflex.core.dto.output.pages.UserPageForAdminDtoOutput;
